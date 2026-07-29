@@ -29,21 +29,52 @@ export type ChartSettings = {
   zones: boolean;
 };
 
-/** Prevedie hodnotu CSS premennej (aj oklch) na rgb(...) reťazec, ktorému rozumie canvas. */
+/** oklch(L C H [/ a]) -> rgb(...) — canvas nevie oklch parsovať. */
+function oklchToRgb(str: string): string | null {
+  const m = str.match(/^oklch\(\s*([\d.%]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.%]+))?\s*\)$/i);
+  if (!m) return null;
+  const L = m[1].endsWith("%") ? parseFloat(m[1]) / 100 : parseFloat(m[1]);
+  const C = parseFloat(m[2]);
+  const H = (parseFloat(m[3]) * Math.PI) / 180;
+  const a = m[4] ? (m[4].endsWith("%") ? parseFloat(m[4]) / 100 : parseFloat(m[4])) : 1;
+
+  const l_ = L + 0.3963377774 * (C * Math.cos(H)) + 0.2158037573 * (C * Math.sin(H));
+  const m_ = L - 0.1055613458 * (C * Math.cos(H)) - 0.0638541728 * (C * Math.sin(H));
+  const s_ = L - 0.0894841775 * (C * Math.cos(H)) - 1.291485548 * (C * Math.sin(H));
+  const l = l_ ** 3;
+  const mm = m_ ** 3;
+  const ss = s_ ** 3;
+
+  const lin = [
+    4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * ss,
+    -1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * ss,
+    -0.0041960863 * l - 0.7034186147 * mm + 1.707614701 * ss,
+  ];
+  const toSrgb = (v: number) => {
+    const c = v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(Math.max(v, 0), 1 / 2.4) - 0.055;
+    return Math.round(Math.min(1, Math.max(0, c)) * 255);
+  };
+  const [r, g, b] = lin.map(toSrgb);
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+/** Hodnota CSS premennej prevedená na rgba(), ktorej rozumie canvas. */
 function cssVar(name: string, fallback: string) {
   if (typeof window === "undefined") return fallback;
   const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   if (!raw) return fallback;
+  if (raw.startsWith("oklch")) return oklchToRgb(raw) ?? fallback;
   const probe = document.createElement("span");
   probe.style.color = raw;
   probe.style.display = "none";
   document.body.appendChild(probe);
   const resolved = getComputedStyle(probe).color;
   probe.remove();
+  if (resolved.startsWith("oklch")) return oklchToRgb(resolved) ?? fallback;
   return resolved || fallback;
 }
 
-/** rgb(r, g, b) -> rgba(r, g, b, alpha) */
+/** rgb(a) -> rgba s inou priehľadnosťou */
 function alpha(color: string, a: number) {
   const m = color.match(/rgba?\(([^)]+)\)/);
   if (!m) return color;
