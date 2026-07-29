@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UctyRouteImport } from './routes/ucty'
+import { Route as RiskRouteImport } from './routes/risk'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UctyRoute = UctyRouteImport.update({
+  id: '/ucty',
+  path: '/ucty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
@@ -33,34 +45,56 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
   '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
   '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
   '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analyza' | '/journal'
+  fullPaths: '/' | '/analyza' | '/journal' | '/risk' | '/ucty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analyza' | '/journal'
-  id: '__root__' | '/' | '/analyza' | '/journal'
+  to: '/' | '/analyza' | '/journal' | '/risk' | '/ucty'
+  id: '__root__' | '/' | '/analyza' | '/journal' | '/risk' | '/ucty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyzaRoute: typeof AnalyzaRoute
   JournalRoute: typeof JournalRoute
+  RiskRoute: typeof RiskRoute
+  UctyRoute: typeof UctyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ucty': {
+      id: '/ucty'
+      path: '/ucty'
+      fullPath: '/ucty'
+      preLoaderRoute: typeof UctyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/journal': {
       id: '/journal'
       path: '/journal'
@@ -89,6 +123,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyzaRoute: AnalyzaRoute,
   JournalRoute: JournalRoute,
+  RiskRoute: RiskRoute,
+  UctyRoute: UctyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
