@@ -105,7 +105,8 @@ export default function TradingChart({
     const primary = cssVar("--color-primary", "#0d9488");
 
     const chart = createChart(el, {
-      autoSize: true,
+      width: el.clientWidth,
+      height,
       layout: {
         background: { type: ColorType.Solid, color: "rgba(0,0,0,0)" },
         textColor: text,
@@ -252,11 +253,18 @@ export default function TradingChart({
 
     chart.timeScale().fitContent();
 
+    const ro = new ResizeObserver(() => {
+      chart.resize(el.clientWidth, el.clientHeight || height);
+      chart.timeScale().fitContent();
+    });
+    ro.observe(el);
+
     return () => {
+      ro.disconnect();
       chart.remove();
       chartRef.current = null;
     };
-  }, [candles, settings]);
+  }, [candles, settings, height]);
 
   return <div ref={containerRef} style={{ height }} className="w-full" />;
 }
