@@ -13,6 +13,7 @@ import { Route as UctyRouteImport } from './routes/ucty'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as GrafyRouteImport } from './routes/grafy'
 import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as BacktestingRouteImport } from './routes/backtesting'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
@@ -36,6 +37,11 @@ const RiskRoute = RiskRouteImport.update({
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrafyRoute = GrafyRouteImport.update({
+  id: '/grafy',
+  path: '/grafy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CennikRoute = CennikRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/analyza': typeof AnalyzaRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
+  '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/analyza': typeof AnalyzaRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
+  '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/analyza': typeof AnalyzaRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
+  '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/analyza'
     | '/backtesting'
     | '/cennik'
+    | '/grafy'
     | '/journal'
     | '/risk'
     | '/sitemap.xml'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/analyza'
     | '/backtesting'
     | '/cennik'
+    | '/grafy'
     | '/journal'
     | '/risk'
     | '/sitemap.xml'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/analyza'
     | '/backtesting'
     | '/cennik'
+    | '/grafy'
     | '/journal'
     | '/risk'
     | '/sitemap.xml'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AnalyzaRoute: typeof AnalyzaRoute
   BacktestingRoute: typeof BacktestingRoute
   CennikRoute: typeof CennikRoute
+  GrafyRoute: typeof GrafyRoute
   JournalRoute: typeof JournalRoute
   RiskRoute: typeof RiskRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/journal'
       fullPath: '/journal'
       preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grafy': {
+      id: '/grafy'
+      path: '/grafy'
+      fullPath: '/grafy'
+      preLoaderRoute: typeof GrafyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cennik': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyzaRoute: AnalyzaRoute,
   BacktestingRoute: BacktestingRoute,
   CennikRoute: CennikRoute,
+  GrafyRoute: GrafyRoute,
   JournalRoute: JournalRoute,
   RiskRoute: RiskRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
