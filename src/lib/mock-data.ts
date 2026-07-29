@@ -11,13 +11,16 @@ export const currencyStrength = [
   { code: "NZD", value: 31 },
 ];
 
+// Fundament Score je v škále −10 až +10.
+// Celkové skóre = priemer čiastkových skóre (sadzby, inflácia, rast, COT), zaokrúhlené na 1 desatinné miesto.
 export const fundamentScore = [
-  { pair: "EURUSD", score: -34, bias: "Bearish", rate: "4.15 %", infl: "2.1 %", gdp: "0.3 %" },
-  { pair: "GBPUSD", score: -12, bias: "Neutrálny", rate: "4.75 %", infl: "2.8 %", gdp: "0.5 %" },
-  { pair: "USDJPY", score: 58, bias: "Bullish", rate: "0.50 %", infl: "3.0 %", gdp: "0.1 %" },
-  { pair: "AUDUSD", score: -41, bias: "Bearish", rate: "3.60 %", infl: "2.4 %", gdp: "0.2 %" },
-  { pair: "XAUUSD", score: 27, bias: "Bullish", rate: "—", infl: "—", gdp: "—" },
+  { pair: "EURUSD", score: -3.4, bias: "Bearish", rate: "4.15 %", infl: "2.1 %", gdp: "0.3 %", rateScore: -4, inflScore: -3, gdpScore: -3, cotScore: -3.5 },
+  { pair: "GBPUSD", score: -1.2, bias: "Neutrálny", rate: "4.75 %", infl: "2.8 %", gdp: "0.5 %", rateScore: -1, inflScore: -2, gdpScore: 0, cotScore: -2 },
+  { pair: "USDJPY", score: 5.8, bias: "Bullish", rate: "0.50 %", infl: "3.0 %", gdp: "0.1 %", rateScore: 8, inflScore: 4, gdpScore: 5, cotScore: 6 },
+  { pair: "AUDUSD", score: -4.1, bias: "Bearish", rate: "3.60 %", infl: "2.4 %", gdp: "0.2 %", rateScore: -5, inflScore: -3, gdpScore: -4, cotScore: -4.5 },
+  { pair: "XAUUSD", score: 2.7, bias: "Bullish", rate: "—", infl: "—", gdp: "—", rateScore: 1, inflScore: 3, gdpScore: 2, cotScore: 5 },
 ];
+
 
 export const cotData = [
   { asset: "EUR", net: -34120, change: -4210, extreme: 18 },

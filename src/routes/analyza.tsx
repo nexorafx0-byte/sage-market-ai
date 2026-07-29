@@ -46,7 +46,7 @@ function AnalysisPage() {
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
-            <Panel title="Fundament Score" hint="Sadzby, inflácia, rast, sentiment">
+            <Panel title="Fundament Score" hint="Škála −10 až +10 · sadzby, inflácia, rast, COT">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -56,7 +56,8 @@ function AnalysisPage() {
                       <th className="pb-2 font-medium">Sadzba</th>
                       <th className="pb-2 font-medium">Inflácia</th>
                       <th className="pb-2 font-medium">HDP</th>
-                      <th className="w-48 pb-2 font-medium">Skóre</th>
+                      <th className="pb-2 font-medium">COT</th>
+                      <th className="w-48 pb-2 font-medium">Skóre (−10 / +10)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -64,15 +65,37 @@ function AnalysisPage() {
                       <tr key={r.pair}>
                         <td className="py-3 font-mono font-medium">{r.pair}</td>
                         <td className="py-3 text-muted-foreground">{r.bias}</td>
-                        <td className="py-3 font-mono text-xs">{r.rate}</td>
-                        <td className="py-3 font-mono text-xs">{r.infl}</td>
-                        <td className="py-3 font-mono text-xs">{r.gdp}</td>
+                        <td className="py-3 font-mono text-xs">
+                          {r.rate}
+                          <span className="ml-1 text-muted-foreground">
+                            ({r.rateScore > 0 ? "+" : ""}
+                            {r.rateScore})
+                          </span>
+                        </td>
+                        <td className="py-3 font-mono text-xs">
+                          {r.infl}
+                          <span className="ml-1 text-muted-foreground">
+                            ({r.inflScore > 0 ? "+" : ""}
+                            {r.inflScore})
+                          </span>
+                        </td>
+                        <td className="py-3 font-mono text-xs">
+                          {r.gdp}
+                          <span className="ml-1 text-muted-foreground">
+                            ({r.gdpScore > 0 ? "+" : ""}
+                            {r.gdpScore})
+                          </span>
+                        </td>
+                        <td className="py-3 font-mono text-xs">
+                          {r.cotScore > 0 ? "+" : ""}
+                          {r.cotScore}
+                        </td>
                         <td className="py-3">
                           <div className="flex items-center gap-3">
-                            <ScoreBar value={r.score} />
-                            <span className="w-10 shrink-0 text-right font-mono text-xs">
+                            <ScoreBar value={r.score} max={10} />
+                            <span className="w-12 shrink-0 text-right font-mono text-xs">
                               {r.score > 0 ? "+" : ""}
-                              {r.score}
+                              {r.score.toFixed(1)}
                             </span>
                           </div>
                         </td>
@@ -81,7 +104,12 @@ function AnalysisPage() {
                   </tbody>
                 </table>
               </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
+                pozícií — každé v rozsahu −10 (silne bearish) až +10 (silne bullish).
+              </p>
             </Panel>
+
           </TabsContent>
 
           <TabsContent value="cot" className="mt-5">
