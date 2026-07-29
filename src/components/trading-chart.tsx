@@ -1,18 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useMemo } from "react";
 import {
-  AreaSeries,
-  BarSeries,
-  CandlestickSeries,
-  ColorType,
-  CrosshairMode,
-  HistogramSeries,
-  LineSeries,
-  LineStyle,
-  createChart,
-  type IChartApi,
-  type ISeriesApi,
-  type UTCTimestamp,
-} from "lightweight-charts";
+  Bar,
+  Brush,
+  CartesianGrid,
+  Cell,
+  ComposedChart,
+  Line,
+  ReferenceArea,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { detectZones, ema, macd, rsi, type Candle } from "@/lib/market-data";
 
@@ -29,242 +29,263 @@ export type ChartSettings = {
   zones: boolean;
 };
 
-/** oklch(L C H [/ a]) -> rgb(...) — canvas nevie oklch parsovať. */
-function oklchToRgb(str: string): string | null {
-  const m = str.match(/^oklch\(\s*([\d.%]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.%]+))?\s*\)$/i);
-  if (!m) return null;
-  const L = m[1].endsWith("%") ? parseFloat(m[1]) / 100 : parseFloat(m[1]);
-  const C = parseFloat(m[2]);
-  const H = (parseFloat(m[3]) * Math.PI) / 180;
-  const a = m[4] ? (m[4].endsWith("%") ? parseFloat(m[4]) / 100 : parseFloat(m[4])) : 1;
+type Row = {
+  label: string;
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  range: [number, number];
+  ema20: number | null;
+  ema50: number | null;
+  ema200: number | null;
+  rsi: number | null;
+  macd: number | null;
+  signal: number | null;
+  hist: number | null;
+};
 
-  const l_ = L + 0.3963377774 * (C * Math.cos(H)) + 0.2158037573 * (C * Math.sin(H));
-  const m_ = L - 0.1055613458 * (C * Math.cos(H)) - 0.0638541728 * (C * Math.sin(H));
-  const s_ = L - 0.0894841775 * (C * Math.cos(H)) - 1.291485548 * (C * Math.sin(H));
-  const l = l_ ** 3;
-  const mm = m_ ** 3;
-  const ss = s_ ** 3;
+const UP = "var(--color-success)";
+const DOWN = "var(--color-destructive)";
+const GRID = "var(--color-border)";
 
-  const lin = [
-    4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * ss,
-    -1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * ss,
-    -0.0041960863 * l - 0.7034186147 * mm + 1.707614701 * ss,
-  ];
-  const toSrgb = (v: number) => {
-    const c = v <= 0.0031308 ? 12.92 * v : 1.055 * Math.pow(Math.max(v, 0), 1 / 2.4) - 0.055;
-    return Math.round(Math.min(1, Math.max(0, c)) * 255);
-  };
-  const [r, g, b] = lin.map(toSrgb);
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
+const tooltipStyle = {
+  borderRadius: 12,
+  border: "1px solid var(--color-border)",
+  background: "var(--color-card)",
+  fontSize: 12,
+};
+
+function formatTime(t: number, tf: string) {
+  const d = new Date(t * 1000);
+  if (tf === "D1" || tf === "W1")
+    return d.toLocaleDateString("sk-SK", { day: "2-digit", month: "2-digit" });
+  return d.toLocaleString("sk-SK", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-/** Hodnota CSS premennej prevedená na rgba(), ktorej rozumie canvas. */
-function cssVar(name: string, fallback: string) {
-  if (typeof window === "undefined") return fallback;
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  if (!raw) return fallback;
-  if (raw.startsWith("oklch")) return oklchToRgb(raw) ?? fallback;
-  const probe = document.createElement("span");
-  probe.style.color = raw;
-  probe.style.display = "none";
-  document.body.appendChild(probe);
-  const resolved = getComputedStyle(probe).color;
-  probe.remove();
-  if (resolved.startsWith("oklch")) return oklchToRgb(resolved) ?? fallback;
-  return resolved || fallback;
+/** Vlastný tvar sviečky: knôt + telo. */
+function CandleShape(props: any) {
+  const { x, y, width, height, payload } = props;
+  const { open, close, high, low } = payload as Row;
+  const span = high - low || 1e-9;
+  const ratio = height / span;
+  const bullish = close >= open;
+  const color = bullish ? "var(--color-success)" : "var(--color-destructive)";
+  const bodyTop = y + (high - Math.max(open, close)) * ratio;
+  const bodyH = Math.max(Math.abs(close - open) * ratio, 1);
+  const w = Math.max(width * 0.7, 1);
+  const cx = x + width / 2;
+  return (
+    <g>
+      <line x1={cx} x2={cx} y1={y} y2={y + height} stroke={color} strokeWidth={1} />
+      <rect x={cx - w / 2} y={bodyTop} width={w} height={bodyH} fill={color} rx={1} />
+    </g>
+  );
 }
 
-/** rgb(a) -> rgba s inou priehľadnosťou */
-function alpha(color: string, a: number) {
-  const m = color.match(/rgba?\(([^)]+)\)/);
-  if (!m) return color;
-  const [r, g, b] = m[1].split(",").map((x) => parseFloat(x));
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
+/** OHLC bar: ľavá čiarka = open, pravá = close. */
+function BarShape(props: any) {
+  const { x, y, width, height, payload } = props;
+  const { open, close, high, low } = payload as Row;
+  const span = high - low || 1e-9;
+  const ratio = height / span;
+  const color = close >= open ? "var(--color-success)" : "var(--color-destructive)";
+  const cx = x + width / 2;
+  const yo = y + (high - open) * ratio;
+  const yc = y + (high - close) * ratio;
+  const tick = Math.max(width * 0.35, 2);
+  return (
+    <g stroke={color} strokeWidth={1.4} fill="none">
+      <line x1={cx} x2={cx} y1={y} y2={y + height} />
+      <line x1={cx - tick} x2={cx} y1={yo} y2={yo} />
+      <line x1={cx} x2={cx + tick} y1={yc} y2={yc} />
+    </g>
+  );
 }
 
 export default function TradingChart({
   candles,
   settings,
-  height = 520,
+  timeframe = "H1",
+  digits = 5,
+  height = 460,
 }: {
   candles: Candle[];
   settings: ChartSettings;
+  timeframe?: string;
+  digits?: number;
   height?: number;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const text = cssVar("--color-muted-foreground", "#64748b");
-    const grid = cssVar("--color-border", "#e2e8f0");
-    const up = cssVar("--color-success", "#16a34a");
-    const down = cssVar("--color-destructive", "#dc2626");
-    const primary = cssVar("--color-primary", "#0d9488");
-
-    const chart = createChart(el, {
-      width: el.clientWidth,
-      height,
-      layout: {
-        background: { type: ColorType.Solid, color: "rgba(0,0,0,0)" },
-        textColor: text,
-        fontFamily: "inherit",
-        attributionLogo: false,
-        panes: { separatorColor: grid, separatorHoverColor: grid },
-      },
-      grid: {
-        vertLines: { color: grid, style: LineStyle.Dotted },
-        horzLines: { color: grid, style: LineStyle.Dotted },
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-        vertLine: { color: text, width: 1, style: LineStyle.Dashed, labelBackgroundColor: primary },
-        horzLine: { color: text, width: 1, style: LineStyle.Dashed, labelBackgroundColor: primary },
-      },
-      rightPriceScale: { borderColor: grid },
-      timeScale: { borderColor: grid, timeVisible: true, secondsVisible: false },
-    });
-    chartRef.current = chart;
-
-    const time = (c: Candle) => c.time as UTCTimestamp;
+  const rows = useMemo<Row[]>(() => {
     const closes = candles.map((c) => c.close);
+    const e20 = ema(closes, 20);
+    const e50 = ema(closes, 50);
+    const e200 = ema(closes, 200);
+    const r = rsi(closes);
+    const m = macd(closes);
+    return candles.map((c, i) => ({
+      label: formatTime(c.time, timeframe),
+      time: c.time,
+      open: c.open,
+      high: c.high,
+      low: c.low,
+      close: c.close,
+      volume: c.volume,
+      range: [c.low, c.high],
+      ema20: e20[i],
+      ema50: e50[i],
+      ema200: e200[i],
+      rsi: r[i],
+      macd: m.line[i],
+      signal: m.signal[i],
+      hist: m.hist[i],
+    }));
+  }, [candles, timeframe]);
 
-    let main: ISeriesApi<"Candlestick" | "Bar" | "Area">;
-    if (settings.type === "candles") {
-      main = chart.addSeries(CandlestickSeries, {
-        upColor: up,
-        downColor: down,
-        borderUpColor: up,
-        borderDownColor: down,
-        wickUpColor: up,
-        wickDownColor: down,
-      }) as ISeriesApi<"Candlestick">;
-      main.setData(candles.map((c) => ({ time: time(c), open: c.open, high: c.high, low: c.low, close: c.close })));
-    } else if (settings.type === "bars") {
-      main = chart.addSeries(BarSeries, { upColor: up, downColor: down }) as ISeriesApi<"Bar">;
-      main.setData(candles.map((c) => ({ time: time(c), open: c.open, high: c.high, low: c.low, close: c.close })));
-    } else {
-      main = chart.addSeries(AreaSeries, {
-        lineColor: primary,
-        topColor: alpha(primary, 0.35),
-        bottomColor: alpha(primary, 0),
-        lineWidth: 2,
-      }) as ISeriesApi<"Area">;
-      main.setData(candles.map((c) => ({ time: time(c), value: c.close })));
-    }
+  const zones = useMemo(() => (settings.zones ? detectZones(candles) : []), [candles, settings.zones]);
+  const fmt = (v: number) => v.toFixed(digits);
+  const lows = Math.min(...candles.map((c) => c.low));
+  const highs = Math.max(...candles.map((c) => c.high));
+  const pad = (highs - lows) * 0.08;
 
-    const addEma = (period: number, color: string) => {
-      const values = ema(closes, period);
-      const s = chart.addSeries(LineSeries, {
-        color,
-        lineWidth: 2,
-        priceLineVisible: false,
-        lastValueVisible: false,
-      });
-      s.setData(
-        candles
-          .map((c, i) => ({ time: time(c), value: values[i] }))
-          .filter((d): d is { time: UTCTimestamp; value: number } => d.value != null),
-      );
-    };
-    if (settings.ema20) addEma(20, primary);
-    if (settings.ema50) addEma(50, "#f59e0b");
-    if (settings.ema200) addEma(200, "#6366f1");
+  return (
+    <div className="space-y-2">
+      <div style={{ height }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} syncId="tv">
+            <CartesianGrid stroke={GRID} strokeDasharray="2 4" />
+            <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={11} minTickGap={40} />
+            <YAxis
+              orientation="right"
+              domain={[lows - pad, highs + pad]}
+              tickFormatter={(v: number) => fmt(v)}
+              tickLine={false}
+              axisLine={false}
+              fontSize={11}
+              width={72}
+            />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value: any, name: string) => {
+                if (name === "range" && Array.isArray(value))
+                  return [`${fmt(value[0])} – ${fmt(value[1])}`, "L / H"];
+                return [typeof value === "number" ? fmt(value) : value, name];
+              }}
+            />
 
-    if (settings.volume) {
-      const vol = chart.addSeries(HistogramSeries, {
-        priceFormat: { type: "volume" },
-        priceScaleId: "vol",
-      });
-      vol.setData(
-        candles.map((c) => ({
-          time: time(c),
-          value: c.volume,
-          color: c.close >= c.open ? alpha(up, 0.35) : alpha(down, 0.35),
-        })),
-      );
-      chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
-    }
+            {zones.map((z) => (
+              <ReferenceArea
+                key={`${z.type}-${z.time}`}
+                y1={z.from}
+                y2={z.to}
+                fill={z.type === "supply" ? DOWN : UP}
+                fillOpacity={0.12}
+                stroke={z.type === "supply" ? DOWN : UP}
+                strokeOpacity={0.35}
+                strokeDasharray="4 4"
+              />
+            ))}
 
-    if (settings.zones) {
-      for (const z of detectZones(candles)) {
-        main.createPriceLine({
-          price: (z.from + z.to) / 2,
-          color: z.type === "supply" ? down : up,
-          lineWidth: 1,
-          lineStyle: LineStyle.Dashed,
-          axisLabelVisible: true,
-          title: z.type === "supply" ? "Supply" : "Demand",
-        });
-      }
-    }
+            {settings.type === "area" ? (
+              <Line
+                type="monotone"
+                dataKey="close"
+                stroke="var(--color-primary)"
+                strokeWidth={2}
+                dot={false}
+                name="Close"
+              />
+            ) : (
+              <Bar
+                dataKey="range"
+                shape={settings.type === "candles" ? <CandleShape /> : <BarShape />}
+                isAnimationActive={false}
+                name="range"
+              />
+            )}
 
-    let pane = 1;
-    if (settings.rsi) {
-      const values = rsi(closes);
-      const s = chart.addSeries(LineSeries, { color: primary, lineWidth: 2, priceLineVisible: false }, pane);
-      s.setData(
-        candles
-          .map((c, i) => ({ time: time(c), value: values[i] }))
-          .filter((d): d is { time: UTCTimestamp; value: number } => d.value != null),
-      );
-      [70, 30].forEach((lvl) =>
-        s.createPriceLine({
-          price: lvl,
-          color: grid,
-          lineWidth: 1,
-          lineStyle: LineStyle.Dashed,
-          axisLabelVisible: true,
-          title: `RSI ${lvl}`,
-        }),
-      );
-      chart.panes()[pane]?.setHeight(110);
-      pane++;
-    }
+            {settings.ema20 && (
+              <Line type="monotone" dataKey="ema20" stroke="var(--color-primary)" strokeWidth={1.6} dot={false} connectNulls name="EMA 20" />
+            )}
+            {settings.ema50 && (
+              <Line type="monotone" dataKey="ema50" stroke="#f59e0b" strokeWidth={1.6} dot={false} connectNulls name="EMA 50" />
+            )}
+            {settings.ema200 && (
+              <Line type="monotone" dataKey="ema200" stroke="#6366f1" strokeWidth={1.6} dot={false} connectNulls name="EMA 200" />
+            )}
 
-    if (settings.macd) {
-      const m = macd(closes);
-      const hist = chart.addSeries(HistogramSeries, { priceLineVisible: false }, pane);
-      hist.setData(
-        candles
-          .map((c, i) => ({
-            time: time(c),
-            value: m.hist[i],
-            color: (m.hist[i] ?? 0) >= 0 ? alpha(up, 0.6) : alpha(down, 0.6),
-          }))
-          .filter((d): d is { time: UTCTimestamp; value: number; color: string } => d.value != null),
-      );
-      const line = chart.addSeries(LineSeries, { color: primary, lineWidth: 2, priceLineVisible: false }, pane);
-      line.setData(
-        candles
-          .map((c, i) => ({ time: time(c), value: m.line[i] }))
-          .filter((d): d is { time: UTCTimestamp; value: number } => d.value != null),
-      );
-      const sig = chart.addSeries(LineSeries, { color: "#f59e0b", lineWidth: 2, priceLineVisible: false }, pane);
-      sig.setData(
-        candles
-          .map((c, i) => ({ time: time(c), value: m.signal[i] }))
-          .filter((d): d is { time: UTCTimestamp; value: number } => d.value != null),
-      );
-      chart.panes()[pane]?.setHeight(110);
-    }
+            <Brush
+              dataKey="label"
+              height={22}
+              travellerWidth={8}
+              stroke="var(--color-primary)"
+              fill="var(--color-secondary)"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
 
-    chart.timeScale().fitContent();
+      {settings.volume && (
+        <div className="h-24">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={rows} margin={{ top: 4, right: 8, left: 0, bottom: 0 }} syncId="tv">
+              <CartesianGrid stroke={GRID} strokeDasharray="2 4" vertical={false} />
+              <XAxis dataKey="label" hide />
+              <YAxis orientation="right" tickLine={false} axisLine={false} fontSize={10} width={72} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Bar dataKey="volume" name="Objem" isAnimationActive={false}>
+                {rows.map((r) => (
+                  <Cell key={r.time} fill={r.close >= r.open ? UP : DOWN} fillOpacity={0.45} />
+                ))}
+              </Bar>
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
-    const ro = new ResizeObserver(() => {
-      chart.resize(el.clientWidth, el.clientHeight || height);
-      chart.timeScale().fitContent();
-    });
-    ro.observe(el);
+      {settings.rsi && (
+        <div className="h-28">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={rows} margin={{ top: 4, right: 8, left: 0, bottom: 0 }} syncId="tv">
+              <CartesianGrid stroke={GRID} strokeDasharray="2 4" vertical={false} />
+              <XAxis dataKey="label" hide />
+              <YAxis orientation="right" domain={[0, 100]} ticks={[30, 50, 70]} tickLine={false} axisLine={false} fontSize={10} width={72} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <ReferenceLine y={70} stroke={DOWN} strokeDasharray="3 3" />
+              <ReferenceLine y={30} stroke={UP} strokeDasharray="3 3" />
+              <Line type="monotone" dataKey="rsi" stroke="var(--color-primary)" strokeWidth={1.8} dot={false} connectNulls name="RSI 14" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
-    return () => {
-      ro.disconnect();
-      chart.remove();
-      chartRef.current = null;
-    };
-  }, [candles, settings, height]);
-
-  return <div ref={containerRef} style={{ height }} className="w-full" />;
+      {settings.macd && (
+        <div className="h-28">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={rows} margin={{ top: 4, right: 8, left: 0, bottom: 0 }} syncId="tv">
+              <CartesianGrid stroke={GRID} strokeDasharray="2 4" vertical={false} />
+              <XAxis dataKey="label" hide />
+              <YAxis orientation="right" tickLine={false} axisLine={false} fontSize={10} width={72} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <ReferenceLine y={0} stroke={GRID} />
+              <Bar dataKey="hist" name="Histogram" isAnimationActive={false}>
+                {rows.map((r) => (
+                  <Cell key={r.time} fill={(r.hist ?? 0) >= 0 ? UP : DOWN} fillOpacity={0.5} />
+                ))}
+              </Bar>
+              <Line type="monotone" dataKey="macd" stroke="var(--color-primary)" strokeWidth={1.6} dot={false} connectNulls name="MACD" />
+              <Line type="monotone" dataKey="signal" stroke="#f59e0b" strokeWidth={1.6} dot={false} connectNulls name="Signál" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </div>
+  );
 }
