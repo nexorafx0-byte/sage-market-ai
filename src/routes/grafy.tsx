@@ -173,13 +173,13 @@ function ChartsPage() {
 
           <ClientOnly
             fallback={
-              <div className="h-[520px] w-full animate-pulse rounded-lg bg-secondary" />
+              <div className="h-[460px] w-full animate-pulse rounded-lg bg-secondary" />
             }
           >
             <Suspense
-              fallback={<div className="h-[520px] w-full animate-pulse rounded-lg bg-secondary" />}
+              fallback={<div className="h-[460px] w-full animate-pulse rounded-lg bg-secondary" />}
             >
-              <TradingChart candles={candles} settings={settings} />
+              <TradingChart candles={candles} settings={settings} timeframe={tf} digits={meta.digits} />
             </Suspense>
           </ClientOnly>
         </Panel>
