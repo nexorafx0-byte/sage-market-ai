@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UctyRouteImport } from './routes/ucty'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as JournalRouteImport } from './routes/journal'
+import { Route as CennikRouteImport } from './routes/cennik'
+import { Route as BacktestingRouteImport } from './routes/backtesting'
+import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UctyRoute = UctyRouteImport.update({
+  id: '/ucty',
+  path: '/ucty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CennikRoute = CennikRouteImport.update({
+  id: '/cennik',
+  path: '/cennik',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BacktestingRoute = BacktestingRouteImport.update({
+  id: '/backtesting',
+  path: '/backtesting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyzaRoute = AnalyzaRouteImport.update({
+  id: '/analyza',
+  path: '/analyza',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analyza': typeof AnalyzaRoute
+  '/backtesting': typeof BacktestingRoute
+  '/cennik': typeof CennikRoute
+  '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analyza': typeof AnalyzaRoute
+  '/backtesting': typeof BacktestingRoute
+  '/cennik': typeof CennikRoute
+  '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analyza': typeof AnalyzaRoute
+  '/backtesting': typeof BacktestingRoute
+  '/cennik': typeof CennikRoute
+  '/journal': typeof JournalRoute
+  '/risk': typeof RiskRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ucty': typeof UctyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analyza'
+    | '/backtesting'
+    | '/cennik'
+    | '/journal'
+    | '/risk'
+    | '/sitemap.xml'
+    | '/ucty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/analyza'
+    | '/backtesting'
+    | '/cennik'
+    | '/journal'
+    | '/risk'
+    | '/sitemap.xml'
+    | '/ucty'
+  id:
+    | '__root__'
+    | '/'
+    | '/analyza'
+    | '/backtesting'
+    | '/cennik'
+    | '/journal'
+    | '/risk'
+    | '/sitemap.xml'
+    | '/ucty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyzaRoute: typeof AnalyzaRoute
+  BacktestingRoute: typeof BacktestingRoute
+  CennikRoute: typeof CennikRoute
+  JournalRoute: typeof JournalRoute
+  RiskRoute: typeof RiskRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UctyRoute: typeof UctyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ucty': {
+      id: '/ucty'
+      path: '/ucty'
+      fullPath: '/ucty'
+      preLoaderRoute: typeof UctyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cennik': {
+      id: '/cennik'
+      path: '/cennik'
+      fullPath: '/cennik'
+      preLoaderRoute: typeof CennikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/backtesting': {
+      id: '/backtesting'
+      path: '/backtesting'
+      fullPath: '/backtesting'
+      preLoaderRoute: typeof BacktestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analyza': {
+      id: '/analyza'
+      path: '/analyza'
+      fullPath: '/analyza'
+      preLoaderRoute: typeof AnalyzaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +197,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyzaRoute: AnalyzaRoute,
+  BacktestingRoute: BacktestingRoute,
+  CennikRoute: CennikRoute,
+  JournalRoute: JournalRoute,
+  RiskRoute: RiskRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UctyRoute: UctyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
