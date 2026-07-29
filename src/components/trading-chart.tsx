@@ -29,10 +29,26 @@ export type ChartSettings = {
   zones: boolean;
 };
 
+/** Prevedie hodnotu CSS premennej (aj oklch) na rgb(...) reťazec, ktorému rozumie canvas. */
 function cssVar(name: string, fallback: string) {
   if (typeof window === "undefined") return fallback;
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return v || fallback;
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  if (!raw) return fallback;
+  const probe = document.createElement("span");
+  probe.style.color = raw;
+  probe.style.display = "none";
+  document.body.appendChild(probe);
+  const resolved = getComputedStyle(probe).color;
+  probe.remove();
+  return resolved || fallback;
+}
+
+/** rgb(r, g, b) -> rgba(r, g, b, alpha) */
+function alpha(color: string, a: number) {
+  const m = color.match(/rgba?\(([^)]+)\)/);
+  if (!m) return color;
+  const [r, g, b] = m[1].split(",").map((x) => parseFloat(x));
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 export default function TradingChart({
@@ -60,7 +76,7 @@ export default function TradingChart({
     const chart = createChart(el, {
       autoSize: true,
       layout: {
-        background: { type: ColorType.Solid, color: "transparent" },
+        background: { type: ColorType.Solid, color: "rgba(0,0,0,0)" },
         textColor: text,
         fontFamily: "inherit",
         attributionLogo: false,
@@ -100,8 +116,8 @@ export default function TradingChart({
     } else {
       main = chart.addSeries(AreaSeries, {
         lineColor: primary,
-        topColor: primary,
-        bottomColor: "transparent",
+        topColor: alpha(primary, 0.35),
+        bottomColor: alpha(primary, 0),
         lineWidth: 2,
       }) as ISeriesApi<"Area">;
       main.setData(candles.map((c) => ({ time: time(c), value: c.close })));
@@ -134,7 +150,7 @@ export default function TradingChart({
         candles.map((c) => ({
           time: time(c),
           value: c.volume,
-          color: c.close >= c.open ? `${up}55` : `${down}55`,
+          color: c.close >= c.open ? alpha(up, 0.35) : alpha(down, 0.35),
         })),
       );
       chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
@@ -184,7 +200,7 @@ export default function TradingChart({
           .map((c, i) => ({
             time: time(c),
             value: m.hist[i],
-            color: (m.hist[i] ?? 0) >= 0 ? `${up}99` : `${down}99`,
+            color: (m.hist[i] ?? 0) >= 0 ? alpha(up, 0.6) : alpha(down, 0.6),
           }))
           .filter((d): d is { time: UTCTimestamp; value: number; color: string } => d.value != null),
       );
