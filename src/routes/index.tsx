@@ -153,7 +153,7 @@ function Dashboard() {
             </div>
           </Panel>
 
-          <Panel title="Fundament Score" hint="Kombinácia sadzieb, inflácie a rastu">
+          <Panel title="Fundament Score" hint="Škála −10 až +10 · sadzby, inflácia, rast, COT">
             <div className="space-y-4">
               {fundamentScore.map((row) => (
                 <div key={row.pair}>
@@ -161,12 +161,13 @@ function Dashboard() {
                     <span className="font-mono font-medium text-foreground">{row.pair}</span>
                     <span className="text-xs text-muted-foreground">
                       {row.bias} · {row.score > 0 ? "+" : ""}
-                      {row.score}
+                      {row.score.toFixed(1)}
                     </span>
                   </div>
                   <div className="mt-1.5">
-                    <ScoreBar value={row.score} />
+                    <ScoreBar value={row.score} max={10} />
                   </div>
+
                 </div>
               ))}
             </div>
