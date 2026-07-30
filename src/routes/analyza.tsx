@@ -88,9 +88,10 @@ function AnalysisPage() {
               <div className="max-h-[32rem] overflow-auto">
 
                 <table className="w-full text-sm">
-                  <thead>
+                  <thead className="sticky top-0 bg-card">
                     <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                      <th className="pb-2 font-medium">Pár</th>
+                      <th className="pb-2 font-medium">Inštrument</th>
+                      <th className="pb-2 font-medium">Trh</th>
                       <th className="pb-2 font-medium">Bias</th>
                       <th className="pb-2 font-medium">Sadzba</th>
                       <th className="pb-2 font-medium">Inflácia</th>
@@ -100,9 +101,11 @@ function AnalysisPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {fundamentScore.map((r) => (
+                    {rows.map((r) => (
                       <tr key={r.pair}>
                         <td className="py-3 font-mono font-medium">{r.pair}</td>
+                        <td className="py-3 text-xs text-muted-foreground">{r.category}</td>
+
                         <td className="py-3 text-muted-foreground">{r.bias}</td>
                         <td className="py-3 font-mono text-xs">
                           {r.rate}
