@@ -153,9 +153,12 @@ function Dashboard() {
             </div>
           </Panel>
 
-          <Panel title="Fundament Score" hint="Škála −10 až +10 · sadzby, inflácia, rast, COT">
+          <Panel title="Fundament Score" hint="Top 8 podľa sily · škála −10 až +10">
             <div className="space-y-4">
-              {fundamentScore.map((row) => (
+              {[...fundamentScore]
+                .sort((a, b) => Math.abs(b.score) - Math.abs(a.score))
+                .slice(0, 8)
+                .map((row) => (
                 <div key={row.pair}>
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-mono font-medium text-foreground">{row.pair}</span>

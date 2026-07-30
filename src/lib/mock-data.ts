@@ -13,13 +13,94 @@ export const currencyStrength = [
 
 // Fundament Score je v škále −10 až +10.
 // Celkové skóre = priemer čiastkových skóre (sadzby, inflácia, rast, COT), zaokrúhlené na 1 desatinné miesto.
-export const fundamentScore = [
-  { pair: "EURUSD", score: -3.4, bias: "Bearish", rate: "4.15 %", infl: "2.1 %", gdp: "0.3 %", rateScore: -4, inflScore: -3, gdpScore: -3, cotScore: -3.5 },
-  { pair: "GBPUSD", score: -1.2, bias: "Neutrálny", rate: "4.75 %", infl: "2.8 %", gdp: "0.5 %", rateScore: -1, inflScore: -2, gdpScore: 0, cotScore: -2 },
-  { pair: "USDJPY", score: 5.8, bias: "Bullish", rate: "0.50 %", infl: "3.0 %", gdp: "0.1 %", rateScore: 8, inflScore: 4, gdpScore: 5, cotScore: 6 },
-  { pair: "AUDUSD", score: -4.1, bias: "Bearish", rate: "3.60 %", infl: "2.4 %", gdp: "0.2 %", rateScore: -5, inflScore: -3, gdpScore: -4, cotScore: -4.5 },
-  { pair: "XAUUSD", score: 2.7, bias: "Bullish", rate: "—", infl: "—", gdp: "—", rateScore: 1, inflScore: 3, gdpScore: 2, cotScore: 5 },
+export type FundamentCategory = "Forex" | "Komodity" | "Indexy";
+
+export type FundamentRow = {
+  pair: string;
+  category: FundamentCategory;
+  score: number;
+  bias: string;
+  rate: string;
+  infl: string;
+  gdp: string;
+  rateScore: number;
+  inflScore: number;
+  gdpScore: number;
+  cotScore: number;
+};
+
+const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutrálny");
+
+function row(
+  pair: string,
+  category: FundamentCategory,
+  rate: string,
+  infl: string,
+  gdp: string,
+  rateScore: number,
+  inflScore: number,
+  gdpScore: number,
+  cotScore: number,
+): FundamentRow {
+  const score = Math.round(((rateScore + inflScore + gdpScore + cotScore) / 4) * 10) / 10;
+  return { pair, category, score, bias: bias(score), rate, infl, gdp, rateScore, inflScore, gdpScore, cotScore };
+}
+
+export const fundamentScore: FundamentRow[] = [
+  // ---- Forex: majors ----
+  row("EURUSD", "Forex", "4.15 %", "2.1 %", "0.3 %", -4, -3, -3, -3.5),
+  row("GBPUSD", "Forex", "4.75 %", "2.8 %", "0.5 %", -1, -2, 0, -2),
+  row("USDJPY", "Forex", "0.50 %", "3.0 %", "0.1 %", 8, 4, 5, 6),
+  row("USDCHF", "Forex", "0.25 %", "1.1 %", "0.4 %", 6, 3, 2, 3),
+  row("USDCAD", "Forex", "2.75 %", "2.0 %", "0.6 %", 3, 2, 1, 2.5),
+  row("AUDUSD", "Forex", "3.60 %", "2.4 %", "0.2 %", -5, -3, -4, -4.5),
+  row("NZDUSD", "Forex", "3.25 %", "2.2 %", "0.1 %", -4, -3, -5, -3),
+  // ---- Forex: crosses ----
+  row("EURGBP", "Forex", "4.15 / 4.75 %", "2.1 / 2.8 %", "0.3 / 0.5 %", -3, -1, -2, -1.5),
+  row("EURJPY", "Forex", "4.15 / 0.50 %", "2.1 / 3.0 %", "0.3 / 0.1 %", 5, 2, 3, 4),
+  row("EURCHF", "Forex", "4.15 / 0.25 %", "2.1 / 1.1 %", "0.3 / 0.4 %", 3, 1, 0, 1),
+  row("EURAUD", "Forex", "4.15 / 3.60 %", "2.1 / 2.4 %", "0.3 / 0.2 %", 2, 1, 2, 3),
+  row("EURCAD", "Forex", "4.15 / 2.75 %", "2.1 / 2.0 %", "0.3 / 0.6 %", 2, 0, -1, 1),
+  row("EURNZD", "Forex", "4.15 / 3.25 %", "2.1 / 2.2 %", "0.3 / 0.1 %", 3, 1, 3, 2),
+  row("GBPJPY", "Forex", "4.75 / 0.50 %", "2.8 / 3.0 %", "0.5 / 0.1 %", 6, 3, 4, 5),
+  row("GBPCHF", "Forex", "4.75 / 0.25 %", "2.8 / 1.1 %", "0.5 / 0.4 %", 4, 2, 1, 2),
+  row("GBPAUD", "Forex", "4.75 / 3.60 %", "2.8 / 2.4 %", "0.5 / 0.2 %", 3, 2, 3, 3.5),
+  row("GBPCAD", "Forex", "4.75 / 2.75 %", "2.8 / 2.0 %", "0.5 / 0.6 %", 3, 1, 0, 1.5),
+  row("GBPNZD", "Forex", "4.75 / 3.25 %", "2.8 / 2.2 %", "0.5 / 0.1 %", 4, 2, 4, 3),
+  row("AUDJPY", "Forex", "3.60 / 0.50 %", "2.4 / 3.0 %", "0.2 / 0.1 %", 4, 1, 1, 2.5),
+  row("AUDNZD", "Forex", "3.60 / 3.25 %", "2.4 / 2.2 %", "0.2 / 0.1 %", 1, 0, 1, 1),
+  row("AUDCAD", "Forex", "3.60 / 2.75 %", "2.4 / 2.0 %", "0.2 / 0.6 %", 1, -1, -2, -1),
+  row("CADJPY", "Forex", "2.75 / 0.50 %", "2.0 / 3.0 %", "0.6 / 0.1 %", 5, 2, 3, 3.5),
+  row("CHFJPY", "Forex", "0.25 / 0.50 %", "1.1 / 3.0 %", "0.4 / 0.1 %", 2, 3, 2, 2),
+  row("NZDJPY", "Forex", "3.25 / 0.50 %", "2.2 / 3.0 %", "0.1 / 0.1 %", 4, 1, 0, 2),
+  row("USDMXN", "Forex", "9.00 %", "4.2 %", "0.2 %", -2, 1, 2, 1.5),
+  row("USDZAR", "Forex", "7.25 %", "4.8 %", "0.3 %", -1, 2, 3, 2),
+  row("USDSEK", "Forex", "1.75 %", "1.9 %", "0.4 %", 5, 2, 2, 3),
+  row("USDNOK", "Forex", "4.25 %", "2.9 %", "0.5 %", 2, 1, -1, 0.5),
+  // ---- Komodity ----
+  row("XAUUSD", "Komodity", "—", "—", "—", 1, 3, 2, 5),
+  row("XAGUSD", "Komodity", "—", "—", "—", 1, 4, 3, 4),
+  row("XPTUSD", "Komodity", "—", "—", "—", 0, 2, 1, 2),
+  row("WTI (US Oil)", "Komodity", "—", "—", "—", -2, 1, -3, 3),
+  row("BRENT", "Komodity", "—", "—", "—", -2, 1, -2, 2.5),
+  row("NATGAS", "Komodity", "—", "—", "—", -1, 2, -4, -3),
+  row("COPPER", "Komodity", "—", "—", "—", -1, 0, -3, -2),
+  row("WHEAT", "Komodity", "—", "—", "—", 0, 1, -1, -2),
+  // ---- Indexy ----
+  row("US500 (S&P 500)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -2, 1, 5, 4),
+  row("US100 (Nasdaq)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -3, 1, 6, 5),
+  row("US30 (Dow)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -2, 1, 4, 3),
+  row("US2000 (Russell)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -4, 0, 2, 1),
+  row("GER40 (DAX)", "Indexy", "2.15 %", "2.2 %", "0.3 %", 2, 1, -2, 1),
+  row("UK100 (FTSE)", "Indexy", "4.75 %", "2.8 %", "0.5 %", -1, 0, 0, 1),
+  row("FRA40 (CAC)", "Indexy", "2.15 %", "2.0 %", "0.2 %", 2, 1, -2, 0),
+  row("EU50 (Euro Stoxx)", "Indexy", "2.15 %", "2.1 %", "0.3 %", 2, 1, -1, 1),
+  row("JP225 (Nikkei)", "Indexy", "0.50 %", "3.0 %", "0.9 %", 4, -1, 3, 3),
+  row("HK50 (Hang Seng)", "Indexy", "3.10 %", "1.2 %", "4.7 %", 0, 2, 3, -1),
+  row("AUS200 (ASX)", "Indexy", "3.60 %", "2.4 %", "0.2 %", -1, 0, -1, 0),
+  row("US_DXY (Dolár index)", "Indexy", "4.15 %", "2.1 %", "2.4 %", 5, 3, 4, 5),
 ];
+
 
 
 export const cotData = [

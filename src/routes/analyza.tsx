@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
 import {
   Bar,
   BarChart,
@@ -32,7 +34,18 @@ export const Route = createFileRoute("/analyza")({
   component: AnalysisPage,
 });
 
+const CATEGORIES = ["Všetko", "Forex", "Komodity", "Indexy"] as const;
+
 function AnalysisPage() {
+  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
+  const [q, setQ] = useState("");
+
+  const rows = fundamentScore.filter(
+    (r) =>
+      (cat === "Všetko" || r.category === cat) &&
+      r.pair.toLowerCase().includes(q.trim().toLowerCase()),
+  );
+
   return (
     <>
       <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť · Supply & Demand" />
@@ -46,12 +59,39 @@ function AnalysisPage() {
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
-            <Panel title="Fundament Score" hint="Škála −10 až +10 · sadzby, inflácia, rast, COT">
-              <div className="overflow-x-auto">
+            <Panel
+              title="Fundament Score"
+              hint={`${rows.length} inštrumentov · škála −10 až +10`}
+            >
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCat(c)}
+                    className={
+                      c === cat
+                        ? "rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                        : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
+                    }
+                  >
+                    {c}
+                  </button>
+                ))}
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Hľadať pár…"
+                  className="ml-auto w-44 rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div className="max-h-[32rem] overflow-auto">
+
                 <table className="w-full text-sm">
-                  <thead>
+                  <thead className="sticky top-0 bg-card">
                     <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                      <th className="pb-2 font-medium">Pár</th>
+                      <th className="pb-2 font-medium">Inštrument</th>
+                      <th className="pb-2 font-medium">Trh</th>
                       <th className="pb-2 font-medium">Bias</th>
                       <th className="pb-2 font-medium">Sadzba</th>
                       <th className="pb-2 font-medium">Inflácia</th>
@@ -61,9 +101,11 @@ function AnalysisPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {fundamentScore.map((r) => (
+                    {rows.map((r) => (
                       <tr key={r.pair}>
                         <td className="py-3 font-mono font-medium">{r.pair}</td>
+                        <td className="py-3 text-xs text-muted-foreground">{r.category}</td>
+
                         <td className="py-3 text-muted-foreground">{r.bias}</td>
                         <td className="py-3 font-mono text-xs">
                           {r.rate}
