@@ -46,11 +46,6 @@ function AnalysisPage() {
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
-  const rows = fundamentScore.filter(
-    (r) =>
-      (cat === "Všetko" || r.category === cat) &&
-      r.pair.toLowerCase().includes(q.trim().toLowerCase()),
-  );
 
   const rowsForex = rows.filter((r) => r.category === "Forex");
   const rowsCommodities = rows.filter((r) => r.category === "Komodity");
