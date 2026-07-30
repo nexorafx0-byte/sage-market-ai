@@ -46,24 +46,10 @@ function AnalysisPage() {
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
-  const CCY_ORDER = ["USD", "EUR", "GBP", "JPY", "CHF", "AUD", "CAD", "NZD"];
 
-  const groupName = (r: (typeof rows)[number]) => {
-    if (r.category !== "Forex") return r.category;
-    const base = r.pair.slice(0, 3);
-    return CCY_ORDER.includes(base) ? `Forex — ${base}` : "Forex — exotické";
-  };
-
-  const order = [
-    ...CCY_ORDER.map((c) => `Forex — ${c}`),
-    "Forex — exotické",
-    "Komodity",
-    "Indexy",
-  ];
-
-  const groups = order
-    .map((name) => ({ name, items: rows.filter((r) => groupName(r) === name) }))
-    .filter((g) => g.items.length > 0);
+  const rowsForex = rows.filter((r) => r.category === "Forex");
+  const rowsCommodities = rows.filter((r) => r.category === "Komodity");
+  const rowsIndices = rows.filter((r) => r.category === "Indexy");
 
 
   return (
@@ -102,15 +88,14 @@ function AnalysisPage() {
               />
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-2">
-              {groups.map((g) => (
-                <Panel
-                  key={g.name}
-                  title={g.name}
-                  hint={`${g.items.length} inštrumentov · −10 až +10`}
-                >
+            <div className="space-y-10">
+              {rowsForex.length > 0 && (
+                <section>
+                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Forex páry
+                  </h3>
                   <div className="space-y-3">
-                    {g.items.map((r) => (
+                    {rowsForex.map((r) => (
                       <div key={r.pair} className="rounded-lg border border-border p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="font-mono text-sm font-medium">{r.pair}</span>
@@ -147,9 +132,102 @@ function AnalysisPage() {
                       </div>
                     ))}
                   </div>
-                </Panel>
-              ))}
-              {groups.length === 0 && (
+                </section>
+              )}
+
+              {rowsCommodities.length > 0 && (
+                <section>
+                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Komodity
+                  </h3>
+                  <div className="space-y-3">
+                    {rowsCommodities.map((r) => (
+                      <div key={r.pair} className="rounded-lg border border-border p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-mono text-sm font-medium">{r.pair}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {r.bias} · {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex items-center gap-3">
+                          <ScoreBar value={r.score} max={10} />
+                          <span className="w-12 shrink-0 text-right font-mono text-xs">
+                            {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                          <span>
+                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
+                            {r.rateScore})
+                          </span>
+                          <span>
+                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
+                            {r.inflScore})
+                          </span>
+                          <span>
+                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
+                            {r.gdpScore})
+                          </span>
+                          <span>
+                            COT {r.cotScore > 0 ? "+" : ""}
+                            {r.cotScore}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {rowsIndices.length > 0 && (
+                <section>
+                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    Indexy
+                  </h3>
+                  <div className="space-y-3">
+                    {rowsIndices.map((r) => (
+                      <div key={r.pair} className="rounded-lg border border-border p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-mono text-sm font-medium">{r.pair}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {r.bias} · {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex items-center gap-3">
+                          <ScoreBar value={r.score} max={10} />
+                          <span className="w-12 shrink-0 text-right font-mono text-xs">
+                            {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                          <span>
+                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
+                            {r.rateScore})
+                          </span>
+                          <span>
+                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
+                            {r.inflScore})
+                          </span>
+                          <span>
+                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
+                            {r.gdpScore})
+                          </span>
+                          <span>
+                            COT {r.cotScore > 0 ? "+" : ""}
+                            {r.cotScore}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {rows.length === 0 && (
                 <p className="text-sm text-muted-foreground">Žiadny inštrument nezodpovedá filtru.</p>
               )}
             </div>
