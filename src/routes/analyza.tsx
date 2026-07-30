@@ -46,24 +46,15 @@ function AnalysisPage() {
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
-  const CCY_ORDER = ["USD", "EUR", "GBP", "JPY", "CHF", "AUD", "CAD", "NZD"];
+  const rows = fundamentScore.filter(
+    (r) =>
+      (cat === "Všetko" || r.category === cat) &&
+      r.pair.toLowerCase().includes(q.trim().toLowerCase()),
+  );
 
-  const groupName = (r: (typeof rows)[number]) => {
-    if (r.category !== "Forex") return r.category;
-    const base = r.pair.slice(0, 3);
-    return CCY_ORDER.includes(base) ? `Forex — ${base}` : "Forex — exotické";
-  };
-
-  const order = [
-    ...CCY_ORDER.map((c) => `Forex — ${c}`),
-    "Forex — exotické",
-    "Komodity",
-    "Indexy",
-  ];
-
-  const groups = order
-    .map((name) => ({ name, items: rows.filter((r) => groupName(r) === name) }))
-    .filter((g) => g.items.length > 0);
+  const rowsForex = rows.filter((r) => r.category === "Forex");
+  const rowsCommodities = rows.filter((r) => r.category === "Komodity");
+  const rowsIndices = rows.filter((r) => r.category === "Indexy");
 
 
   return (
