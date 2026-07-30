@@ -59,98 +59,86 @@ function AnalysisPage() {
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
-            <Panel
-              title="Fundament Score"
-              hint={`${rows.length} inštrumentov · škála −10 až +10`}
-            >
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                {CATEGORIES.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setCat(c)}
-                    className={
-                      c === cat
-                        ? "rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-                        : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
-                    }
-                  >
-                    {c}
-                  </button>
-                ))}
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Hľadať pár…"
-                  className="ml-auto w-44 rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-              <div className="max-h-[32rem] overflow-auto">
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCat(c)}
+                  className={
+                    c === cat
+                      ? "rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                      : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
+                  }
+                >
+                  {c}
+                </button>
+              ))}
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Hľadať inštrument…"
+                className="ml-auto w-44 rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
 
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-card">
-                    <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                      <th className="pb-2 font-medium">Inštrument</th>
-                      <th className="pb-2 font-medium">Trh</th>
-                      <th className="pb-2 font-medium">Bias</th>
-                      <th className="pb-2 font-medium">Sadzba</th>
-                      <th className="pb-2 font-medium">Inflácia</th>
-                      <th className="pb-2 font-medium">HDP</th>
-                      <th className="pb-2 font-medium">COT</th>
-                      <th className="w-48 pb-2 font-medium">Skóre (−10 / +10)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {rows.map((r) => (
-                      <tr key={r.pair}>
-                        <td className="py-3 font-mono font-medium">{r.pair}</td>
-                        <td className="py-3 text-xs text-muted-foreground">{r.category}</td>
-
-                        <td className="py-3 text-muted-foreground">{r.bias}</td>
-                        <td className="py-3 font-mono text-xs">
-                          {r.rate}
-                          <span className="ml-1 text-muted-foreground">
-                            ({r.rateScore > 0 ? "+" : ""}
+            <div className="grid gap-5 lg:grid-cols-2">
+              {groups.map((g) => (
+                <Panel
+                  key={g.name}
+                  title={g.name}
+                  hint={`${g.items.length} inštrumentov · −10 až +10`}
+                >
+                  <div className="space-y-3">
+                    {g.items.map((r) => (
+                      <div key={r.pair} className="rounded-lg border border-border p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-mono text-sm font-medium">{r.pair}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {r.bias} · {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex items-center gap-3">
+                          <ScoreBar value={r.score} max={10} />
+                          <span className="w-12 shrink-0 text-right font-mono text-xs">
+                            {r.score > 0 ? "+" : ""}
+                            {r.score.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                          <span>
+                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
                             {r.rateScore})
                           </span>
-                        </td>
-                        <td className="py-3 font-mono text-xs">
-                          {r.infl}
-                          <span className="ml-1 text-muted-foreground">
-                            ({r.inflScore > 0 ? "+" : ""}
+                          <span>
+                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
                             {r.inflScore})
                           </span>
-                        </td>
-                        <td className="py-3 font-mono text-xs">
-                          {r.gdp}
-                          <span className="ml-1 text-muted-foreground">
-                            ({r.gdpScore > 0 ? "+" : ""}
+                          <span>
+                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
                             {r.gdpScore})
                           </span>
-                        </td>
-                        <td className="py-3 font-mono text-xs">
-                          {r.cotScore > 0 ? "+" : ""}
-                          {r.cotScore}
-                        </td>
-                        <td className="py-3">
-                          <div className="flex items-center gap-3">
-                            <ScoreBar value={r.score} max={10} />
-                            <span className="w-12 shrink-0 text-right font-mono text-xs">
-                              {r.score > 0 ? "+" : ""}
-                              {r.score.toFixed(1)}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
+                          <span>
+                            COT {r.cotScore > 0 ? "+" : ""}
+                            {r.cotScore}
+                          </span>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-              <p className="mt-4 text-xs text-muted-foreground">
-                Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
-                pozícií — každé v rozsahu −10 (silne bearish) až +10 (silne bullish).
-              </p>
-            </Panel>
+                  </div>
+                </Panel>
+              ))}
+              {groups.length === 0 && (
+                <p className="text-sm text-muted-foreground">Žiadny inštrument nezodpovedá filtru.</p>
+              )}
+            </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">
+              Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
+              pozícií — každé v rozsahu −10 (silne bearish) až +10 (silne bullish).
+            </p>
+
 
           </TabsContent>
 
