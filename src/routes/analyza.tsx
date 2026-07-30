@@ -32,7 +32,18 @@ export const Route = createFileRoute("/analyza")({
   component: AnalysisPage,
 });
 
+const CATEGORIES = ["Všetko", "Forex", "Komodity", "Indexy"] as const;
+
 function AnalysisPage() {
+  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
+  const [q, setQ] = useState("");
+
+  const rows = fundamentScore.filter(
+    (r) =>
+      (cat === "Všetko" || r.category === cat) &&
+      r.pair.toLowerCase().includes(q.trim().toLowerCase()),
+  );
+
   return (
     <>
       <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť · Supply & Demand" />
@@ -46,8 +57,34 @@ function AnalysisPage() {
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
-            <Panel title="Fundament Score" hint="Škála −10 až +10 · sadzby, inflácia, rast, COT">
-              <div className="overflow-x-auto">
+            <Panel
+              title="Fundament Score"
+              hint={`${rows.length} inštrumentov · škála −10 až +10`}
+            >
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCat(c)}
+                    className={
+                      c === cat
+                        ? "rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                        : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
+                    }
+                  >
+                    {c}
+                  </button>
+                ))}
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Hľadať pár…"
+                  className="ml-auto w-44 rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div className="max-h-[32rem] overflow-auto">
+
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
