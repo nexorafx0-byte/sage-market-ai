@@ -36,9 +36,53 @@ export const Route = createFileRoute("/analyza")({
 
 const CATEGORIES = ["Všetko", "Forex", "Komodity", "Indexy"] as const;
 
+function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(r)}
+      className="w-full rounded-lg border border-border p-3 text-left transition-colors hover:bg-secondary"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="font-mono text-sm font-medium">{r.pair}</span>
+        <span className="text-xs text-muted-foreground">
+          {r.bias} · {r.score > 0 ? "+" : ""}
+          {r.score.toFixed(1)}
+        </span>
+      </div>
+      <div className="mt-2 flex items-center gap-3">
+        <ScoreBar value={r.score} max={10} />
+        <span className="w-12 shrink-0 text-right font-mono text-xs">
+          {r.score > 0 ? "+" : ""}
+          {r.score.toFixed(1)}
+        </span>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+        <span>
+          Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
+          {r.rateScore})
+        </span>
+        <span>
+          Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
+          {r.inflScore})
+        </span>
+        <span>
+          HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
+          {r.gdpScore})
+        </span>
+        <span>
+          COT {r.cotScore > 0 ? "+" : ""}
+          {r.cotScore}
+        </span>
+      </div>
+    </button>
+  );
+}
+
 function AnalysisPage() {
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
   const [q, setQ] = useState("");
+  const [selected, setSelected] = useState<FundamentRow | null>(null);
 
   const rows = fundamentScore.filter(
     (r) =>
@@ -46,11 +90,15 @@ function AnalysisPage() {
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
-
   const rowsForex = rows.filter((r) => r.category === "Forex");
   const rowsCommodities = rows.filter((r) => r.category === "Komodity");
   const rowsIndices = rows.filter((r) => r.category === "Indexy");
 
+  const sections: { title: string; items: FundamentRow[] }[] = [
+    { title: "Forex páry", items: rowsForex },
+    { title: "Komodity", items: rowsCommodities },
+    { title: "Indexy", items: rowsIndices },
+  ];
 
   return (
     <>
@@ -89,148 +137,34 @@ function AnalysisPage() {
             </div>
 
             <div className="space-y-10">
-              {rowsForex.length > 0 && (
-                <section>
-                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Forex páry
-                  </h3>
-                  <div className="space-y-3">
-                    {rowsForex.map((r) => (
-                      <div key={r.pair} className="rounded-lg border border-border p-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="font-mono text-sm font-medium">{r.pair}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {r.bias} · {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex items-center gap-3">
-                          <ScoreBar value={r.score} max={10} />
-                          <span className="w-12 shrink-0 text-right font-mono text-xs">
-                            {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-                          <span>
-                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
-                            {r.rateScore})
-                          </span>
-                          <span>
-                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
-                            {r.inflScore})
-                          </span>
-                          <span>
-                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
-                            {r.gdpScore})
-                          </span>
-                          <span>
-                            COT {r.cotScore > 0 ? "+" : ""}
-                            {r.cotScore}
-                          </span>
-                        </div>
+              {sections.map(
+                (s) =>
+                  s.items.length > 0 && (
+                    <section key={s.title}>
+                      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                        {s.title}
+                      </h3>
+                      <div className="space-y-3">
+                        {s.items.map((r) => (
+                          <RowCard key={r.pair} r={r} onOpen={setSelected} />
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {rowsCommodities.length > 0 && (
-                <section>
-                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Komodity
-                  </h3>
-                  <div className="space-y-3">
-                    {rowsCommodities.map((r) => (
-                      <div key={r.pair} className="rounded-lg border border-border p-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="font-mono text-sm font-medium">{r.pair}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {r.bias} · {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex items-center gap-3">
-                          <ScoreBar value={r.score} max={10} />
-                          <span className="w-12 shrink-0 text-right font-mono text-xs">
-                            {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-                          <span>
-                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
-                            {r.rateScore})
-                          </span>
-                          <span>
-                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
-                            {r.inflScore})
-                          </span>
-                          <span>
-                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
-                            {r.gdpScore})
-                          </span>
-                          <span>
-                            COT {r.cotScore > 0 ? "+" : ""}
-                            {r.cotScore}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {rowsIndices.length > 0 && (
-                <section>
-                  <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                    Indexy
-                  </h3>
-                  <div className="space-y-3">
-                    {rowsIndices.map((r) => (
-                      <div key={r.pair} className="rounded-lg border border-border p-3">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="font-mono text-sm font-medium">{r.pair}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {r.bias} · {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex items-center gap-3">
-                          <ScoreBar value={r.score} max={10} />
-                          <span className="w-12 shrink-0 text-right font-mono text-xs">
-                            {r.score > 0 ? "+" : ""}
-                            {r.score.toFixed(1)}
-                          </span>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-                          <span>
-                            Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
-                            {r.rateScore})
-                          </span>
-                          <span>
-                            Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
-                            {r.inflScore})
-                          </span>
-                          <span>
-                            HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
-                            {r.gdpScore})
-                          </span>
-                          <span>
-                            COT {r.cotScore > 0 ? "+" : ""}
-                            {r.cotScore}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                    </section>
+                  ),
               )}
 
               {rows.length === 0 && (
                 <p className="text-sm text-muted-foreground">Žiadny inštrument nezodpovedá filtru.</p>
               )}
             </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">
+              Kliknutím na inštrument otvoríš detailný rozpis (sadzba, inflácia, HDP, COT tabuľka a
+              kruhový graf pozícií).
+            </p>
+
+            <InstrumentDetailDialog row={selected} onOpenChange={(o) => !o && setSelected(null)} />
+
 
             <p className="mt-4 text-xs text-muted-foreground">
               Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
