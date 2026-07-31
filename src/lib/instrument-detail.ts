@@ -48,20 +48,51 @@ const WEEK_DATES = [
   "22 Jún 2026",
 ];
 
-/** COT história (Noncommercial positions) – 6 týždňov, formát ako reporty CFTC. */
-export function cotHistory(row: FundamentRow): CotWeek[] {
-  const rand = seeded(hash(row.pair + "cot"));
-  const base = 30000 + Math.round(rand() * 40000);
-  // bias podľa COT skóre: kladné = viac longov
-  const tilt = 0.5 + (row.cotScore / 10) * 0.12;
+export type CotGroup = "noncommercial" | "commercial" | "retail";
+
+export const COT_GROUPS: {
+  key: CotGroup;
+  label: string;
+  desc: string;
+  source: string;
+}[] = [
+  {
+    key: "noncommercial",
+    label: "Non-Commercial",
+    desc: "Veľkí špekulanti (hedge fondy, CTA) — trend-following peniaze.",
+    source: "CFTC — Legacy report, Noncommercial positions",
+  },
+  {
+    key: "commercial",
+    label: "Commercial",
+    desc: "Hedgeri a producenti — zaisťujú sa, zvyčajne proti trendu.",
+    source: "CFTC — Legacy report, Commercial positions",
+  },
+  {
+    key: "retail",
+    label: "Retail",
+    desc: "Drobní obchodníci (non-reportable + sentiment brokerov).",
+    source: "CFTC Non-reportable + retail sentiment brokerov",
+  },
+];
+
+/** COT história pre danú skupinu – 6 týždňov, formát ako reporty CFTC. */
+export function cotHistory(row: FundamentRow, group: CotGroup = "noncommercial"): CotWeek[] {
+  const rand = seeded(hash(row.pair + group));
+  const sizeFactor = group === "noncommercial" ? 1 : group === "commercial" ? 1.15 : 0.35;
+  const base = (30000 + Math.round(rand() * 40000)) * sizeFactor;
+
+  // bias podľa COT skóre: non-commercial ide s trendom, commercial a retail proti nemu
+  const dir = group === "noncommercial" ? 1 : group === "commercial" ? -1 : -0.8;
+  const tilt = 0.5 + ((row.cotScore * dir) / 10) * 0.12;
 
   const out: CotWeek[] = [];
   let longOi = Math.round(base * tilt * (0.95 + rand() * 0.1));
   let shortOi = Math.round(base * (1 - tilt) * (0.95 + rand() * 0.1));
 
   for (let i = 0; i < WEEK_DATES.length; i++) {
-    const longChange = Math.round((rand() - 0.45) * 3500);
-    const shortChange = Math.round((rand() - 0.5) * 3000);
+    const longChange = Math.round((rand() - 0.45) * 3500 * sizeFactor);
+    const shortChange = Math.round((rand() - 0.5) * 3000 * sizeFactor);
     const openInterest = longOi + shortOi + Math.round(rand() * 6000);
     const total = longOi + shortOi;
     out.push({
@@ -80,6 +111,7 @@ export function cotHistory(row: FundamentRow): CotWeek[] {
   }
   return out;
 }
+
 
 function bankFor(pair: string) {
   if (pair.startsWith("EUR")) return "ECB";
