@@ -12,8 +12,10 @@ import {
   YAxis,
 } from "recharts";
 
+import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { FundamentRow } from "@/lib/mock-data";
 import { cotData, fundamentScore, seasonality, supplyDemandZones } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/analyza")({
