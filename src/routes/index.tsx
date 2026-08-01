@@ -268,44 +268,7 @@ function Dashboard() {
 
 
         <div className="grid gap-5 xl:grid-cols-3">
-          <Panel title="Equity krivka" hint="Posledných 30 dní · všetky účty" className="xl:col-span-2">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={equityCurve}>
-                  <defs>
-                    <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="var(--color-border)" />
-                  <XAxis dataKey="d" tickLine={false} axisLine={false} fontSize={12} />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    fontSize={12}
-                    width={60}
-                    domain={["dataMin - 2000", "dataMax + 2000"]}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid var(--color-border)",
-                      background: "var(--color-card)",
-                      fontSize: 12,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="v"
-                    stroke="var(--color-primary)"
-                    strokeWidth={2}
-                    fill="url(#eq)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </Panel>
+
 
           <Panel title="AI makro analýza" hint="Zhrnutie relácie">
             <p className="text-sm leading-relaxed text-foreground">
