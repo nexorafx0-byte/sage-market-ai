@@ -30,9 +30,16 @@ function CotSection({
 }) {
   const weeks = cotHistory(row, group);
   const latest = weeks[0];
+  const longEntry = Math.max(0, latest.longChange);
+  const longExit = Math.abs(Math.min(0, latest.longChange));
+  const shortEntry = Math.max(0, latest.shortChange);
+  const shortExit = Math.abs(Math.min(0, latest.shortChange));
+
   const pie = [
-    { name: "Long", value: latest.longOi },
-    { name: "Short", value: latest.shortOi },
+    { name: "Long vstup", value: longEntry, color: "var(--color-success)" },
+    { name: "Short vstup", value: shortEntry, color: "var(--color-success)" },
+    { name: "Long výstup", value: longExit, color: "var(--color-destructive)" },
+    { name: "Short výstup", value: shortExit, color: "var(--color-destructive)" },
   ];
 
   return (
