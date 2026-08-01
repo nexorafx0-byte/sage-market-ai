@@ -94,7 +94,7 @@ function CotSection({
 
       <div className="rounded-lg border border-border p-4">
         <h4 className="mb-2 text-sm font-semibold">
-          {label} — rozdelenie pozícií ({latest.date})
+          {label} — týždenné zmeny pozícií ({latest.date})
         </h4>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
@@ -108,8 +108,9 @@ function CotSection({
                 paddingAngle={2}
                 label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(1)} %`}
               >
-                <Cell fill="var(--color-success)" />
-                <Cell fill="var(--color-destructive)" />
+                {pie.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
               </Pie>
               <Tooltip
                 formatter={(v: number) => nf(v)}
