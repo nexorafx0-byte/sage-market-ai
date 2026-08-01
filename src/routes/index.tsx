@@ -267,7 +267,8 @@ function Dashboard() {
         </Panel>
 
 
-        <div className="grid gap-5 xl:grid-cols-3">
+        <div className="grid gap-5">
+
 
 
           <Panel title="AI makro analýza" hint="Zhrnutie relácie">
