@@ -32,13 +32,15 @@ export function PnlCalendar() {
         </span>
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="grid grid-cols-8 gap-1.5 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
         {WEEKDAYS.map((w) => (
           <div key={w} className="pb-1">
             {w}
           </div>
         ))}
+        <div className="pb-1">Spolu</div>
       </div>
+
 
       <div className="space-y-1.5">
         {weeks.map((week, wi) => {
