@@ -30,9 +30,16 @@ function CotSection({
 }) {
   const weeks = cotHistory(row, group);
   const latest = weeks[0];
+  const longEntry = Math.max(0, latest.longChange);
+  const longExit = Math.abs(Math.min(0, latest.longChange));
+  const shortEntry = Math.max(0, latest.shortChange);
+  const shortExit = Math.abs(Math.min(0, latest.shortChange));
+
   const pie = [
-    { name: "Long", value: latest.longOi },
-    { name: "Short", value: latest.shortOi },
+    { name: "Long vstup", value: longEntry, color: "var(--color-success)" },
+    { name: "Short vstup", value: shortEntry, color: "var(--color-success)" },
+    { name: "Long výstup", value: longExit, color: "var(--color-destructive)" },
+    { name: "Short výstup", value: shortExit, color: "var(--color-destructive)" },
   ];
 
   return (
@@ -87,7 +94,7 @@ function CotSection({
 
       <div className="rounded-lg border border-border p-4">
         <h4 className="mb-2 text-sm font-semibold">
-          {label} — rozdelenie pozícií ({latest.date})
+          {label} — týždenné zmeny pozícií ({latest.date})
         </h4>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
@@ -101,8 +108,9 @@ function CotSection({
                 paddingAngle={2}
                 label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(1)} %`}
               >
-                <Cell fill="var(--color-success)" />
-                <Cell fill="var(--color-destructive)" />
+                {pie.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
               </Pie>
               <Tooltip
                 formatter={(v: number) => nf(v)}
