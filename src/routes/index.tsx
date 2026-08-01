@@ -5,18 +5,30 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { Sparkles, AlertTriangle } from "lucide-react";
+import { Sparkles, AlertTriangle, Flame, Shield, Wallet, LineChart as LineIcon, BarChart3 } from "lucide-react";
 
-import { PageHeader, Panel, ScoreBar, Stat } from "@/components/page-shell";
+import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
+import { PnlCalendar } from "@/components/pnl-calendar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  accountSummary,
+  balanceSeries,
+  capitalFlows,
+  riskStats,
+  statisticsRows,
+  tradeCountSeries,
+  tradeStats,
+} from "@/lib/account-stats";
 import {
   currencyStrength,
-  equityCurve,
   newsFeed,
   supplyDemandZones,
   fundamentScore,
@@ -29,17 +41,56 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Prehľad trhu: currency strength, fundament score, supply & demand zóny a AI upozornenia na správy.",
+          "Prehľad účtu: gain, net P&L, drawdown, štatistiky, obchodný kalendár a AI makro analýza.",
       },
       { property: "og:title", content: "Dashboard — Trading Analyzer AI" },
       {
         property: "og:description",
         content: "Jedna platforma pre makro analýzu, journal a risk manažment.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Dashboard,
 });
+
+type StatRow = { label: string; value: string; tone?: "negative" | "accent" };
+
+function StatList({
+  title,
+  icon,
+  rows,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  rows: StatRow[];
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {icon}
+        {title}
+      </div>
+      <div className="divide-y divide-border rounded-lg border border-border">
+        {rows.map((r) => (
+          <div key={r.label} className="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+            <span className="text-muted-foreground">{r.label}</span>
+            <span
+              className={cn(
+                "font-mono text-xs font-medium text-foreground",
+                r.tone === "negative" && "text-destructive",
+                r.tone === "accent" && "text-primary",
+              )}
+            >
+              {r.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function Dashboard() {
   return (
@@ -56,12 +107,165 @@ function Dashboard() {
       />
 
       <div className="space-y-5 p-6">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Stat label="Equity" value="111 700 €" delta="+11.7 % tento mesiac" tone="positive" />
-          <Stat label="Otvorené riziko" value="1.8 %" delta="Limit 3.0 %" />
-          <Stat label="Winrate (30 d)" value="58 %" delta="+4 pb" tone="positive" />
-          <Stat label="Profit factor" value="1.84" delta="-0.09" tone="negative" />
+        <div className="grid gap-5 xl:grid-cols-3">
+          {/* Ľavý stĺpec — súhrn účtu */}
+          <section className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
+            <div className="flex items-start justify-between border-l-2 border-primary pl-3">
+              <div>
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Gain %
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-success">
+                  +{accountSummary.gainPct.toFixed(2)} %
+                </div>
+                <div className="font-mono text-xs text-success">
+                  +{accountSummary.gainAbsPct.toFixed(2)} % Abs
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Net P&amp;L
+                </div>
+                <div className="mt-1 font-mono text-lg font-semibold text-success">
+                  +{accountSummary.netPnl.toFixed(2)} €
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              <StatList title="Risk" icon={<Shield className="h-3.5 w-3.5" />} rows={riskStats} />
+              <StatList
+                title="Kapitálové toky"
+                icon={<Wallet className="h-3.5 w-3.5" />}
+                rows={capitalFlows}
+              />
+              <StatList
+                title="Štatistiky"
+                icon={<LineIcon className="h-3.5 w-3.5" />}
+                rows={statisticsRows}
+              />
+              <StatList
+                title="Trade Stats"
+                icon={<BarChart3 className="h-3.5 w-3.5" />}
+                rows={tradeStats}
+              />
+            </div>
+          </section>
+
+          {/* Pravý blok — trade count, winstreak, balance */}
+          <div className="space-y-5 xl:col-span-2">
+            <div className="grid gap-5 md:grid-cols-2">
+              <Panel title="Trade Count" hint="Posledných 14 dní">
+                <div className="font-mono text-2xl font-semibold text-foreground">
+                  {accountSummary.tradeCount}
+                </div>
+                <div className="mt-2 h-16">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={tradeCountSeries}>
+                      <Line
+                        type="monotone"
+                        dataKey="v"
+                        stroke="var(--color-primary)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </Panel>
+
+              <Panel title="Winstreak" hint="Aktuálna séria">
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    {
+                      v: accountSummary.winstreakDays,
+                      label: "Dni",
+                      best: accountSummary.winstreakDaysBest,
+                      worst: accountSummary.winstreakDaysWorst,
+                    },
+                    {
+                      v: accountSummary.winstreakTrades,
+                      label: "Obchody",
+                      best: accountSummary.winstreakTradesBest,
+                      worst: accountSummary.winstreakTradesWorst,
+                    },
+                  ].map((s) => (
+                    <div key={s.label}>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-2xl font-semibold text-destructive">
+                          {s.v}
+                        </span>
+                        <Flame className="h-4 w-4 text-warning" />
+                        <span className="text-sm text-muted-foreground">{s.label}</span>
+                      </div>
+                      <div className="mt-2 flex gap-1.5 text-[11px]">
+                        <span className="rounded bg-success/15 px-1.5 py-0.5 font-medium text-success">
+                          BEST {s.best}
+                        </span>
+                        <span className="rounded bg-destructive/10 px-1.5 py-0.5 font-medium text-destructive">
+                          WORST {s.worst}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            </div>
+
+            <Panel
+              title="Balance"
+              hint={`+${accountSummary.balanceChangePct.toFixed(2)} % tento mesiac`}
+            >
+              <div className="font-mono text-3xl font-semibold text-foreground">
+                {accountSummary.balance.toLocaleString("sk-SK", {
+                  minimumFractionDigits: 2,
+                })}{" "}
+                €
+              </div>
+              <div className="mt-3 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={balanceSeries}>
+                    <defs>
+                      <linearGradient id="bal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="var(--color-border)" />
+                    <XAxis dataKey="d" tickLine={false} axisLine={false} fontSize={11} />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={11}
+                      width={64}
+                      domain={["dataMin - 100", "dataMax + 100"]}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: 12,
+                        border: "1px solid var(--color-border)",
+                        background: "var(--color-card)",
+                        fontSize: 12,
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="v"
+                      stroke="var(--color-primary)"
+                      strokeWidth={2}
+                      fill="url(#bal)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </Panel>
+          </div>
         </div>
+
+        <Panel title="Obchodný kalendár" hint="P&L po dňoch a týždňoch">
+          <PnlCalendar />
+        </Panel>
+
 
         <div className="grid gap-5 xl:grid-cols-3">
           <Panel title="Equity krivka" hint="Posledných 30 dní · všetky účty" className="xl:col-span-2">
