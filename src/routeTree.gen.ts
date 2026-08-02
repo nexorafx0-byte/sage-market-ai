@@ -18,7 +18,6 @@ import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as BacktestingRouteImport } from './routes/backtesting'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiPublicWbtestRouteImport } from './routes/api/public/wbtest'
 
 const UctyRoute = UctyRouteImport.update({
   id: '/ucty',
@@ -65,11 +64,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWbtestRoute = ApiPublicWbtestRouteImport.update({
-  id: '/api/public/wbtest',
-  path: '/api/public/wbtest',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ucty': typeof UctyRoute
-  '/api/public/wbtest': typeof ApiPublicWbtestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByTo {
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ucty': typeof UctyRoute
-  '/api/public/wbtest': typeof ApiPublicWbtestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,7 +98,6 @@ export interface FileRoutesById {
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ucty': typeof UctyRoute
-  '/api/public/wbtest': typeof ApiPublicWbtestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,7 +111,6 @@ export interface FileRouteTypes {
     | '/risk'
     | '/sitemap.xml'
     | '/ucty'
-    | '/api/public/wbtest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,7 +122,6 @@ export interface FileRouteTypes {
     | '/risk'
     | '/sitemap.xml'
     | '/ucty'
-    | '/api/public/wbtest'
   id:
     | '__root__'
     | '/'
@@ -144,7 +133,6 @@ export interface FileRouteTypes {
     | '/risk'
     | '/sitemap.xml'
     | '/ucty'
-    | '/api/public/wbtest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -157,7 +145,6 @@ export interface RootRouteChildren {
   RiskRoute: typeof RiskRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UctyRoute: typeof UctyRoute
-  ApiPublicWbtestRoute: typeof ApiPublicWbtestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,13 +212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/wbtest': {
-      id: '/api/public/wbtest'
-      path: '/api/public/wbtest'
-      fullPath: '/api/public/wbtest'
-      preLoaderRoute: typeof ApiPublicWbtestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -245,18 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   RiskRoute: RiskRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UctyRoute: UctyRoute,
-  ApiPublicWbtestRoute: ApiPublicWbtestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
