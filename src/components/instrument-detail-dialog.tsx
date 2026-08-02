@@ -137,13 +137,16 @@ function CotSection({
 
 export function InstrumentDetailDialog({
   row,
+  detail,
   onOpenChange,
 }: {
   row: FundamentRow | null;
+  detail?: InstrumentDetailReal | null;
   onOpenChange: (open: boolean) => void;
 }) {
   if (!row) return null;
-  const sources = macroSources(row);
+  const sources = detail?.macro?.length ? detail.macro : macroSources(row);
+  const isReal = !!detail?.macro?.length;
 
   return (
     <Dialog open={!!row} onOpenChange={onOpenChange}>
@@ -154,7 +157,9 @@ export function InstrumentDetailDialog({
             {row.score.toFixed(1)})
           </DialogTitle>
           <DialogDescription>
-            Rozpis makroekonomických dát a COT pozícií (Non-Commercial, Commercial, Retail).
+            {isReal
+              ? "Reálne dáta: BIS (sadzby), World Bank (inflácia, HDP) a CFTC COT (Non-Commercial, Commercial, Retail)."
+              : "Rozpis makroekonomických dát a COT pozícií (Non-Commercial, Commercial, Retail)."}
           </DialogDescription>
         </DialogHeader>
 
@@ -199,12 +204,17 @@ export function InstrumentDetailDialog({
                   group={g.key}
                   label={g.label}
                   desc={g.desc}
-                  source={g.source}
+                  source={detail?.cotSource ?? g.source}
+                  real={detail}
                 />
               </TabsContent>
             ))}
           </Tabs>
         </div>
+      </DialogContent>
+    </Dialog>
+  );
+
       </DialogContent>
     </Dialog>
   );
