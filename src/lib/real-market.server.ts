@@ -240,9 +240,10 @@ async function fetchPolicyRates(): Promise<Record<string, number>> {
 
 async function fetchWorldBank(indicator: string): Promise<Record<string, { v: number; year: string }>> {
   const countries = Object.values(CCY).map((c) => c.wb).join(";");
-  const url = `https://api.worldbank.org/v2/country/${countries}/indicator/${indicator}?format=json&per_page=400&date=2015:2026`;
-  const data = await getJson<any[]>(url);
-  const out: Record<string, { v: number; year: string }> = {};
+  const url = `https://api.worldbank.org/v2/country/${countries}/indicator/${indicator}?format=json&per_page=200&mrv=4`;
+  let data = await getJson<any[]>(url);
+  if (!Array.isArray(data) || !Array.isArray(data[1])) data = await getJson<any[]>(url);
+
   if (!Array.isArray(data) || !Array.isArray(data[1])) return out;
   for (const row of data[1]) {
     const iso = row.countryiso3code as string;
