@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { COT_GROUPS, cotHistory, macroSources } from "@/lib/instrument-detail";
 import type { CotGroup } from "@/lib/instrument-detail";
+import type { InstrumentDetailReal } from "@/lib/market-types";
 import type { FundamentRow } from "@/lib/mock-data";
 
 const nf = (n: number) => n.toLocaleString("sk-SK");
@@ -21,19 +22,23 @@ function CotSection({
   label,
   desc,
   source,
+  real,
 }: {
   row: FundamentRow;
   group: CotGroup;
   label: string;
   desc: string;
   source: string;
+  real?: InstrumentDetailReal | null;
 }) {
-  const weeks = cotHistory(row, group);
+  const realWeeks = real?.cot?.[group];
+  const weeks = realWeeks && realWeeks.length > 0 ? realWeeks : cotHistory(row, group);
   const latest = weeks[0];
   const longEntry = Math.max(0, latest.longChange);
   const longExit = Math.abs(Math.min(0, latest.longChange));
   const shortEntry = Math.max(0, latest.shortChange);
   const shortExit = Math.abs(Math.min(0, latest.shortChange));
+
 
   const pie = [
     { name: "Long vstup", value: longEntry, color: "var(--color-success)" },
