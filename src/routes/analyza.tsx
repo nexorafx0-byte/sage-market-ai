@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import {
@@ -15,6 +17,7 @@ import {
 import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
 import { cotData, fundamentScore, seasonality, supplyDemandZones } from "@/lib/mock-data";
 
@@ -24,13 +27,16 @@ export const Route = createFileRoute("/analyza")({
       { title: "AI analýza trhu — Trading Analyzer AI" },
       {
         name: "description",
-        content: "Fundament score, COT pozície, sezónnosť a supply & demand analýza na jednom mieste.",
+        content:
+          "Fundament score z reálnych dát (CFTC COT, BIS sadzby, World Bank), sezónnosť a supply & demand analýza.",
       },
       { property: "og:title", content: "AI analýza trhu — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "Fundament, COT, sezónnosť a S&D zóny s AI komentárom.",
+        content: "Reálne makro dáta, COT pozície, sezónnosť a S&D zóny s AI komentárom.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AnalysisPage,
@@ -86,26 +92,51 @@ function AnalysisPage() {
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<FundamentRow | null>(null);
 
-  const rows = fundamentScore.filter(
+  const fetchAnalysis = useServerFn(getMarketAnalysis);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["market-analysis"],
+    queryFn: () => fetchAnalysis(),
+    staleTime: 1000 * 60 * 30,
+  });
+
+  const live = data ?? null;
+  const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
+  const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
+  const seasonRows = live?.seasonality?.length ? live.seasonality : seasonality;
+  const zoneRows = live?.zones?.length ? live.zones : supplyDemandZones;
+
+  const rows = allRows.filter(
     (r) =>
       (cat === "Všetko" || r.category === cat) &&
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
-  const rowsForex = rows.filter((r) => r.category === "Forex");
-  const rowsCommodities = rows.filter((r) => r.category === "Komodity");
-  const rowsIndices = rows.filter((r) => r.category === "Indexy");
-
   const sections: { title: string; items: FundamentRow[] }[] = [
-    { title: "Forex páry", items: rowsForex },
-    { title: "Komodity", items: rowsCommodities },
-    { title: "Indexy", items: rowsIndices },
+    { title: "Forex páry", items: rows.filter((r) => r.category === "Forex") },
+    { title: "Komodity", items: rows.filter((r) => r.category === "Komodity") },
+    { title: "Indexy", items: rows.filter((r) => r.category === "Indexy") },
   ];
+
+  const statusLine = isLoading
+    ? "Načítavam reálne dáta z CFTC, BIS a World Bank…"
+    : isError || !live
+      ? "Reálne dáta sa nepodarilo načítať — zobrazené sú ukážkové hodnoty."
+      : `Reálne dáta · COT report ${live.cotReportDate} · aktualizované ${new Date(live.updatedAt).toLocaleString("sk-SK")}`;
 
   return (
     <>
       <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť · Supply & Demand" />
       <div className="p-6">
+        <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
+          <p>{statusLine}</p>
+          {live?.sources?.length ? (
+            <p className="mt-1">Zdroje: {live.sources.join(" · ")}</p>
+          ) : null}
+          {live?.warnings?.length ? (
+            <p className="mt-1 text-destructive">{live.warnings.join(" ")}</p>
+          ) : null}
+        </div>
+
         <Tabs defaultValue="fundament">
           <TabsList>
             <TabsTrigger value="fundament">Fundament</TabsTrigger>
@@ -165,21 +196,25 @@ function AnalysisPage() {
               kruhový graf pozícií).
             </p>
 
-            <InstrumentDetailDialog row={selected} onOpenChange={(o) => !o && setSelected(null)} />
-
+            <InstrumentDetailDialog
+              row={selected}
+              detail={selected ? (live?.details?.[selected.pair] ?? null) : null}
+              onOpenChange={(o) => !o && setSelected(null)}
+            />
 
             <p className="mt-4 text-xs text-muted-foreground">
               Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
               pozícií — každé v rozsahu −10 (silne bearish) až +10 (silne bullish).
             </p>
-
-
           </TabsContent>
 
           <TabsContent value="cot" className="mt-5">
-            <Panel title="COT — pozície veľkých hráčov" hint="Týždenná zmena netto pozícií">
+            <Panel
+              title="COT — pozície veľkých hráčov"
+              hint={live ? `CFTC report ${live.cotReportDate}` : "Týždenná zmena netto pozícií"}
+            >
               <div className="space-y-4">
-                {cotData.map((c) => (
+                {cotRows.map((c) => (
                   <div key={c.asset} className="rounded-lg border border-border p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="font-mono font-semibold">{c.asset}</span>
@@ -210,10 +245,13 @@ function AnalysisPage() {
           </TabsContent>
 
           <TabsContent value="sezonnost" className="mt-5">
-            <Panel title="Sezónnosť XAUUSD" hint="Priemerná mesačná zmena za 15 rokov (%)">
+            <Panel
+              title="Sezónnosť XAUUSD"
+              hint={live ? "Reálne mesačné dáta (COMEX zlato)" : "Priemerná mesačná zmena (%)"}
+            >
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={seasonality}>
+                  <BarChart data={seasonRows}>
                     <CartesianGrid vertical={false} stroke="var(--color-border)" />
                     <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
                     <YAxis tickLine={false} axisLine={false} fontSize={12} width={36} />
@@ -227,7 +265,7 @@ function AnalysisPage() {
                       }}
                     />
                     <Bar dataKey="value" radius={[6, 6, 6, 6]}>
-                      {seasonality.map((s) => (
+                      {seasonRows.map((s) => (
                         <Cell
                           key={s.month}
                           fill={s.value >= 0 ? "var(--color-primary)" : "var(--color-destructive)"}
@@ -238,16 +276,19 @@ function AnalysisPage() {
                 </ResponsiveContainer>
               </div>
               <p className="mt-4 text-sm text-muted-foreground">
-                AI: November a apríl sú historicky najsilnejšie mesiace (úspešnosť 73 %). September
-                má negatívnu očakávanú hodnotu — vhodné znížiť expozíciu.
+                {live?.seasonalityNote ??
+                  "AI: November a apríl sú historicky najsilnejšie mesiace — september má negatívnu očakávanú hodnotu."}
               </p>
             </Panel>
           </TabsContent>
 
           <TabsContent value="sd" className="mt-5">
-            <Panel title="Supply & Demand zóny" hint="Detekcia podľa impulzu a nerovnováhy">
+            <Panel
+              title="Supply & Demand zóny"
+              hint={live ? "Zo swingov reálnych denných sviečok" : "Detekcia podľa impulzu"}
+            >
               <div className="grid gap-4 md:grid-cols-2">
-                {supplyDemandZones.map((z) => (
+                {zoneRows.map((z) => (
                   <div key={`${z.pair}-${z.from}`} className="rounded-lg border border-border p-4">
                     <div className="flex items-center justify-between">
                       <span className="font-mono font-semibold">
