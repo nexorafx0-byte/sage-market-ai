@@ -214,8 +214,6 @@ export function InstrumentDetailDialog({
       </DialogContent>
     </Dialog>
   );
+}
 
-      </DialogContent>
-    </Dialog>
-  );
 }
