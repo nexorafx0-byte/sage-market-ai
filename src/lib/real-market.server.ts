@@ -239,22 +239,26 @@ async function fetchPolicyRates(): Promise<Record<string, number>> {
 /* ------------------------------------------------------------------ */
 
 async function fetchWorldBank(indicator: string): Promise<Record<string, { v: number; year: string }>> {
-  const countries = Object.values(CCY).map((c) => c.wb).join(";");
-  const url = `https://api.worldbank.org/v2/country/${countries}/indicator/${indicator}?format=json&per_page=200&mrv=4`;
-  let data = await getJson<any[]>(url);
-  if (!Array.isArray(data) || !Array.isArray(data[1])) data = await getJson<any[]>(url);
   const out: Record<string, { v: number; year: string }> = {};
+  const isos = Object.values(CCY).map((c) => c.wb);
 
-
-  if (!Array.isArray(data) || !Array.isArray(data[1])) return out;
-  for (const row of data[1]) {
-    const iso = row.countryiso3code as string;
-    if (row.value == null) continue;
-    const existing = out[iso];
-    if (!existing || row.date > existing.year) out[iso] = { v: row.value as number, year: row.date };
-  }
+  await Promise.all(
+    isos.map(async (iso) => {
+      const url = `https://api.worldbank.org/v2/country/${iso}/indicator/${indicator}?format=json&per_page=10&mrv=4`;
+      let data = await getJson<any[]>(url);
+      if (!Array.isArray(data) || !Array.isArray(data[1])) data = await getJson<any[]>(url);
+      if (!Array.isArray(data) || !Array.isArray(data[1])) return;
+      for (const row of data[1]) {
+        if (row.value == null) continue;
+        const existing = out[iso];
+        if (!existing || row.date > existing.year)
+          out[iso] = { v: row.value as number, year: row.date };
+      }
+    }),
+  );
   return out;
 }
+
 
 /** Mesačná US inflácia z FRED, ak je k dispozícii platný kľúč. */
 async function fetchFredCpi(): Promise<{ v: number; date: string } | null> {
