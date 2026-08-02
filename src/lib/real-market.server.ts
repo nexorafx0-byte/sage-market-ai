@@ -242,22 +242,21 @@ async function fetchWorldBank(indicator: string): Promise<Record<string, { v: nu
   const out: Record<string, { v: number; year: string }> = {};
   const isos = Object.values(CCY).map((c) => c.wb);
 
-  await Promise.all(
-    isos.map(async (iso) => {
-      const url = `https://api.worldbank.org/v2/country/${iso}/indicator/${indicator}?format=json&per_page=10&mrv=4`;
-      let data = await getJson<any[]>(url);
-      if (!Array.isArray(data) || !Array.isArray(data[1])) data = await getJson<any[]>(url);
-      if (!Array.isArray(data) || !Array.isArray(data[1])) return;
-      for (const row of data[1]) {
-        if (row.value == null) continue;
-        const existing = out[iso];
-        if (!existing || row.date > existing.year)
-          out[iso] = { v: row.value as number, year: row.date };
-      }
-    }),
-  );
+  for (const iso of isos) {
+    const url = `https://api.worldbank.org/v2/country/${iso}/indicator/${indicator}?format=json&per_page=10&mrv=4`;
+    let data = await getJson<any[]>(url);
+    if (!Array.isArray(data) || !Array.isArray(data[1])) data = await getJson<any[]>(url);
+    if (!Array.isArray(data) || !Array.isArray(data[1])) continue;
+    for (const row of data[1]) {
+      if (row.value == null) continue;
+      const existing = out[iso];
+      if (!existing || row.date > existing.year)
+        out[iso] = { v: row.value as number, year: row.date };
+    }
+  }
   return out;
 }
+
 
 
 /** Mesačná US inflácia z FRED, ak je k dispozícii platný kľúč. */
