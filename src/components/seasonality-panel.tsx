@@ -162,14 +162,76 @@ export function SeasonalityPanel() {
           </label>
         </div>
 
-        <div className="h-80">
+        <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-border bg-secondary/40 p-3">
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">Od (deň/mesiac)</label>
+            <input
+              type="date"
+              value={idxToIso(range?.start ?? 0)}
+              min={idxToIso(0)}
+              max={idxToIso(364)}
+              onChange={(e) => {
+                const i = isoToIdx(e.target.value);
+                if (i == null) return;
+                setRange((r) => ({ start: i, end: Math.max(i, r?.end ?? i) }));
+              }}
+              className="rounded-md border border-border bg-background px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">Do (deň/mesiac)</label>
+            <input
+              type="date"
+              value={idxToIso(range?.end ?? 364)}
+              min={idxToIso(0)}
+              max={idxToIso(364)}
+              onChange={(e) => {
+                const i = isoToIdx(e.target.value);
+                if (i == null) return;
+                setRange((r) => ({ start: Math.min(i, r?.start ?? i), end: i }));
+              }}
+              className="rounded-md border border-border bg-background px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <span className="text-[11px] text-muted-foreground">
+            Rok je iba pomocný — počíta sa deň a mesiac.
+          </span>
+          <button
+            type="button"
+            onClick={() => setRange(null)}
+            className="ml-auto rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary"
+          >
+            Zrušiť výber
+          </button>
+        </div>
+
+        <div className="h-80 select-none">
           {isError || (!isLoading && !data) ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               Sezónne dáta pre {symbol} sa nepodarilo načítať.
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <AreaChart
+                data={chartData}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                onMouseDown={(e: { activeLabel?: string }) => {
+                  const i = e?.activeLabel != null ? labelToIdx.get(e.activeLabel) : undefined;
+                  if (i != null) setDrag({ start: i, end: i });
+                }}
+                onMouseMove={(e: { activeLabel?: string }) => {
+                  if (!drag) return;
+                  const i = e?.activeLabel != null ? labelToIdx.get(e.activeLabel) : undefined;
+                  if (i != null) setDrag((d) => (d ? { start: d.start, end: i } : d));
+                }}
+                onMouseUp={() => {
+                  const n = norm(drag);
+                  if (n && n.end > n.start) setRange(n);
+                  setDrag(null);
+                }}
+                onMouseLeave={() => setDrag(null)}
+              >
+
                 <defs>
                   <linearGradient id="seasonFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28} />
