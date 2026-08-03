@@ -276,7 +276,9 @@ export function SeasonalityPanel() {
                     x1={sel.from}
                     x2={sel.to}
                     fill="var(--color-primary)"
-                    fillOpacity={0.08}
+                    fillOpacity={0.14}
+                    stroke="var(--color-primary)"
+                    strokeOpacity={0.5}
                   />
                 )}
                 <Area
@@ -293,14 +295,8 @@ export function SeasonalityPanel() {
                   travellerWidth={8}
                   stroke="var(--color-primary)"
                   fill="var(--color-secondary)"
-                  onChange={(r: { startIndex?: number; endIndex?: number }) =>
-                    setRange(
-                      r.startIndex != null && r.endIndex != null
-                        ? { start: r.startIndex, end: r.endIndex }
-                        : null,
-                    )
-                  }
                 />
+
               </AreaChart>
             </ResponsiveContainer>
           )}
