@@ -70,24 +70,38 @@ export function SeasonalityPanel() {
     );
   }, []);
 
+  const labelToIdx = useMemo(() => {
+    const m = new Map<string, number>();
+    chartData.forEach((d, i) => m.set(d.label, i));
+    return m;
+  }, [chartData]);
+
+  const norm = (r: { start: number; end: number } | null) =>
+    r ? { start: Math.min(r.start, r.end), end: Math.max(r.start, r.end) } : null;
+
+  const active = norm(drag) ?? range;
+
   const sel = useMemo(() => {
-    if (!range || chartData.length === 0) return null;
-    const a = chartData[Math.max(0, range.start)];
-    const b = chartData[Math.min(chartData.length - 1, range.end)];
+    if (!active || chartData.length === 0) return null;
+    const a = chartData[Math.max(0, active.start)];
+    const b = chartData[Math.min(chartData.length - 1, active.end)];
     if (!a || !b) return null;
-    const slice = chartData.slice(range.start, range.end + 1);
+    const slice = chartData.slice(active.start, active.end + 1);
     const lows = slice.map((s) => s.value);
     return {
       from: a.label,
       to: b.label,
+      fromIdx: active.start,
+      toIdx: active.end,
       change: b.value - a.value,
-      days: range.end - range.start + 1,
+      days: active.end - active.start + 1,
       min: Math.min(...lows) - a.value,
       max: Math.max(...lows) - a.value,
     };
-  }, [range, chartData]);
+  }, [active, chartData]);
 
   const monthRows = data?.months ?? [];
+
 
   return (
     <div className="space-y-6">
