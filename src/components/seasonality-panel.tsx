@@ -23,11 +23,27 @@ import { SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-type
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
 
+// Sezónny rok = nepriestupný rok (365 dní), index 0 = 1. januára.
+const BASE_YEAR = 2001;
+const idxToIso = (i: number) => {
+  const d = new Date(Date.UTC(BASE_YEAR, 0, 1 + Math.max(0, Math.min(364, i))));
+  return d.toISOString().slice(0, 10);
+};
+const isoToIdx = (iso: string) => {
+  const [, m, d] = iso.split("-").map(Number);
+  if (!m || !d) return null;
+  const t = Date.UTC(BASE_YEAR, m - 1, d);
+  const i = Math.round((t - Date.UTC(BASE_YEAR, 0, 1)) / 86400000);
+  return Math.max(0, Math.min(364, i));
+};
+
 export function SeasonalityPanel() {
   const [symbol, setSymbol] = useState<string>("XAUUSD");
   const [years, setYears] = useState<number>(10);
   const [detrend, setDetrend] = useState(true);
   const [range, setRange] = useState<{ start: number; end: number } | null>(null);
+  const [drag, setDrag] = useState<{ start: number; end: number } | null>(null);
+
 
   const fetchSeasonality = useServerFn(getSeasonality);
   const { data, isLoading, isError } = useQuery({
@@ -54,24 +70,38 @@ export function SeasonalityPanel() {
     );
   }, []);
 
+  const labelToIdx = useMemo(() => {
+    const m = new Map<string, number>();
+    chartData.forEach((d, i) => m.set(d.label, i));
+    return m;
+  }, [chartData]);
+
+  const norm = (r: { start: number; end: number } | null) =>
+    r ? { start: Math.min(r.start, r.end), end: Math.max(r.start, r.end) } : null;
+
+  const active = norm(drag) ?? range;
+
   const sel = useMemo(() => {
-    if (!range || chartData.length === 0) return null;
-    const a = chartData[Math.max(0, range.start)];
-    const b = chartData[Math.min(chartData.length - 1, range.end)];
+    if (!active || chartData.length === 0) return null;
+    const a = chartData[Math.max(0, active.start)];
+    const b = chartData[Math.min(chartData.length - 1, active.end)];
     if (!a || !b) return null;
-    const slice = chartData.slice(range.start, range.end + 1);
+    const slice = chartData.slice(active.start, active.end + 1);
     const lows = slice.map((s) => s.value);
     return {
       from: a.label,
       to: b.label,
+      fromIdx: active.start,
+      toIdx: active.end,
       change: b.value - a.value,
-      days: range.end - range.start + 1,
+      days: active.end - active.start + 1,
       min: Math.min(...lows) - a.value,
       max: Math.max(...lows) - a.value,
     };
-  }, [range, chartData]);
+  }, [active, chartData]);
 
   const monthRows = data?.months ?? [];
+
 
   return (
     <div className="space-y-6">
@@ -132,14 +162,76 @@ export function SeasonalityPanel() {
           </label>
         </div>
 
-        <div className="h-80">
+        <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-border bg-secondary/40 p-3">
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">Od (deň/mesiac)</label>
+            <input
+              type="date"
+              value={idxToIso(range?.start ?? 0)}
+              min={idxToIso(0)}
+              max={idxToIso(364)}
+              onChange={(e) => {
+                const i = isoToIdx(e.target.value);
+                if (i == null) return;
+                setRange((r) => ({ start: i, end: Math.max(i, r?.end ?? i) }));
+              }}
+              className="rounded-md border border-border bg-background px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">Do (deň/mesiac)</label>
+            <input
+              type="date"
+              value={idxToIso(range?.end ?? 364)}
+              min={idxToIso(0)}
+              max={idxToIso(364)}
+              onChange={(e) => {
+                const i = isoToIdx(e.target.value);
+                if (i == null) return;
+                setRange((r) => ({ start: Math.min(i, r?.start ?? i), end: i }));
+              }}
+              className="rounded-md border border-border bg-background px-2 py-1.5 font-mono text-xs outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <span className="text-[11px] text-muted-foreground">
+            Rok je iba pomocný — počíta sa deň a mesiac.
+          </span>
+          <button
+            type="button"
+            onClick={() => setRange(null)}
+            className="ml-auto rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary"
+          >
+            Zrušiť výber
+          </button>
+        </div>
+
+        <div className="h-80 select-none">
           {isError || (!isLoading && !data) ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               Sezónne dáta pre {symbol} sa nepodarilo načítať.
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <AreaChart
+                data={chartData}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                onMouseDown={(e: { activeLabel?: string }) => {
+                  const i = e?.activeLabel != null ? labelToIdx.get(e.activeLabel) : undefined;
+                  if (i != null) setDrag({ start: i, end: i });
+                }}
+                onMouseMove={(e: { activeLabel?: string }) => {
+                  if (!drag) return;
+                  const i = e?.activeLabel != null ? labelToIdx.get(e.activeLabel) : undefined;
+                  if (i != null) setDrag((d) => (d ? { start: d.start, end: i } : d));
+                }}
+                onMouseUp={() => {
+                  const n = norm(drag);
+                  if (n && n.end > n.start) setRange(n);
+                  setDrag(null);
+                }}
+                onMouseLeave={() => setDrag(null)}
+              >
+
                 <defs>
                   <linearGradient id="seasonFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28} />
@@ -184,7 +276,9 @@ export function SeasonalityPanel() {
                     x1={sel.from}
                     x2={sel.to}
                     fill="var(--color-primary)"
-                    fillOpacity={0.08}
+                    fillOpacity={0.14}
+                    stroke="var(--color-primary)"
+                    strokeOpacity={0.5}
                   />
                 )}
                 <Area
@@ -201,14 +295,8 @@ export function SeasonalityPanel() {
                   travellerWidth={8}
                   stroke="var(--color-primary)"
                   fill="var(--color-secondary)"
-                  onChange={(r: { startIndex?: number; endIndex?: number }) =>
-                    setRange(
-                      r.startIndex != null && r.endIndex != null
-                        ? { start: r.startIndex, end: r.endIndex }
-                        : null,
-                    )
-                  }
                 />
+
               </AreaChart>
             </ResponsiveContainer>
           )}
@@ -245,9 +333,10 @@ export function SeasonalityPanel() {
             </div>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
-              Potiahnutím lišty pod grafom zakresli obdobie — vypočítam priemerný sezónny výnos za
-              posledných {data?.sampleYears ?? years} rokov.
+              Ťahaním myšou priamo v grafe alebo cez polia „Od / Do" vyznač presné obdobie —
+              vypočítam priemerný sezónny výnos za posledných {data?.sampleYears ?? years} rokov.
             </p>
+
           )}
         </div>
       </Panel>
