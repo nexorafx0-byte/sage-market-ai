@@ -20,7 +20,7 @@ import { SeasonalityPanel } from "@/components/seasonality-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
-import { cotData, fundamentScore, seasonality, supplyDemandZones } from "@/lib/mock-data";
+import { cotData, fundamentScore, supplyDemandZones } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/analyza")({
   head: () => ({
@@ -103,7 +103,6 @@ function AnalysisPage() {
   const live = data ?? null;
   const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
-  const seasonRows = live?.seasonality?.length ? live.seasonality : seasonality;
   const zoneRows = live?.zones?.length ? live.zones : supplyDemandZones;
 
   const rows = allRows.filter(
