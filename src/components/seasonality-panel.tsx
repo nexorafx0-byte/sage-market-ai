@@ -333,9 +333,10 @@ export function SeasonalityPanel() {
             </div>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
-              Potiahnutím lišty pod grafom zakresli obdobie — vypočítam priemerný sezónny výnos za
-              posledných {data?.sampleYears ?? years} rokov.
+              Ťahaním myšou priamo v grafe alebo cez polia „Od / Do" vyznač presné obdobie —
+              vypočítam priemerný sezónny výnos za posledných {data?.sampleYears ?? years} rokov.
             </p>
+
           )}
         </div>
       </Panel>
