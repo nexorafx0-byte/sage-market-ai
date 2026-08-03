@@ -16,6 +16,7 @@ import {
 
 import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
+import { SeasonalityPanel } from "@/components/seasonality-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
