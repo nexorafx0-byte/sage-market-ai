@@ -23,11 +23,27 @@ import { SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-type
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
 
+// Sezónny rok = nepriestupný rok (365 dní), index 0 = 1. januára.
+const BASE_YEAR = 2001;
+const idxToIso = (i: number) => {
+  const d = new Date(Date.UTC(BASE_YEAR, 0, 1 + Math.max(0, Math.min(364, i))));
+  return d.toISOString().slice(0, 10);
+};
+const isoToIdx = (iso: string) => {
+  const [, m, d] = iso.split("-").map(Number);
+  if (!m || !d) return null;
+  const t = Date.UTC(BASE_YEAR, m - 1, d);
+  const i = Math.round((t - Date.UTC(BASE_YEAR, 0, 1)) / 86400000);
+  return Math.max(0, Math.min(364, i));
+};
+
 export function SeasonalityPanel() {
   const [symbol, setSymbol] = useState<string>("XAUUSD");
   const [years, setYears] = useState<number>(10);
   const [detrend, setDetrend] = useState(true);
   const [range, setRange] = useState<{ start: number; end: number } | null>(null);
+  const [drag, setDrag] = useState<{ start: number; end: number } | null>(null);
+
 
   const fetchSeasonality = useServerFn(getSeasonality);
   const { data, isLoading, isError } = useQuery({
