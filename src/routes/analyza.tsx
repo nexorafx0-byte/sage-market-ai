@@ -245,42 +245,9 @@ function AnalysisPage() {
           </TabsContent>
 
           <TabsContent value="sezonnost" className="mt-5">
-            <Panel
-              title="Sezónnosť XAUUSD"
-              hint={live ? "Reálne mesačné dáta (COMEX zlato)" : "Priemerná mesačná zmena (%)"}
-            >
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={seasonRows}>
-                    <CartesianGrid vertical={false} stroke="var(--color-border)" />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} />
-                    <YAxis tickLine={false} axisLine={false} fontSize={12} width={36} />
-                    <Tooltip
-                      cursor={{ fill: "var(--color-secondary)" }}
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid var(--color-border)",
-                        background: "var(--color-card)",
-                        fontSize: 12,
-                      }}
-                    />
-                    <Bar dataKey="value" radius={[6, 6, 6, 6]}>
-                      {seasonRows.map((s) => (
-                        <Cell
-                          key={s.month}
-                          fill={s.value >= 0 ? "var(--color-primary)" : "var(--color-destructive)"}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <p className="mt-4 text-sm text-muted-foreground">
-                {live?.seasonalityNote ??
-                  "AI: November a apríl sú historicky najsilnejšie mesiace — september má negatívnu očakávanú hodnotu."}
-              </p>
-            </Panel>
+            <SeasonalityPanel />
           </TabsContent>
+
 
           <TabsContent value="sd" className="mt-5">
             <Panel
