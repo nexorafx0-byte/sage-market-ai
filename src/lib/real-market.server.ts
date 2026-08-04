@@ -381,19 +381,23 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     ...NON_FX.map((n) => n.cot),
   ].filter((v, i, a) => a.indexOf(v) === i);
 
-  const [cot, rates, cpi, gdpG, fredCpi, goldMonthly, eurBars, jpyBars, gbpBars, goldBars] =
-    await Promise.all([
-      fetchCot(codes),
-      fetchPolicyRates(),
-      fetchWorldBank("FP.CPI.TOTL.ZG"),
-      fetchWorldBank("NY.GDP.MKTP.KD.ZG"),
-      fetchFredCpi(),
-      fetchBars("GC=F", "15y", "1mo"),
-      fetchBars("EURUSD=X", "6mo", "1d"),
-      fetchBars("USDJPY=X", "6mo", "1d"),
-      fetchBars("GBPUSD=X", "6mo", "1d"),
-      fetchBars("GC=F", "6mo", "1d"),
-    ]);
+  // Workerd povoľuje len obmedzený počet súbežných podpožiadaviek —
+  // dáta sťahujeme v menších skupinách, nie všetky naraz.
+  const [cot, rates, fredCpi] = await Promise.all([
+    fetchCot(codes),
+    fetchPolicyRates(),
+    fetchFredCpi(),
+  ]);
+  const cpi = await fetchWorldBank("FP.CPI.TOTL.ZG");
+  const gdpG = await fetchWorldBank("NY.GDP.MKTP.KD.ZG");
+  const [goldMonthly, eurBars, jpyBars, gbpBars, goldBars] = await Promise.all([
+    fetchBars("GC=F", "15y", "1mo"),
+    fetchBars("EURUSD=X", "6mo", "1d"),
+    fetchBars("USDJPY=X", "6mo", "1d"),
+    fetchBars("GBPUSD=X", "6mo", "1d"),
+    fetchBars("GC=F", "6mo", "1d"),
+  ]);
+
 
   const warnings: string[] = [];
   if (cot.size === 0) warnings.push("CFTC COT dáta sa nepodarilo načítať.");
