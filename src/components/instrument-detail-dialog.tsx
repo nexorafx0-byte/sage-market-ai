@@ -1,5 +1,6 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
+import { CotOverview } from "@/components/cot-overview";
 import { ScoreBar } from "@/components/page-shell";
 import {
   Dialog,
