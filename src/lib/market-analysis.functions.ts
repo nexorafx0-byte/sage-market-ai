@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
-import { buildMarketAnalysis } from "./real-market.server";
+import { buildMarketAnalysisSafe } from "./real-market.server";
 
 export const getMarketAnalysis = createServerFn({ method: "GET" }).handler(async () => {
-  return await buildMarketAnalysis();
+  return await buildMarketAnalysisSafe();
 });
