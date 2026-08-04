@@ -1,5 +1,6 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
+import { CotOverview } from "@/components/cot-overview";
 import { ScoreBar } from "@/components/page-shell";
 import {
   Dialog,
@@ -186,9 +187,14 @@ export function InstrumentDetailDialog({
           ))}
         </div>
 
+        {/* COT prehľad – donuty + tabuľka skupín */}
+        <div className="mt-2">
+          <CotOverview row={row} detail={detail} />
+        </div>
+
         {/* COT podľa skupín */}
         <div className="mt-2">
-          <h3 className="mb-3 text-sm font-semibold">Commitments of Traders — podľa skupín</h3>
+          <h3 className="mb-3 text-sm font-semibold">COT história — podľa skupín</h3>
           <Tabs defaultValue="noncommercial">
             <TabsList>
               {COT_GROUPS.map((g) => (
