@@ -373,7 +373,29 @@ function mkRow(
 let cache: { at: number; data: MarketAnalysis } | null = null;
 const TTL = 1000 * 60 * 60 * 6;
 
+/** Nikdy nehodí chybu — pri zlyhaní vráti prázdnu analýzu s varovaním. */
+export async function buildMarketAnalysisSafe(): Promise<MarketAnalysis> {
+  try {
+    return await buildMarketAnalysis();
+  } catch (error) {
+    console.error(error);
+    return {
+      updatedAt: new Date().toISOString(),
+      cotReportDate: "—",
+      fundament: [],
+      details: {},
+      cotSummary: [],
+      seasonality: SK_MONTHS.map((month) => ({ month, value: 0 })),
+      seasonalityNote: "Reálne dáta nedostupné.",
+      zones: [],
+      sources: [],
+      warnings: ["Externé dátové zdroje sú momentálne nedostupné — zobrazené sú ukážkové hodnoty."],
+    };
+  }
+}
+
 export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
+
   if (cache && Date.now() - cache.at < TTL) return cache.data;
 
   const codes = [
