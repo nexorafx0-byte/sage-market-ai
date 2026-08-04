@@ -19,7 +19,7 @@ import {
 
 import { Panel } from "@/components/page-shell";
 import { getSeasonality } from "@/lib/seasonality.functions";
-import { SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-types";
+import { SEASONALITY_GROUPS, SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-types";
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
 
