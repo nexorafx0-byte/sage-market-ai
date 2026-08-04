@@ -19,7 +19,7 @@ import {
 
 import { Panel } from "@/components/page-shell";
 import { getSeasonality } from "@/lib/seasonality.functions";
-import { SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-types";
+import { SEASONALITY_GROUPS, SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-types";
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
 
@@ -124,10 +124,14 @@ export function SeasonalityPanel() {
             }}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
           >
-            {SEASONALITY_SYMBOLS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
+            {SEASONALITY_GROUPS.map((g) => (
+              <optgroup key={g} label={g}>
+                {SEASONALITY_SYMBOLS.filter((s) => s.group === g).map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
 
