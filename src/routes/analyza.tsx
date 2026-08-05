@@ -14,6 +14,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { CotOverview } from "@/components/cot-overview";
 import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
 import { SeasonalityPanel } from "@/components/seasonality-panel";
@@ -92,6 +93,8 @@ function AnalysisPage() {
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<FundamentRow | null>(null);
+  const [cotPair, setCotPair] = useState("EURUSD");
+
 
   const fetchAnalysis = useServerFn(getMarketAnalysis);
   const { data, isLoading, isError } = useQuery({
@@ -104,6 +107,8 @@ function AnalysisPage() {
   const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
   const zoneRows = live?.zones?.length ? live.zones : supplyDemandZones;
+  const cotRow = allRows.find((r) => r.pair === cotPair) ?? allRows[0] ?? null;
+
 
   const rows = allRows.filter(
     (r) =>
@@ -209,11 +214,36 @@ function AnalysisPage() {
           </TabsContent>
 
           <TabsContent value="cot" className="mt-5">
+            <div className="mb-5 rounded-lg border border-border bg-card p-4">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="text-sm font-semibold">COT dáta podľa inštrumentu</span>
+                <select
+                  value={cotPair}
+                  onChange={(e) => setCotPair(e.target.value)}
+                  className="ml-auto rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
+                >
+                  {allRows.map((r) => (
+                    <option key={r.pair} value={r.pair}>
+                      {r.pair}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {cotRow ? (
+                <CotOverview
+                  row={cotRow}
+                  detail={live?.details?.[cotRow.pair] ?? null}
+                  reportDate={live?.cotReportDate}
+                />
+              ) : null}
+            </div>
+
             <Panel
               title="COT — pozície veľkých hráčov"
               hint={live ? `CFTC report ${live.cotReportDate}` : "Týždenná zmena netto pozícií"}
             >
               <div className="space-y-4">
+
                 {cotRows.map((c) => (
                   <div key={c.asset} className="rounded-lg border border-border p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
