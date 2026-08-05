@@ -92,7 +92,7 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
 function AnalysisPage() {
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
   const [q, setQ] = useState("");
-  const [selected, setSelected] = useState<FundamentRow | null>(null);
+  const [cotPair, setCotPair] = useState("EURUSD");
 
   const fetchAnalysis = useServerFn(getMarketAnalysis);
   const { data, isLoading, isError } = useQuery({
