@@ -14,6 +14,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { CotOverview } from "@/components/cot-overview";
 import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
 import { SeasonalityPanel } from "@/components/seasonality-panel";
