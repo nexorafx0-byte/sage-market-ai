@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 
+const DEFAULT_STUDIES = ["STD;EMA", "STD;RSI"];
+
 type Props = {
   symbol: string;
   interval: string;
@@ -11,7 +13,7 @@ type Props = {
 export default function TradingViewChart({
   symbol,
   interval,
-  studies = ["STD;EMA", "STD;RSI"],
+  studies = DEFAULT_STUDIES,
   height = 620,
 }: Props) {
   const holder = useRef<HTMLDivElement>(null);
