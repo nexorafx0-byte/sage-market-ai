@@ -21,7 +21,7 @@ import { SeasonalityPanel } from "@/components/seasonality-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
-import { cotData, fundamentScore, supplyDemandZones } from "@/lib/mock-data";
+import { cotData, fundamentScore } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/analyza")({
   head: () => ({
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/analyza")({
       {
         name: "description",
         content:
-          "Fundament score z reálnych dát (CFTC COT, BIS sadzby, World Bank), sezónnosť a supply & demand analýza.",
+          "Fundament score z reálnych dát (CFTC COT, BIS sadzby, World Bank) a sezónnosť.",
       },
       { property: "og:title", content: "AI analýza trhu — Trading Analyzer AI" },
       {
@@ -106,7 +106,6 @@ function AnalysisPage() {
   const live = data ?? null;
   const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
-  const zoneRows = live?.zones?.length ? live.zones : supplyDemandZones;
   const cotRow = allRows.find((r) => r.pair === cotPair) ?? allRows[0] ?? null;
 
 
@@ -130,7 +129,7 @@ function AnalysisPage() {
 
   return (
     <>
-      <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť · Supply & Demand" />
+      <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť" />
       <div className="p-6">
         <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
           <p>{statusLine}</p>
@@ -147,7 +146,6 @@ function AnalysisPage() {
             <TabsTrigger value="fundament">Fundament</TabsTrigger>
             <TabsTrigger value="cot">COT</TabsTrigger>
             <TabsTrigger value="sezonnost">Sezónnosť</TabsTrigger>
-            <TabsTrigger value="sd">Supply & Demand</TabsTrigger>
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
