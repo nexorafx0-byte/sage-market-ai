@@ -30,7 +30,6 @@ import {
 import {
   currencyStrength,
   newsFeed,
-  supplyDemandZones,
   fundamentScore,
 } from "@/lib/mock-data";
 
@@ -372,44 +371,6 @@ function Dashboard() {
             </div>
           </Panel>
 
-          <Panel title="Supply & Demand zóny" hint="Automatická detekcia AI">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="pb-2 font-medium">Pár</th>
-                    <th className="pb-2 font-medium">TF</th>
-                    <th className="pb-2 font-medium">Typ</th>
-                    <th className="pb-2 font-medium">Zóna</th>
-                    <th className="pb-2 text-right font-medium">Skóre</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {supplyDemandZones.map((z) => (
-                    <tr key={`${z.pair}-${z.tf}-${z.from}`}>
-                      <td className="py-2.5 font-mono font-medium">{z.pair}</td>
-                      <td className="py-2.5 text-muted-foreground">{z.tf}</td>
-                      <td className="py-2.5">
-                        <span
-                          className={
-                            z.type === "Supply"
-                              ? "rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-                              : "rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
-                          }
-                        >
-                          {z.type}
-                        </span>
-                      </td>
-                      <td className="py-2.5 font-mono text-xs text-muted-foreground">
-                        {z.from} – {z.to}
-                      </td>
-                      <td className="py-2.5 text-right font-mono font-medium">{z.score}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Panel>
         </div>
       </div>
     </>
