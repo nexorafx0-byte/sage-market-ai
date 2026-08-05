@@ -107,6 +107,8 @@ function AnalysisPage() {
   const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
   const zoneRows = live?.zones?.length ? live.zones : supplyDemandZones;
+  const cotRow = allRows.find((r) => r.pair === cotPair) ?? allRows[0] ?? null;
+
 
   const rows = allRows.filter(
     (r) =>
