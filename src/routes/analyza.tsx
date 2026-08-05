@@ -278,43 +278,6 @@ function AnalysisPage() {
             <SeasonalityPanel />
           </TabsContent>
 
-
-          <TabsContent value="sd" className="mt-5">
-            <Panel
-              title="Supply & Demand zóny"
-              hint={live ? "Zo swingov reálnych denných sviečok" : "Detekcia podľa impulzu"}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                {zoneRows.map((z) => (
-                  <div key={`${z.pair}-${z.from}`} className="rounded-lg border border-border p-4">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono font-semibold">
-                        {z.pair} · {z.tf}
-                      </span>
-                      <span
-                        className={
-                          z.type === "Supply"
-                            ? "rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive"
-                            : "rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
-                        }
-                      >
-                        {z.type}
-                      </span>
-                    </div>
-                    <div className="mt-2 font-mono text-sm text-muted-foreground">
-                      {z.from} – {z.to}
-                    </div>
-                    <div className="mt-3 flex items-center gap-3">
-                      <ScoreBar value={z.score} />
-                      <span className="w-20 shrink-0 text-right text-xs text-muted-foreground">
-                        {z.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Panel>
-          </TabsContent>
         </Tabs>
       </div>
     </>
