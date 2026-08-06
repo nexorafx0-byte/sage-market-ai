@@ -6,7 +6,7 @@ type Props = {
   symbol: string;
   interval: string;
   studies?: string[];
-  height?: number;
+  height?: number | string;
 };
 
 /** TradingView Advanced Chart widget (len na klientovi). */
@@ -14,7 +14,7 @@ export default function TradingViewChart({
   symbol,
   interval,
   studies = DEFAULT_STUDIES,
-  height = 620,
+  height = "100%",
 }: Props) {
   const holder = useRef<HTMLDivElement>(null);
 
