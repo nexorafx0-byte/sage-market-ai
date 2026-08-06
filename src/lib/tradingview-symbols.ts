@@ -30,6 +30,7 @@ export type ChartInstrument = {
   id: string;
   label: string;
   tv: string;
+  yahoo: string;
   group: SeasonalityGroup;
 };
 
@@ -37,6 +38,7 @@ export const CHART_INSTRUMENTS: ChartInstrument[] = SEASONALITY_SYMBOLS.map((s) 
   id: s.id,
   label: s.label,
   group: s.group,
+  yahoo: s.yahoo,
   tv: OVERRIDES[s.id] ?? `FX:${s.id}`,
 }));
 
