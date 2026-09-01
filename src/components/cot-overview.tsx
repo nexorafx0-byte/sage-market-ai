@@ -231,7 +231,7 @@ export function CotOverview({
   detail?: InstrumentDetailReal | null;
   reportDate?: string;
 }) {
-  const rows = ORDER.map((g) => ({ group: g, week: latestFor(row, g, detail) }));
+  const rows = ORDER.map((g) => ({ group: g, week: weeksFor(row, g, detail)[0] }));
 
   return (
     <div className="rounded-lg border border-border p-4">
