@@ -1,4 +1,19 @@
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { COT_GROUPS, cotHistory } from "@/lib/instrument-detail";
 import type { CotGroup } from "@/lib/instrument-detail";
@@ -15,14 +30,146 @@ const DONUT_LABEL: Record<CotGroup, string> = {
 
 const ORDER: CotGroup[] = ["commercial", "noncommercial", "retail"];
 
-function latestFor(
+function weeksFor(
   row: FundamentRow,
   group: CotGroup,
   real?: InstrumentDetailReal | null,
-): CotWeekReal {
+): CotWeekReal[] {
   const realWeeks = real?.cot?.[group];
-  const weeks = realWeeks && realWeeks.length > 0 ? realWeeks : cotHistory(row, group);
-  return weeks[0];
+  return realWeeks && realWeeks.length > 0 ? realWeeks : cotHistory(row, group);
+}
+
+const shortDate = (d: string) => {
+  const parts = d.split("-");
+  return parts.length === 3 ? `${parts[2]}.${parts[1]}.` : d;
+};
+
+const tooltipStyle = {
+  borderRadius: 12,
+  border: "1px solid var(--color-border)",
+  background: "var(--color-card)",
+  fontSize: 12,
+} as const;
+
+function CotHistoryCharts({
+  row,
+  detail,
+}: {
+  row: FundamentRow;
+  detail?: InstrumentDetailReal | null;
+}) {
+  const series = ORDER.map((g) => ({ group: g, weeks: weeksFor(row, g, detail) }));
+  const base = series[0].weeks;
+  // dáta idú od najnovšieho — otočíme na chronologické poradie
+  const netData = [...base]
+    .map((_, i) => {
+      const idx = base.length - 1 - i;
+      const rec: Record<string, string | number> = { date: shortDate(base[idx].date) };
+      for (const s of series) {
+        const w = s.weeks[idx];
+        if (w) rec[s.group] = w.net;
+      }
+      return rec;
+    })
+    .filter((r) => Object.keys(r).length > 1);
+
+  const flowData = [...base].map((_, i) => {
+    const idx = base.length - 1 - i;
+    const w = series[1].weeks[idx] ?? base[idx];
+    return {
+      date: shortDate(w.date),
+      long: w.longOi,
+      short: -w.shortOi,
+    };
+  });
+
+  return (
+    <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="rounded-lg border border-border p-3">
+        <p className="mb-2 text-xs font-semibold">Vývoj netto pozícií (posledné týždne)</p>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={netData} margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="var(--color-muted-foreground)" />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                stroke="var(--color-muted-foreground)"
+                width={58}
+                tickFormatter={(v: number) => nf(v)}
+              />
+              <ReferenceLine y={0} stroke="var(--color-muted-foreground)" />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                formatter={(v: number, n: string) =>
+                  [nf(v), DONUT_LABEL[n as CotGroup] ?? n] as [string, string]
+                }
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 11 }}
+                formatter={(n: string) => DONUT_LABEL[n as CotGroup] ?? n}
+              />
+              <Line
+                type="monotone"
+                dataKey="commercial"
+                stroke="var(--color-chart-3)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="noncommercial"
+                stroke="var(--color-chart-1)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="retail"
+                stroke="var(--color-warning)"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border p-3">
+        <p className="mb-2 text-xs font-semibold">
+          Long vs Short — Large Speculators (otvorené kontrakty)
+        </p>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={flowData} stackOffset="sign" margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="var(--color-muted-foreground)" />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                stroke="var(--color-muted-foreground)"
+                width={58}
+                tickFormatter={(v: number) => nf(Math.abs(v))}
+              />
+              <ReferenceLine y={0} stroke="var(--color-muted-foreground)" />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                formatter={(v: number, n: string) =>
+                  [nf(Math.abs(v)), n === "long" ? "Long" : "Short"] as [string, string]
+                }
+              />
+              <Bar dataKey="long" stackId="oi" fill="var(--color-success)" radius={[3, 3, 0, 0]} />
+              <Bar
+                dataKey="short"
+                stackId="oi"
+                fill="var(--color-destructive)"
+                radius={[0, 0, 3, 3]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Donut({ title, long, short }: { title: string; long: number; short: number }) {
@@ -84,7 +231,7 @@ export function CotOverview({
   detail?: InstrumentDetailReal | null;
   reportDate?: string;
 }) {
-  const rows = ORDER.map((g) => ({ group: g, week: latestFor(row, g, detail) }));
+  const rows = ORDER.map((g) => ({ group: g, week: weeksFor(row, g, detail)[0] }));
 
   return (
     <div className="rounded-lg border border-border p-4">
@@ -113,6 +260,8 @@ export function CotOverview({
           />
         ))}
       </div>
+
+      <CotHistoryCharts row={row} detail={detail} />
 
       <div className="mt-4 overflow-x-auto rounded-lg border border-border">
         <table className="w-full border-collapse text-right font-mono text-xs">
