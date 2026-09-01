@@ -261,6 +261,8 @@ export function CotOverview({
         ))}
       </div>
 
+      <CotHistoryCharts row={row} detail={detail} />
+
       <div className="mt-4 overflow-x-auto rounded-lg border border-border">
         <table className="w-full border-collapse text-right font-mono text-xs">
           <thead>
