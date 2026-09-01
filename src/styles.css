@@ -117,38 +117,43 @@
 
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: oklch(0.13 0.012 165);
+  --foreground: oklch(0.97 0.005 160);
+  --card: oklch(0.19 0.016 165);
+  --card-foreground: oklch(0.97 0.005 160);
+  --popover: oklch(0.17 0.016 165);
+  --popover-foreground: oklch(0.97 0.005 160);
+  --primary: oklch(0.74 0.16 162);
+  --primary-foreground: oklch(0.14 0.03 165);
+  --primary-glow: oklch(0.86 0.14 168);
+  --secondary: oklch(0.24 0.018 165);
+  --secondary-foreground: oklch(0.96 0.005 160);
+  --muted: oklch(0.23 0.014 165);
+  --muted-foreground: oklch(0.74 0.02 160);
+  --accent: oklch(0.3 0.05 163);
+  --accent-foreground: oklch(0.95 0.02 160);
+  --destructive: oklch(0.62 0.19 22);
+  --destructive-foreground: oklch(0.98 0 0);
+  --success: oklch(0.76 0.17 158);
+  --success-foreground: oklch(0.17 0.03 158);
+  --warning: oklch(0.82 0.14 88);
+  --warning-foreground: oklch(0.22 0.04 88);
+  --border: oklch(0.82 0.12 162 / 12%);
+  --input: oklch(0.82 0.12 162 / 16%);
+  --ring: oklch(0.74 0.16 162);
+  --chart-1: oklch(0.74 0.16 162);
+  --chart-2: oklch(0.86 0.14 168);
+  --chart-3: oklch(0.58 0.13 158);
+  --chart-4: oklch(0.66 0.09 150);
+  --chart-5: oklch(0.42 0.08 163);
+  --sidebar: oklch(0.11 0.012 165);
+  --sidebar-foreground: oklch(0.95 0.005 160);
+  --sidebar-primary: oklch(0.74 0.16 162);
+  --sidebar-primary-foreground: oklch(0.13 0.03 165);
+  --sidebar-accent: oklch(0.24 0.035 163);
+  --sidebar-accent-foreground: oklch(0.96 0.01 160);
+  --sidebar-border: oklch(0.82 0.12 162 / 10%);
+  --sidebar-ring: oklch(0.74 0.16 162);
 }
 
 @layer base {
@@ -158,6 +163,42 @@
 
   body {
     background-color: var(--color-background);
+    background-image:
+      radial-gradient(1100px 500px at 12% -10%, oklch(0.74 0.16 162 / 10%), transparent 65%),
+      radial-gradient(900px 480px at 100% 0%, oklch(0.86 0.14 168 / 7%), transparent 60%);
+    background-attachment: fixed;
     color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
   }
+
+  ::selection {
+    background-color: oklch(0.74 0.16 162 / 30%);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.74 0.16 162 / 25%);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.74 0.16 162 / 45%);
+  }
+}
+
+@utility surface-luxe {
+  background-image: var(--gradient-luxe);
+  box-shadow: var(--shadow-card);
+}
+
+@utility text-gradient-primary {
+  background-image: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
