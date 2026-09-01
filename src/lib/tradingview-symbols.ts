@@ -2,6 +2,17 @@
 import { SEASONALITY_SYMBOLS, SEASONALITY_GROUPS, type SeasonalityGroup } from "./seasonality-types";
 
 const OVERRIDES: Record<string, string> = {
+  "6E": "CME:6E1!",
+  "6B": "CME:6B1!",
+  "6J": "CME:6J1!",
+  "6S": "CME:6S1!",
+  "6C": "CME:6C1!",
+  "6A": "CME:6A1!",
+  "6N": "CME:6N1!",
+  "6M": "CME:6M1!",
+  "6L": "CME:6L1!",
+  "6Z": "CME:6Z1!",
+  DXFUT: "ICEUS:DX1!",
   XAUUSD: "OANDA:XAUUSD",
   XAGUSD: "OANDA:XAGUSD",
   XPTUSD: "OANDA:XPTUSD",

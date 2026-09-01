@@ -30,6 +30,7 @@ export type SeasonalityGroup =
   | "JPY kríže"
   | "AUD / NZD / CAD kríže"
   | "Exotické páry"
+  | "Forex futures"
   | "Komodity"
   | "Indexy"
   | "Krypto";
@@ -75,6 +76,18 @@ export const SEASONALITY_SYMBOLS = [
   { id: "USDNOK", label: "USDNOK", yahoo: "USDNOK=X", group: "Exotické páry" },
   { id: "USDTRY", label: "USDTRY", yahoo: "USDTRY=X", group: "Exotické páry" },
   { id: "USDPLN", label: "USDPLN", yahoo: "USDPLN=X", group: "Exotické páry" },
+  // ---- Forex futures (CME) ----
+  { id: "6E", label: "6E — Euro FX futures", yahoo: "6E=F", group: "Forex futures" },
+  { id: "6B", label: "6B — British Pound futures", yahoo: "6B=F", group: "Forex futures" },
+  { id: "6J", label: "6J — Japanese Yen futures", yahoo: "6J=F", group: "Forex futures" },
+  { id: "6S", label: "6S — Swiss Franc futures", yahoo: "6S=F", group: "Forex futures" },
+  { id: "6C", label: "6C — Canadian Dollar futures", yahoo: "6C=F", group: "Forex futures" },
+  { id: "6A", label: "6A — Australian Dollar futures", yahoo: "6A=F", group: "Forex futures" },
+  { id: "6N", label: "6N — New Zealand Dollar futures", yahoo: "6N=F", group: "Forex futures" },
+  { id: "6M", label: "6M — Mexican Peso futures", yahoo: "6M=F", group: "Forex futures" },
+  { id: "6L", label: "6L — Brazilian Real futures", yahoo: "6L=F", group: "Forex futures" },
+  { id: "6Z", label: "6Z — South African Rand futures", yahoo: "6Z=F", group: "Forex futures" },
+  { id: "DXFUT", label: "DX — Dollar Index futures", yahoo: "DX=F", group: "Forex futures" },
   // ---- Komodity ----
   { id: "XAUUSD", label: "XAUUSD (zlato)", yahoo: "GC=F", group: "Komodity" },
   { id: "XAGUSD", label: "XAGUSD (striebro)", yahoo: "SI=F", group: "Komodity" },
@@ -114,6 +127,7 @@ export const SEASONALITY_GROUPS: SeasonalityGroup[] = [
   "JPY kríže",
   "AUD / NZD / CAD kríže",
   "Exotické páry",
+  "Forex futures",
   "Komodity",
   "Indexy",
   "Krypto",
