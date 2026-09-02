@@ -16,6 +16,7 @@ import { Route as JournalRouteImport } from './routes/journal'
 import { Route as GrafyRouteImport } from './routes/grafy'
 import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as BacktestingRouteImport } from './routes/backtesting'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -54,6 +55,11 @@ const BacktestingRoute = BacktestingRouteImport.update({
   path: '/backtesting',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyzaRoute = AnalyzaRouteImport.update({
   id: '/analyza',
   path: '/analyza',
@@ -68,6 +74,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
+  '/auth': typeof AuthRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
+  '/auth': typeof AuthRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/analyza': typeof AnalyzaRoute
+  '/auth': typeof AuthRoute
   '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/analyza'
+    | '/auth'
     | '/backtesting'
     | '/cennik'
     | '/grafy'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/analyza'
+    | '/auth'
     | '/backtesting'
     | '/cennik'
     | '/grafy'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/analyza'
+    | '/auth'
     | '/backtesting'
     | '/cennik'
     | '/grafy'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyzaRoute: typeof AnalyzaRoute
+  AuthRoute: typeof AuthRoute
   BacktestingRoute: typeof BacktestingRoute
   CennikRoute: typeof CennikRoute
   GrafyRoute: typeof GrafyRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BacktestingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analyza': {
       id: '/analyza'
       path: '/analyza'
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyzaRoute: AnalyzaRoute,
+  AuthRoute: AuthRoute,
   BacktestingRoute: BacktestingRoute,
   CennikRoute: CennikRoute,
   GrafyRoute: GrafyRoute,
