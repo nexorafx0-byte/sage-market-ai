@@ -14,7 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      account_connection_secrets: {
+        Row: {
+          account_id: string
+          api_token: string | null
+          created_at: string
+          investor_password: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          api_token?: string | null
+          created_at?: string
+          investor_password?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          api_token?: string | null
+          created_at?: string
+          investor_password?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_connection_secrets_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: true
+            referencedRelation: "trading_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trading_accounts: {
+        Row: {
+          account_login: string | null
+          balance: number
+          connection_error: string | null
+          connection_status: Database["public"]["Enums"]["account_connection_status"]
+          created_at: string
+          currency: string
+          current_dd_pct: number
+          equity: number | null
+          id: string
+          last_sync_at: string | null
+          max_dd_pct: number
+          name: string
+          notes: string | null
+          phase: string
+          platform: Database["public"]["Enums"]["trading_platform"]
+          profit_target_pct: number
+          prop_firm: string | null
+          server: string | null
+          start_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_login?: string | null
+          balance?: number
+          connection_error?: string | null
+          connection_status?: Database["public"]["Enums"]["account_connection_status"]
+          created_at?: string
+          currency?: string
+          current_dd_pct?: number
+          equity?: number | null
+          id?: string
+          last_sync_at?: string | null
+          max_dd_pct?: number
+          name: string
+          notes?: string | null
+          phase?: string
+          platform?: Database["public"]["Enums"]["trading_platform"]
+          profit_target_pct?: number
+          prop_firm?: string | null
+          server?: string | null
+          start_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_login?: string | null
+          balance?: number
+          connection_error?: string | null
+          connection_status?: Database["public"]["Enums"]["account_connection_status"]
+          created_at?: string
+          currency?: string
+          current_dd_pct?: number
+          equity?: number | null
+          id?: string
+          last_sync_at?: string | null
+          max_dd_pct?: number
+          name?: string
+          notes?: string | null
+          phase?: string
+          platform?: Database["public"]["Enums"]["trading_platform"]
+          profit_target_pct?: number
+          prop_firm?: string | null
+          server?: string | null
+          start_balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +153,14 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      account_connection_status: "manual" | "pending" | "connected" | "error"
+      trading_platform:
+        | "mt4"
+        | "mt5"
+        | "ctrader"
+        | "tradovate"
+        | "tradelocker"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +287,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_connection_status: ["manual", "pending", "connected", "error"],
+      trading_platform: [
+        "mt4",
+        "mt5",
+        "ctrader",
+        "tradovate",
+        "tradelocker",
+        "other",
+      ],
+    },
   },
 } as const
