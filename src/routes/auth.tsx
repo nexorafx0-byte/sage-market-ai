@@ -129,7 +129,7 @@ function AuthPage() {
           className="mt-4 w-full text-center text-xs text-muted-foreground hover:text-foreground"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
         >
-          {mode === "signin" ? "Nemáš účet? Zaregistruj sa" : "Už máš účet? Prihlás sa"}
+          {mode === "signin" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
         </button>
       </div>
     </div>

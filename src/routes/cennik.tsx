@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/cennik")({
   head: () => ({
     meta: [
-      { title: "Cenník — Trading Analyzer AI" },
+      { title: "Pricing — Trading Analyzer AI" },
       {
         name: "description",
-        content: "Basic 29 €, Pro 79 € a Elite 149 € mesačne. Vyber si plán pre svoje obchodovanie.",
+        content: "Basic €29, Pro €79, and Elite €149 per month. Choose the plan for your trading.",
       },
-      { property: "og:title", content: "Cenník — Trading Analyzer AI" },
-      { property: "og:description", content: "Basic 29 € · Pro 79 € · Elite 149 € mesačne." },
+      { property: "og:title", content: "Pricing — Trading Analyzer AI" },
+      { property: "og:description", content: "Basic €29 · Pro €79 · Elite €149 per month." },
     ],
   }),
   component: PricingPage,
@@ -24,38 +24,38 @@ const plans = [
   {
     name: "Basic",
     price: "29 €",
-    desc: "Pre začínajúcich obchodníkov",
+    desc: "For beginner traders",
     features: [
-      "AI makro analýza (denne)",
+      "AI macro analysis (daily)",
       "Currency Strength",
-      "Fundament Score",
-      "Kalendár správ",
-      "1 obchodný účet",
+      "Fundamental Score",
+      "News calendar",
+      "1 trading account",
     ],
   },
   {
     name: "Pro",
     price: "79 €",
-    desc: "Pre aktívnych obchodníkov",
+    desc: "For active traders",
     highlight: true,
     features: [
-      "Všetko z Basic",
-      "COT a sezónnosť",
-      "Supply & Demand analýza",
-      "AI Journal a obchodný plán",
-      "Risk manager · 5 účtov",
+      "Everything in Basic",
+      "COT and Seasonality",
+      "Supply & Demand analysis",
+      "AI Journal and trading plan",
+      "Risk manager · 5 accounts",
     ],
   },
   {
     name: "Elite",
     price: "149 €",
-    desc: "Pre funded a profesionálov",
+    desc: "For funded traders and professionals",
     features: [
-      "Všetko z Pro",
-      "Backtesting bez limitov",
-      "Dashboard pre funded účty",
-      "AI upozornenia v reálnom čase",
-      "Mobilná aplikácia a prioritná podpora",
+      "Everything in Pro",
+      "Unlimited backtesting",
+      "Dashboard for funded accounts",
+      "Real-time AI alerts",
+      "Mobile app and priority support",
     ],
   },
 ];
@@ -63,7 +63,7 @@ const plans = [
 function PricingPage() {
   return (
     <>
-      <PageHeader title="Cenník" subtitle="Zruš kedykoľvek · 7 dní zadarmo" />
+      <PageHeader title="Pricing" subtitle="Cancel anytime · 7 days free" />
       <div className="grid gap-5 p-6 lg:grid-cols-3">
         {plans.map((p) => (
           <div
@@ -75,14 +75,14 @@ function PricingPage() {
           >
             {p.highlight && (
               <span className="mb-3 inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
-                Najobľúbenejší
+                Most popular
               </span>
             )}
             <h2 className="text-lg font-semibold tracking-tight">{p.name}</h2>
             <p className="text-sm text-muted-foreground">{p.desc}</p>
             <div className="mt-4 flex items-baseline gap-1">
               <span className="font-mono text-4xl font-bold">{p.price}</span>
-              <span className="text-sm text-muted-foreground">/mesiac</span>
+              <span className="text-sm text-muted-foreground">/month</span>
             </div>
             <ul className="mt-6 space-y-3 text-sm">
               {p.features.map((f) => (
@@ -93,7 +93,7 @@ function PricingPage() {
               ))}
             </ul>
             <Button className="mt-6 w-full" variant={p.highlight ? "default" : "outline"}>
-              Vybrať {p.name}
+              Choose {p.name}
             </Button>
           </div>
         ))}
