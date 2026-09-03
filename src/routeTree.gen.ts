@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UctyRouteImport } from './routes/ucty'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as JournalRouteImport } from './routes/journal'
@@ -18,13 +17,10 @@ import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as BacktestingRouteImport } from './routes/backtesting'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUctyRouteImport } from './routes/_authenticated/ucty'
 
-const UctyRoute = UctyRouteImport.update({
-  id: '/ucty',
-  path: '/ucty',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -65,10 +61,19 @@ const AnalyzaRoute = AnalyzaRouteImport.update({
   path: '/analyza',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUctyRoute = AuthenticatedUctyRouteImport.update({
+  id: '/ucty',
+  path: '/ucty',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -81,7 +86,7 @@ export interface FileRoutesByFullPath {
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/ucty': typeof UctyRoute
+  '/ucty': typeof AuthenticatedUctyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,11 +98,12 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/ucty': typeof UctyRoute
+  '/ucty': typeof AuthenticatedUctyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
   '/backtesting': typeof BacktestingRoute
@@ -106,7 +112,7 @@ export interface FileRoutesById {
   '/journal': typeof JournalRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/ucty': typeof UctyRoute
+  '/_authenticated/ucty': typeof AuthenticatedUctyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -136,6 +142,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/analyza'
     | '/auth'
     | '/backtesting'
@@ -144,11 +151,12 @@ export interface FileRouteTypes {
     | '/journal'
     | '/risk'
     | '/sitemap.xml'
-    | '/ucty'
+    | '/_authenticated/ucty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AnalyzaRoute: typeof AnalyzaRoute
   AuthRoute: typeof AuthRoute
   BacktestingRoute: typeof BacktestingRoute
@@ -157,18 +165,10 @@ export interface RootRouteChildren {
   JournalRoute: typeof JournalRoute
   RiskRoute: typeof RiskRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  UctyRoute: typeof UctyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/ucty': {
-      id: '/ucty'
-      path: '/ucty'
-      fullPath: '/ucty'
-      preLoaderRoute: typeof UctyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -225,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyzaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -232,11 +239,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/ucty': {
+      id: '/_authenticated/ucty'
+      path: '/ucty'
+      fullPath: '/ucty'
+      preLoaderRoute: typeof AuthenticatedUctyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedUctyRoute: typeof AuthenticatedUctyRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedUctyRoute: AuthenticatedUctyRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AnalyzaRoute: AnalyzaRoute,
   AuthRoute: AuthRoute,
   BacktestingRoute: BacktestingRoute,
@@ -245,7 +271,6 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   RiskRoute: RiskRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  UctyRoute: UctyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
