@@ -40,12 +40,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       {
         name: "description",
         content:
-          "Prehľad účtu: gain, net P&L, drawdown, štatistiky, obchodný kalendár a AI makro analýza.",
+          "Account overview: gain, net P&L, drawdown, statistics, trading calendar and AI macro analysis.",
       },
       { property: "og:title", content: "Dashboard — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "Jedna platforma pre makro analýzu, journal a risk manažment.",
+        content: "One platform for macro analysis, journaling and risk management.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -96,18 +96,18 @@ function Dashboard() {
     <>
       <PageHeader
         title="Dashboard"
-        subtitle="Streda, 29. júl · AI aktualizácia pred 4 minútami"
+        subtitle="Wednesday, July 29 · AI update 4 minutes ago"
         actions={
           <Button className="gap-2">
             <Sparkles className="h-4 w-4" />
-            Vygenerovať obchodný plán
+            Generate trading plan
           </Button>
         }
       />
 
       <div className="space-y-5 p-6">
         <div className="grid gap-5 xl:grid-cols-3">
-          {/* Ľavý stĺpec — súhrn účtu */}
+          {/* Left column — account summary */}
           <section className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
             <div className="flex items-start justify-between border-l-2 border-primary pl-3">
               <div>
@@ -134,12 +134,12 @@ function Dashboard() {
             <div className="mt-5 space-y-4">
               <StatList title="Risk" icon={<Shield className="h-3.5 w-3.5" />} rows={riskStats} />
               <StatList
-                title="Kapitálové toky"
+                title="Capital Flows"
                 icon={<Wallet className="h-3.5 w-3.5" />}
                 rows={capitalFlows}
               />
               <StatList
-                title="Štatistiky"
+                title="Statistics"
                 icon={<LineIcon className="h-3.5 w-3.5" />}
                 rows={statisticsRows}
               />
@@ -151,10 +151,10 @@ function Dashboard() {
             </div>
           </section>
 
-          {/* Pravý blok — trade count, winstreak, balance */}
+          {/* Right block — trade count, winstreak, balance */}
           <div className="space-y-5 xl:col-span-2">
             <div className="grid gap-5 md:grid-cols-2">
-              <Panel title="Trade Count" hint="Posledných 14 dní">
+              <Panel title="Trade Count" hint="Last 14 days">
                 <div className="font-mono text-2xl font-semibold text-foreground">
                   {accountSummary.tradeCount}
                 </div>
@@ -173,18 +173,18 @@ function Dashboard() {
                 </div>
               </Panel>
 
-              <Panel title="Winstreak" hint="Aktuálna séria">
+              <Panel title="Winstreak" hint="Current streak">
                 <div className="grid grid-cols-2 gap-4">
                   {[
                     {
                       v: accountSummary.winstreakDays,
-                      label: "Dni",
+                      label: "Days",
                       best: accountSummary.winstreakDaysBest,
                       worst: accountSummary.winstreakDaysWorst,
                     },
                     {
                       v: accountSummary.winstreakTrades,
-                      label: "Obchody",
+                      label: "Trades",
                       best: accountSummary.winstreakTradesBest,
                       worst: accountSummary.winstreakTradesWorst,
                     },
@@ -261,7 +261,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <Panel title="Obchodný kalendár" hint="P&L po dňoch a týždňoch">
+        <Panel title="Trading Calendar" hint="P&L by day and week">
           <PnlCalendar />
         </Panel>
 
@@ -270,35 +270,35 @@ function Dashboard() {
 
 
 
-          <Panel title="AI makro analýza" hint="Zhrnutie relácie">
+          <Panel title="AI Macro Analysis" hint="Session summary">
             <p className="text-sm leading-relaxed text-foreground">
-              Dolár drží prevahu naprieč G8 — výnosy 2Y sa držia nad 4.1 % a trh preceňuje
-              septembrové zníženie sadzieb na 38 %. Euro zostáva najslabšie po slabom nemeckom PMI.
+              The dollar retains dominance across the G8 — 2Y yields are holding above 4.1% and the
+              market is pricing a September rate cut at 38%. The euro remains the weakest after a weak German PMI.
             </p>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               <li className="flex gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                Preferovaný smer: <strong className="text-foreground">short EUR</strong> voči USD a
+                Preferred direction: <strong className="text-foreground">short EUR</strong> against USD and
                 CHF.
               </li>
               <li className="flex gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                Zlato podporené sezónnosťou a rekordným COT netto longom — pozor na preplnenosť.
+                Gold supported by seasonality and a record COT net long — watch for crowding.
               </li>
               <li className="flex gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                Riziková udalosť dňa: FOMC zápisnica o 20:00.
+                Today's risk event: FOMC minutes at 20:00.
               </li>
             </ul>
             <div className="mt-5 flex items-start gap-2 rounded-lg bg-accent p-3 text-xs text-accent-foreground">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-              Znížená likvidita medzi 18:00 a 20:00 — AI odporúča polovičnú veľkosť pozície.
+              Reduced liquidity between 18:00 and 20:00 — AI recommends half position size.
             </div>
           </Panel>
         </div>
 
         <div className="grid gap-5 xl:grid-cols-3">
-          <Panel title="Currency Strength" hint="Vážený index za 24 h" className="xl:col-span-2">
+          <Panel title="Currency Strength" hint="Weighted index for 24h" className="xl:col-span-2">
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={currencyStrength}>
@@ -320,7 +320,7 @@ function Dashboard() {
             </div>
           </Panel>
 
-          <Panel title="Fundament Score" hint="Top 8 podľa sily · škála −10 až +10">
+          <Panel title="Fundament Score" hint="Top 8 by strength · scale −10 to +10">
             <div className="space-y-4">
               {[...fundamentScore]
                 .sort((a, b) => Math.abs(b.score) - Math.abs(a.score))
@@ -345,7 +345,7 @@ function Dashboard() {
         </div>
 
         <div className="grid gap-5 xl:grid-cols-2">
-          <Panel title="Dôležité správy dnes" hint="AI komentár ku každej udalosti">
+          <Panel title="Important News Today" hint="AI commentary for each event">
             <div className="space-y-4">
               {newsFeed.map((n) => (
                 <article key={n.title} className="rounded-lg border border-border p-4">
@@ -358,7 +358,7 @@ function Dashboard() {
                           : "rounded-full bg-warning/15 px-2 py-0.5 font-medium text-warning-foreground"
                       }
                     >
-                      {n.impact === "high" ? "Vysoký dopad" : "Stredný dopad"}
+                      {n.impact === "high" ? "High Impact" : "Medium Impact"}
                     </span>
                     <span className="rounded-full bg-secondary px-2 py-0.5 font-mono text-secondary-foreground">
                       {n.currency}
