@@ -38,7 +38,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/ucty" });
+      if (data.session) void navigate({ to: "/dashboard" });
     });
   }, [navigate]);
 
@@ -58,7 +58,7 @@ function AuthPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        await navigate({ to: "/ucty" });
+        await navigate({ to: "/dashboard" });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Prihlásenie zlyhalo");
@@ -78,7 +78,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    await navigate({ to: "/ucty" });
+    await navigate({ to: "/dashboard" });
   };
 
   return (
