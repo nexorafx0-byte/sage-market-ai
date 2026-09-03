@@ -213,7 +213,7 @@ function Dashboard() {
 
             <Panel
               title="Balance"
-              hint={`+${accountSummary.balanceChangePct.toFixed(2)} % tento mesiac`}
+              hint={`+${accountSummary.balanceChangePct.toFixed(2)} % this month`}
             >
               <div className="font-mono text-3xl font-semibold text-foreground">
                 {accountSummary.balance.toLocaleString("sk-SK", {
