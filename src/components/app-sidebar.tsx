@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const analysisItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "AI analýza trhu", url: "/analyza", icon: Brain },
   { title: "Grafy", url: "/grafy", icon: CandlestickChart },
   { title: "Backtesting", url: "/backtesting", icon: FlaskConical },
