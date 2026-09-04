@@ -23,16 +23,16 @@ import {
 export const Route = createFileRoute("/_authenticated/ucty")({
   head: () => ({
     meta: [
-      { title: "Funded účty — Trading Analyzer AI" },
+      { title: "Funded accounts — Trading Analyzer AI" },
       {
         name: "description",
         content:
-          "Pripoj MT4, MT5, cTrader, Tradovate a TradeLocker účty a sleduj ciele aj drawdown na jednom mieste.",
+          "Connect MT4, MT5, cTrader, Tradovate and TradeLocker accounts and track targets and drawdown in one place.",
       },
-      { property: "og:title", content: "Funded účty — Trading Analyzer AI" },
+      { property: "og:title", content: "Funded accounts — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "Všetky prop firm účty a broker pripojenia na jednej obrazovke.",
+        content: "All prop firm accounts and broker connections on one screen.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -42,9 +42,9 @@ export const Route = createFileRoute("/_authenticated/ucty")({
 });
 
 const statusLabel: Record<TradingAccount["connection_status"], string> = {
-  manual: "Manuálny",
-  pending: "Čaká na synchronizáciu",
-  connected: "Pripojený",
+  manual: "Manual",
+  pending: "Waiting for sync",
+  connected: "Connected",
   error: "Chyba pripojenia",
 };
 
@@ -84,7 +84,7 @@ function AccountsPage() {
       setEditing(null);
       invalidate();
       toast.success(
-        res.connectionRequested ? "Účet uložený, pripojenie sa pripravuje." : "Účet uložený.",
+        res.connectionRequested ? "Account saved, connection is being prepared." : "Account saved.",
       );
     },
     onError: (e: Error) => toast.error(e.message),
@@ -94,7 +94,7 @@ function AccountsPage() {
     mutationFn: (id: string) => remove({ data: { id } }),
     onSuccess: () => {
       invalidate();
-      toast.success("Účet zmazaný.");
+      toast.success("Account deleted.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -103,7 +103,7 @@ function AccountsPage() {
     mutationFn: (id: string) => disconnect({ data: { id } }),
     onSuccess: () => {
       invalidate();
-      toast.success("Pripojenie odstránené.");
+      toast.success("Connection removed.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -118,12 +118,12 @@ function AccountsPage() {
   return (
     <>
       <PageHeader
-        title="Funded účty"
+        title="Funded accounts"
         subtitle="Prepoj MT4, MT5, cTrader, Tradovate alebo TradeLocker a sleduj ciele aj drawdown"
         actions={
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="mr-1.5 h-4 w-4" /> Odhlásiť
+              <LogOut className="mr-1.5 h-4 w-4" /> Sign out
             </Button>
             <Button
               size="sm"
@@ -132,18 +132,18 @@ function AccountsPage() {
                 setDialogOpen(true);
               }}
             >
-              <Plus className="mr-1.5 h-4 w-4" /> Pridať účet
+              <Plus className="mr-1.5 h-4 w-4" /> Add account
             </Button>
           </div>
         }
       />
 
       <div className="p-6">
-        {accounts.isLoading && <p className="text-sm text-muted-foreground">Načítavam účty…</p>}
+        {accounts.isLoading && <p className="text-sm text-muted-foreground">Loading accounts…</p>}
 
         {!accounts.isLoading && list.length === 0 && (
           <div className="rounded-xl border border-dashed border-border p-10 text-center">
-            <h2 className="text-base font-semibold">Zatiaľ nemáš žiadny účet</h2>
+            <h2 className="text-base font-semibold">You don't have any account yet</h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
               Pridaj svoju výzvu alebo funded účet. Pri MT4/MT5 stačí investor heslo, pri cTrader,
               Tradovate a TradeLocker API token.
@@ -155,7 +155,7 @@ function AccountsPage() {
                 setDialogOpen(true);
               }}
             >
-              <Plus className="mr-1.5 h-4 w-4" /> Pridať prvý účet
+              <Plus className="mr-1.5 h-4 w-4" /> Add first account
             </Button>
           </div>
         )}
@@ -202,7 +202,7 @@ function AccountsPage() {
                 <div className="mt-5 space-y-4">
                   <div>
                     <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Postup k cieľu</span>
+                      <span>Progress to target</span>
                       <span className="font-mono">{targetPct.toFixed(0)} %</span>
                     </div>
                     <Progress value={targetPct} className="mt-1.5" />
@@ -234,7 +234,7 @@ function AccountsPage() {
                       setDialogOpen(true);
                     }}
                   >
-                    <Pencil className="mr-1.5 h-3.5 w-3.5" /> Upraviť
+                    <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
                   </Button>
                   {a.connection_status !== "manual" && (
                     <Button
@@ -242,7 +242,7 @@ function AccountsPage() {
                       variant="ghost"
                       onClick={() => disconnectMutation.mutate(a.id)}
                     >
-                      <Unplug className="mr-1.5 h-3.5 w-3.5" /> Odpojiť
+                      <Unplug className="mr-1.5 h-3.5 w-3.5" /> Disconnect
                     </Button>
                   )}
                   <Button
@@ -251,7 +251,7 @@ function AccountsPage() {
                     className="text-destructive"
                     onClick={() => removeMutation.mutate(a.id)}
                   >
-                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Zmazať
+                    <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete
                   </Button>
                 </div>
               </Panel>

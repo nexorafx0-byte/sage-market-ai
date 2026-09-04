@@ -26,16 +26,16 @@ import { cotData, fundamentScore } from "@/lib/mock-data";
 export const Route = createFileRoute("/analyza")({
   head: () => ({
     meta: [
-      { title: "AI analýza trhu — Trading Analyzer AI" },
+      { title: "AI market analysis — Trading Analyzer AI" },
       {
         name: "description",
         content:
-          "Fundament score z reálnych dát (CFTC COT, BIS sadzby, World Bank) a sezónnosť.",
+          "Fundamental score from real data (CFTC COT, BIS rates, World Bank) and seasonality.",
       },
-      { property: "og:title", content: "AI analýza trhu — Trading Analyzer AI" },
+      { property: "og:title", content: "AI market analysis — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "Reálne makro dáta, COT pozície, sezónnosť a S&D zóny s AI komentárom.",
+        content: "Real macro data, COT positioning and seasonality with AI commentary.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/analyza")({
   component: AnalysisPage,
 });
 
-const CATEGORIES = ["Všetko", "Forex", "Komodity", "Indexy"] as const;
+const CATEGORIES = ["All", "Forex", "Commodities", "Indices"] as const;
 
 function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => void }) {
   return (
@@ -73,7 +73,7 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
           {r.rateScore})
         </span>
         <span>
-          Inflácia {r.infl} ({r.inflScore > 0 ? "+" : ""}
+          Inflation {r.infl} ({r.inflScore > 0 ? "+" : ""}
           {r.inflScore})
         </span>
         <span>
@@ -90,7 +90,7 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
 }
 
 function AnalysisPage() {
-  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Všetko");
+  const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<FundamentRow | null>(null);
   const [cotPair, setCotPair] = useState("EURUSD");
@@ -111,25 +111,25 @@ function AnalysisPage() {
 
   const rows = allRows.filter(
     (r) =>
-      (cat === "Všetko" || r.category === cat) &&
+      (cat === "All" || r.category === cat) &&
       r.pair.toLowerCase().includes(q.trim().toLowerCase()),
   );
 
   const sections: { title: string; items: FundamentRow[] }[] = [
-    { title: "Forex páry", items: rows.filter((r) => r.category === "Forex") },
+    { title: "Forex pairs", items: rows.filter((r) => r.category === "Forex") },
     { title: "Komodity", items: rows.filter((r) => r.category === "Komodity") },
     { title: "Indexy", items: rows.filter((r) => r.category === "Indexy") },
   ];
 
   const statusLine = isLoading
-    ? "Načítavam reálne dáta z CFTC, BIS a World Bank…"
+    ? "Loading real data from CFTC, BIS and World Bank…"
     : isError || !live
-      ? "Reálne dáta sa nepodarilo načítať — zobrazené sú ukážkové hodnoty."
-      : `Reálne dáta · COT report ${live.cotReportDate} · aktualizované ${new Date(live.updatedAt).toLocaleString("sk-SK")}`;
+      ? "Could not load real data — showing sample values."
+      : `Real data · COT report ${live.cotReportDate} · updated ${new Date(live.updatedAt).toLocaleString("en-US")}`;
 
   return (
     <>
-      <PageHeader title="AI analýza trhu" subtitle="Fundament · COT · Sezónnosť" />
+      <PageHeader title="AI market analysis" subtitle="Fundamentals · COT · Seasonality" />
       <div className="p-6">
         <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
           <p>{statusLine}</p>
@@ -145,7 +145,7 @@ function AnalysisPage() {
           <TabsList>
             <TabsTrigger value="fundament">Fundament</TabsTrigger>
             <TabsTrigger value="cot">COT</TabsTrigger>
-            <TabsTrigger value="sezonnost">Sezónnosť</TabsTrigger>
+            <TabsTrigger value="sezonnost">Seasonality</TabsTrigger>
           </TabsList>
 
           <TabsContent value="fundament" className="mt-5">
@@ -167,7 +167,7 @@ function AnalysisPage() {
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Hľadať inštrument…"
+                placeholder="Search instrument…"
                 className="ml-auto w-44 rounded-md border border-border bg-background px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -190,13 +190,12 @@ function AnalysisPage() {
               )}
 
               {rows.length === 0 && (
-                <p className="text-sm text-muted-foreground">Žiadny inštrument nezodpovedá filtru.</p>
+                <p className="text-sm text-muted-foreground">No instrument matches the filter.</p>
               )}
             </div>
 
             <p className="mt-4 text-xs text-muted-foreground">
-              Kliknutím na inštrument otvoríš detailný rozpis (sadzba, inflácia, HDP, COT tabuľka a
-              kruhový graf pozícií).
+              Click an instrument to open the full breakdown (rate, inflation, GDP, COT table and positioning donut chart).
             </p>
 
             <InstrumentDetailDialog
@@ -206,15 +205,14 @@ function AnalysisPage() {
             />
 
             <p className="mt-4 text-xs text-muted-foreground">
-              Skóre je priemer čiastkových hodnotení úrokových sadzieb, inflácie, rastu a COT
-              pozícií — každé v rozsahu −10 (silne bearish) až +10 (silne bullish).
+              The score is the average of sub-ratings for interest rates, inflation, growth and COT positioning — each ranging from −10 (strongly bearish) to +10 (strongly bullish).
             </p>
           </TabsContent>
 
           <TabsContent value="cot" className="mt-5">
             <div className="mb-5 rounded-lg border border-border bg-card p-4">
               <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="text-sm font-semibold">COT dáta podľa inštrumentu</span>
+                <span className="text-sm font-semibold">COT data by instrument</span>
                 <select
                   value={cotPair}
                   onChange={(e) => setCotPair(e.target.value)}
@@ -237,8 +235,8 @@ function AnalysisPage() {
             </div>
 
             <Panel
-              title="COT — pozície veľkých hráčov"
-              hint={live ? `CFTC report ${live.cotReportDate}` : "Týždenná zmena netto pozícií"}
+              title="COT — large player positioning"
+              hint={live ? `CFTC report ${live.cotReportDate}` : "Weekly change in net positions"}
             >
               <div className="space-y-4">
 
