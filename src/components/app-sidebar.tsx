@@ -26,16 +26,16 @@ import {
 
 const analysisItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "AI analýza trhu", url: "/analyza", icon: Brain },
-  { title: "Grafy", url: "/grafy", icon: CandlestickChart },
+  { title: "AI market analysis", url: "/analyza", icon: Brain },
+  { title: "Charts", url: "/grafy", icon: CandlestickChart },
   { title: "Backtesting", url: "/backtesting", icon: FlaskConical },
 ];
 
 const tradingItems = [
   { title: "AI Journal", url: "/journal", icon: BookOpen },
   { title: "Risk manager", url: "/risk", icon: ShieldCheck },
-  { title: "Funded účty", url: "/ucty", icon: Wallet },
-  { title: "Cenník", url: "/cennik", icon: Tags },
+  { title: "Funded accounts", url: "/ucty", icon: Wallet },
+  { title: "Pricing", url: "/cennik", icon: Tags },
 ];
 
 export function AppSidebar() {
@@ -75,11 +75,11 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Analýza</SidebarGroupLabel>
+          <SidebarGroupLabel>Analysis</SidebarGroupLabel>
           <SidebarGroupContent>{renderItems(analysisItems)}</SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Obchodovanie</SidebarGroupLabel>
+          <SidebarGroupLabel>Trading</SidebarGroupLabel>
           <SidebarGroupContent>{renderItems(tradingItems)}</SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
