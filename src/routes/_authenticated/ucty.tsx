@@ -145,8 +145,7 @@ function AccountsPage() {
           <div className="rounded-xl border border-dashed border-border p-10 text-center">
             <h2 className="text-base font-semibold">You don't have any account yet</h2>
             <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-              Pridaj svoju výzvu alebo funded účet. Pri MT4/MT5 stačí investor heslo, pri cTrader,
-              Tradovate a TradeLocker API token.
+              Add your challenge or funded account. For MT4/MT5 an investor password is enough; for cTrader, Tradovate and TradeLocker an API token.
             </p>
             <Button
               className="mt-5"

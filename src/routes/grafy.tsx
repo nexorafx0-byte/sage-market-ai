@@ -296,7 +296,7 @@ function ChartsPage() {
                 inputMode="decimal"
               />
               <Button size="sm" onClick={submitAlert}>
-                Pridať
+                Add
               </Button>
             </div>
 
