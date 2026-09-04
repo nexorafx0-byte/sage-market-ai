@@ -1,4 +1,4 @@
-// Mock dáta pre prehľad obchodného účtu (dashboard).
+// Mock data for the trading account overview (dashboard).
 
 export const accountSummary = {
   gainPct: 1.01,
@@ -18,13 +18,13 @@ export const accountSummary = {
 export const riskStats = [
   { label: "Max Balance Drawdown", value: "271.55 € (1.80 %)", tone: "negative" as const },
   { label: "Max Equity Drawdown", value: "312.40 € (2.05 %)", tone: "negative" as const },
-  { label: "Aktuálna equity", value: "15 152.17 €" },
-  { label: "Aktuálny balance", value: "15 152.17 €" },
-  { label: "Najvyšší balance", value: "15 350.61 €" },
+  { label: "Current equity", value: "15 152.17 €" },
+  { label: "Current balance", value: "15 152.17 €" },
+  { label: "Highest balance", value: "15 350.61 €" },
 ];
 
 export const capitalFlows = [
-  { label: "Vklady / Výbery", value: "15 000.00 € / 0.00 €" },
+  { label: "Deposits / Withdrawals", value: "15 000.00 € / 0.00 €" },
   { label: "Komisie & Swap", value: "11.52 € / -11.70 €", tone: "negative" as const },
   { label: "Celkovo lotov", value: "4.68" },
 ];
@@ -32,7 +32,7 @@ export const capitalFlows = [
 export const statisticsRows = [
   { label: "Profit Factor", value: "1.25", tone: "accent" as const },
   { label: "Expectancy", value: "6.62 €", tone: "accent" as const },
-  { label: "Štandardná odchýlka", value: "79.63 €" },
+  { label: "Standard deviation", value: "79.63 €" },
   { label: "Sharpe Ratio", value: "0.09", tone: "accent" as const },
 ];
 
@@ -40,10 +40,10 @@ export const tradeStats = [
   { label: "Win rate (%)", value: "60.9 %", tone: "accent" as const },
   { label: "Profit Factor", value: "1.25", tone: "accent" as const },
   { label: "Priem. zisk / strata", value: "54.71 € / -68.20 €", tone: "negative" as const },
-  { label: "Priem. dĺžka obchodu", value: "16h 16m" },
+  { label: "Avg. trade length", value: "16h 16m" },
 ];
 
-// Sparkline počtu obchodov (posledných 14 dní)
+// Sparkline of trade count (last 14 days)
 export const tradeCountSeries = [2, 1, 3, 6, 2, 1, 2, 1, 3, 1, 2, 4, 2, 3].map((v, i) => ({
   i,
   v,
@@ -58,7 +58,7 @@ export const balanceSeries = (() => {
   ];
   steps.forEach((s, i) => {
     v = 15000 + s;
-    out.push({ d: `${i + 1}. júl`, v: Math.round(v * 100) / 100 });
+    out.push({ d: `Jul ${i + 1}`, v: Math.round(v * 100) / 100 });
   });
   return out;
 })();
@@ -69,7 +69,7 @@ export type CalendarDay = {
   trades: number;
 };
 
-// Obchodný kalendár — júl (P&L po dňoch)
+// Trading calendar — July (P&L by day)
 export const tradingCalendar: CalendarDay[] = (() => {
   const pnlByDay: Record<number, [number, number]> = {
     1: [42.1, 2],
@@ -98,6 +98,6 @@ export const tradingCalendar: CalendarDay[] = (() => {
   });
 })();
 
-// 1. júl 2026 je streda -> index 2 (Po=0)
+// July 1, 2026 is Wednesday -> index 2 (Mon=0)
 export const calendarFirstWeekday = 2;
-export const calendarMonthLabel = "Júl 2026";
+export const calendarMonthLabel = "July 2026";

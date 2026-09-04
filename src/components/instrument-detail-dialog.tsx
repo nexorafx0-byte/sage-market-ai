@@ -44,8 +44,8 @@ function CotSection({
   const pie = [
     { name: "Long vstup", value: longEntry, color: "var(--color-success)" },
     { name: "Short vstup", value: shortEntry, color: "var(--color-success)" },
-    { name: "Long výstup", value: longExit, color: "var(--color-destructive)" },
-    { name: "Short výstup", value: shortExit, color: "var(--color-destructive)" },
+    { name: "Long exit", value: longExit, color: "var(--color-destructive)" },
+    { name: "Short exit", value: shortExit, color: "var(--color-destructive)" },
   ];
 
   return (
@@ -56,7 +56,7 @@ function CotSection({
         <table className="w-full border-collapse text-right font-mono text-xs">
           <thead>
             <tr className="bg-secondary text-muted-foreground">
-              <th className="px-3 py-2 text-left font-medium">Dátum</th>
+              <th className="px-3 py-2 text-left font-medium">Date</th>
               <th className="px-3 py-2 font-medium">Long zmena</th>
               <th className="px-3 py-2 font-medium">% Long</th>
               <th className="px-3 py-2 font-medium">Long OI</th>
@@ -96,11 +96,11 @@ function CotSection({
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-muted-foreground">Zdroj: {source} · týždenné dáta.</p>
+      <p className="text-[11px] text-muted-foreground">Source: {source} · weekly data.</p>
 
       <div className="rounded-lg border border-border p-4">
         <h4 className="mb-2 text-sm font-semibold">
-          {label} — týždenné zmeny pozícií ({latest.date})
+          {label} — weekly position changes ({latest.date})
         </h4>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
@@ -159,8 +159,8 @@ export function InstrumentDetailDialog({
           </DialogTitle>
           <DialogDescription>
             {isReal
-              ? "Reálne dáta: BIS (sadzby), World Bank (inflácia, HDP) a CFTC COT (Non-Commercial, Commercial, Retail)."
-              : "Rozpis makroekonomických dát a COT pozícií (Non-Commercial, Commercial, Retail)."}
+              ? "Real data: BIS (rates), World Bank (inflation, GDP) and CFTC COT (Non-Commercial, Commercial, Retail)."
+              : "Breakdown of macroeconomic data and COT positioning (Non-Commercial, Commercial, Retail)."}
           </DialogDescription>
         </DialogHeader>
 
@@ -181,20 +181,20 @@ export function InstrumentDetailDialog({
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{s.note}</p>
               <p className="mt-1 text-[11px] text-muted-foreground">
-                Zdroj: {s.source} · aktualizované {s.updated}
+                Source: {s.source} · updated {s.updated}
               </p>
             </div>
           ))}
         </div>
 
-        {/* COT prehľad – donuty + tabuľka skupín */}
+        {/* COT overview - donuts + group table */}
         <div className="mt-2">
           <CotOverview row={row} detail={detail} />
         </div>
 
-        {/* COT podľa skupín */}
+        {/* COT by group */}
         <div className="mt-2">
-          <h3 className="mb-3 text-sm font-semibold">COT história — podľa skupín</h3>
+          <h3 className="mb-3 text-sm font-semibold">COT history — by group</h3>
           <Tabs defaultValue="noncommercial">
             <TabsList>
               {COT_GROUPS.map((g) => (

@@ -60,7 +60,7 @@ function CotHistoryCharts({
 }) {
   const series = ORDER.map((g) => ({ group: g, weeks: weeksFor(row, g, detail) }));
   const base = series[0].weeks;
-  // dáta idú od najnovšieho — otočíme na chronologické poradie
+  // data comes newest-first — reverse to chronological order
   const netData = [...base]
     .map((_, i) => {
       const idx = base.length - 1 - i;
@@ -86,7 +86,7 @@ function CotHistoryCharts({
   return (
     <div className="mt-4 grid gap-4 lg:grid-cols-2">
       <div className="rounded-lg border border-border p-3">
-        <p className="mb-2 text-xs font-semibold">Vývoj netto pozícií (posledné týždne)</p>
+        <p className="mb-2 text-xs font-semibold">Net position trend (recent weeks)</p>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={netData} margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
@@ -137,7 +137,7 @@ function CotHistoryCharts({
 
       <div className="rounded-lg border border-border p-3">
         <p className="mb-2 text-xs font-semibold">
-          Long vs Short — Large Speculators (otvorené kontrakty)
+          Long vs Short — Large Speculators (open contracts)
         </p>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">

@@ -117,8 +117,8 @@ function AnalysisPage() {
 
   const sections: { title: string; items: FundamentRow[] }[] = [
     { title: "Forex pairs", items: rows.filter((r) => r.category === "Forex") },
-    { title: "Komodity", items: rows.filter((r) => r.category === "Komodity") },
-    { title: "Indexy", items: rows.filter((r) => r.category === "Indexy") },
+    { title: "Commodities", items: rows.filter((r) => r.category === "Commodities") },
+    { title: "Indices", items: rows.filter((r) => r.category === "Indices") },
   ];
 
   const statusLine = isLoading

@@ -1,4 +1,4 @@
-// Reálna sezónnosť z denných cien (Yahoo Finance) pre okná 5 / 10 / 15 / 20 rokov.
+// Real seasonality from daily prices (Yahoo Finance) for 5 / 10 / 15 / 20-year windows.
 
 import { SEASONALITY_SYMBOLS } from "./seasonality-types";
 import type { SeasonalPoint, SeasonalityResult } from "./seasonality-types";
@@ -8,9 +8,9 @@ const SK_MONTHS = [
   "Feb",
   "Mar",
   "Apr",
-  "Máj",
-  "Jún",
-  "Júl",
+  "May",
+  "Jun",
+  "Jul",
   "Aug",
   "Sep",
   "Okt",
@@ -57,7 +57,7 @@ function dayKey(d: Date) {
 
 function allKeys() {
   const keys: { key: string; label: string; dayIndex: number }[] = [];
-  const base = Date.UTC(2001, 0, 1); // nepriestupný rok → 365 dní
+  const base = Date.UTC(2001, 0, 1); // non-leap year -> 365 days
   for (let i = 0; i < 365; i++) {
     const d = new Date(base + i * 86400000);
     keys.push({
@@ -85,7 +85,7 @@ export async function buildSeasonality(
   const byYear = new Map<number, Bar[]>();
   for (const b of bars) {
     const y = new Date(b.t * 1000).getUTCFullYear();
-    if (y < startYear || y >= nowYear) continue; // len ukončené roky
+    if (y < startYear || y >= nowYear) continue; // completed years only
     const arr = byYear.get(y) ?? [];
     arr.push(b);
     byYear.set(y, arr);
@@ -101,7 +101,7 @@ export async function buildSeasonality(
     const arr = byYear.get(y)!.sort((a, b) => a.t - b.t);
     if (arr.length < 150) continue;
     const base = arr[0].c;
-    // mapa deň → kumulatívna zmena
+    // map day -> cumulative change
     const perDay = new Map<string, number>();
     for (const b of arr) {
       const d = new Date(b.t * 1000);
@@ -113,7 +113,7 @@ export async function buildSeasonality(
       if (v != null) last = v;
       acc.get(k.key)!.push(last);
     }
-    // mesačné výnosy
+    // monthly returns
     const monthFirst = new Map<number, number>();
     const monthLast = new Map<number, number>();
     for (const b of arr) {
@@ -161,7 +161,7 @@ export async function buildSeasonality(
     path,
     months,
     avgAnnual: Math.round(avgAnnual * 100) / 100,
-    source: `Yahoo Finance · ${meta.yahoo} · denné zatváracie ceny`,
+    source: `Yahoo Finance · ${meta.yahoo} · daily closing prices`,
     updatedAt: new Date().toISOString(),
   };
 }

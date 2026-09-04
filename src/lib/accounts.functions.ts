@@ -9,7 +9,7 @@ export const PLATFORMS = [
   { value: "ctrader", label: "cTrader" },
   { value: "tradovate", label: "Tradovate" },
   { value: "tradelocker", label: "TradeLocker" },
-  { value: "other", label: "Iná platforma" },
+  { value: "other", label: "Other platform" },
 ] as const;
 
 export type PlatformValue = (typeof PLATFORMS)[number]["value"];
@@ -50,7 +50,7 @@ const accountSchema = z.object({
   max_dd_pct: z.number().min(0).max(100),
   current_dd_pct: z.number().min(0).max(100),
   notes: z.string().max(500).nullable().optional(),
-  // Voliteľné pripojenie k brokerovi (read-only investor prístup)
+  // Optional broker connection (read-only investor access)
   investor_password: z.string().max(200).nullable().optional(),
   api_token: z.string().max(400).nullable().optional(),
 });

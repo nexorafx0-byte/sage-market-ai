@@ -82,7 +82,7 @@ export function PnlCalendar() {
                 </div>
               ))}
               <div className="flex aspect-square flex-col items-center justify-center rounded-lg border border-border bg-card px-1">
-                <span className="text-[10px] uppercase text-muted-foreground">Týž.</span>
+                <span className="text-[10px] uppercase text-muted-foreground">Wk</span>
                 <span
                   className={cn(
                     "font-mono text-[11px] font-semibold",

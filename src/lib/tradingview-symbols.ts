@@ -1,4 +1,4 @@
-// Mapovanie našich inštrumentov na TradingView symboly.
+// Mapping of our instruments to TradingView symbols.
 import { SEASONALITY_SYMBOLS, SEASONALITY_GROUPS, type SeasonalityGroup } from "./seasonality-types";
 
 const OVERRIDES: Record<string, string> = {

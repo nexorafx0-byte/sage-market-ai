@@ -70,7 +70,7 @@ function formatTime(t: number, tf: string) {
   });
 }
 
-/** Vlastný tvar sviečky: knôt + telo. */
+/** Custom candle shape: wick + body. */
 function CandleShape(props: any) {
   const { x, y, width, height, payload } = props;
   const { open, close, high, low } = payload as Row;
@@ -90,7 +90,7 @@ function CandleShape(props: any) {
   );
 }
 
-/** OHLC bar: ľavá čiarka = open, pravá = close. */
+/** OHLC bar: left tick = open, right = close. */
 function BarShape(props: any) {
   const { x, y, width, height, payload } = props;
   const { open, close, high, low } = payload as Row;
@@ -281,7 +281,7 @@ export default function TradingChart({
                 ))}
               </Bar>
               <Line type="monotone" dataKey="macd" stroke="var(--color-primary)" strokeWidth={1.6} dot={false} connectNulls name="MACD" />
-              <Line type="monotone" dataKey="signal" stroke="#f59e0b" strokeWidth={1.6} dot={false} connectNulls name="Signál" />
+              <Line type="monotone" dataKey="signal" stroke="#f59e0b" strokeWidth={1.6} dot={false} connectNulls name="Signal" />
             </ComposedChart>
           </ResponsiveContainer>
         </div>

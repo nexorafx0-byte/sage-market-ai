@@ -1,4 +1,4 @@
-// Zdieľané typy pre reálnu trhovú analýzu (bezpečné pre klienta).
+// Shared types for real market analysis (client-safe).
 import type { FundamentRow } from "./mock-data";
 
 export type CotWeekReal = {

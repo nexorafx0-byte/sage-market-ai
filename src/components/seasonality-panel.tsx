@@ -23,7 +23,7 @@ import { SEASONALITY_GROUPS, SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
 
-// Sezónny rok = nepriestupný rok (365 dní), index 0 = 1. januára.
+// Seasonal year = non-leap year (365 days), index 0 = January 1.
 const BASE_YEAR = 2001;
 const idxToIso = (i: number) => {
   const d = new Date(Date.UTC(BASE_YEAR, 0, 1 + Math.max(0, Math.min(364, i))));
@@ -106,13 +106,13 @@ export function SeasonalityPanel() {
   return (
     <div className="space-y-6">
       <Panel
-        title={`Sezónnosť ${data?.label ?? symbol}`}
+        title={`Seasonality ${data?.label ?? symbol}`}
         hint={
           data
             ? `${data.sampleYears} rokov (${data.firstYear}–${data.lastYear}) · ${data.source}`
             : isLoading
-              ? "Načítavam reálne dáta…"
-              : "Dáta sa nepodarilo načítať"
+              ? "Loading real data…"
+              : "Could not load data"
         }
       >
         <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -168,7 +168,7 @@ export function SeasonalityPanel() {
 
         <div className="mb-4 flex flex-wrap items-end gap-3 rounded-lg border border-border bg-secondary/40 p-3">
           <div>
-            <label className="mb-1 block text-[11px] text-muted-foreground">Od (deň/mesiac)</label>
+            <label className="mb-1 block text-[11px] text-muted-foreground">From (day/month)</label>
             <input
               type="date"
               value={idxToIso(range?.start ?? 0)}
@@ -183,7 +183,7 @@ export function SeasonalityPanel() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-[11px] text-muted-foreground">Do (deň/mesiac)</label>
+            <label className="mb-1 block text-[11px] text-muted-foreground">To (day/month)</label>
             <input
               type="date"
               value={idxToIso(range?.end ?? 364)}
@@ -198,21 +198,21 @@ export function SeasonalityPanel() {
             />
           </div>
           <span className="text-[11px] text-muted-foreground">
-            Rok je iba pomocný — počíta sa deň a mesiac.
+            The year is only a helper — day and month are what count.
           </span>
           <button
             type="button"
             onClick={() => setRange(null)}
             className="ml-auto rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary"
           >
-            Zrušiť výber
+            Clear selection
           </button>
         </div>
 
         <div className="h-80 select-none">
           {isError || (!isLoading && !data) ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-              Sezónne dáta pre {symbol} sa nepodarilo načítať.
+              Could not load seasonal data for {symbol}.
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
@@ -307,7 +307,7 @@ export function SeasonalityPanel() {
         </div>
 
         <div className="mt-4 rounded-lg border border-border p-4">
-          <h4 className="text-sm font-semibold">Analýza vybraného obdobia</h4>
+          <h4 className="text-sm font-semibold">Selected period analysis</h4>
           {sel ? (
             <div className="mt-3 grid gap-3 sm:grid-cols-4">
               <div>
@@ -317,7 +317,7 @@ export function SeasonalityPanel() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Priemerný výnos</p>
+                <p className="text-xs text-muted-foreground">Average return</p>
                 <p
                   className={`font-mono text-sm ${sel.change >= 0 ? "text-success" : "text-destructive"}`}
                 >
@@ -325,27 +325,27 @@ export function SeasonalityPanel() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Max / min v období</p>
+                <p className="text-xs text-muted-foreground">Max / min in period</p>
                 <p className="font-mono text-sm">
                   {pct(sel.max)} / {pct(sel.min)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Dĺžka</p>
-                <p className="font-mono text-sm">{sel.days} dní</p>
+                <p className="text-xs text-muted-foreground">Length</p>
+                <p className="font-mono text-sm">{sel.days} days</p>
               </div>
             </div>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
-              Ťahaním myšou priamo v grafe alebo cez polia „Od / Do" vyznač presné obdobie —
-              vypočítam priemerný sezónny výnos za posledných {data?.sampleYears ?? years} rokov.
+              Drag directly on the chart or use the “From / To” fields to mark an exact period —
+              I will compute the average seasonal return over the last {data?.sampleYears ?? years} years.
             </p>
 
           )}
         </div>
       </Panel>
 
-      <Panel title="Priemerný výnos podľa mesiaca" hint={`${years} rokov · reálne dáta`}>
+      <Panel title="Average return podľa mesiaca" hint={`${years} rokov · reálne dáta`}>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthRows}>

@@ -1,4 +1,4 @@
-// Obľúbené inštrumenty a cenové alerty (localStorage).
+// Favorite instruments and price alerts (localStorage).
 import { useCallback, useEffect, useState } from "react";
 
 const FAV_KEY = "ta-favorites";
