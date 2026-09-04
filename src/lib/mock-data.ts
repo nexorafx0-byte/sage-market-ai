@@ -1,4 +1,4 @@
-// Ukážkové (mock) dáta pre UI prototyp Trading Analyzer AI.
+// Sample (mock) data for the Trading Analyzer AI UI prototype.
 
 export const currencyStrength = [
   { code: "USD", value: 82 },
@@ -11,9 +11,9 @@ export const currencyStrength = [
   { code: "NZD", value: 31 },
 ];
 
-// Fundament Score je v škále −10 až +10.
-// Celkové skóre = priemer čiastkových skóre (sadzby, inflácia, rast, COT), zaokrúhlené na 1 desatinné miesto.
-export type FundamentCategory = "Forex" | "Komodity" | "Indexy";
+// Fundamental Score is on a −10 to +10 scale.
+// Total score = average of sub-scores (rates, inflation, growth, COT), rounded to 1 decimal.
+export type FundamentCategory = "Forex" | "Commodities" | "Indices";
 
 export type FundamentRow = {
   pair: string;
@@ -29,7 +29,7 @@ export type FundamentRow = {
   cotScore: number;
 };
 
-const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutrálny");
+const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutral");
 
 function row(
   pair: string,
@@ -77,28 +77,28 @@ export const fundamentScore: FundamentRow[] = [
   row("USDZAR", "Forex", "7.25 %", "4.8 %", "0.3 %", -1, 2, 3, 2),
   row("USDSEK", "Forex", "1.75 %", "1.9 %", "0.4 %", 5, 2, 2, 3),
   row("USDNOK", "Forex", "4.25 %", "2.9 %", "0.5 %", 2, 1, -1, 0.5),
-  // ---- Komodity ----
-  row("XAUUSD", "Komodity", "—", "—", "—", 1, 3, 2, 5),
-  row("XAGUSD", "Komodity", "—", "—", "—", 1, 4, 3, 4),
-  row("XPTUSD", "Komodity", "—", "—", "—", 0, 2, 1, 2),
-  row("WTI (US Oil)", "Komodity", "—", "—", "—", -2, 1, -3, 3),
-  row("BRENT", "Komodity", "—", "—", "—", -2, 1, -2, 2.5),
-  row("NATGAS", "Komodity", "—", "—", "—", -1, 2, -4, -3),
-  row("COPPER", "Komodity", "—", "—", "—", -1, 0, -3, -2),
-  row("WHEAT", "Komodity", "—", "—", "—", 0, 1, -1, -2),
-  // ---- Indexy ----
-  row("US500 (S&P 500)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -2, 1, 5, 4),
-  row("US100 (Nasdaq)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -3, 1, 6, 5),
-  row("US30 (Dow)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -2, 1, 4, 3),
-  row("US2000 (Russell)", "Indexy", "4.15 %", "2.1 %", "2.4 %", -4, 0, 2, 1),
-  row("GER40 (DAX)", "Indexy", "2.15 %", "2.2 %", "0.3 %", 2, 1, -2, 1),
-  row("UK100 (FTSE)", "Indexy", "4.75 %", "2.8 %", "0.5 %", -1, 0, 0, 1),
-  row("FRA40 (CAC)", "Indexy", "2.15 %", "2.0 %", "0.2 %", 2, 1, -2, 0),
-  row("EU50 (Euro Stoxx)", "Indexy", "2.15 %", "2.1 %", "0.3 %", 2, 1, -1, 1),
-  row("JP225 (Nikkei)", "Indexy", "0.50 %", "3.0 %", "0.9 %", 4, -1, 3, 3),
-  row("HK50 (Hang Seng)", "Indexy", "3.10 %", "1.2 %", "4.7 %", 0, 2, 3, -1),
-  row("AUS200 (ASX)", "Indexy", "3.60 %", "2.4 %", "0.2 %", -1, 0, -1, 0),
-  row("US_DXY (Dolár index)", "Indexy", "4.15 %", "2.1 %", "2.4 %", 5, 3, 4, 5),
+  // ---- Commodities ----
+  row("XAUUSD", "Commodities", "—", "—", "—", 1, 3, 2, 5),
+  row("XAGUSD", "Commodities", "—", "—", "—", 1, 4, 3, 4),
+  row("XPTUSD", "Commodities", "—", "—", "—", 0, 2, 1, 2),
+  row("WTI (US Oil)", "Commodities", "—", "—", "—", -2, 1, -3, 3),
+  row("BRENT", "Commodities", "—", "—", "—", -2, 1, -2, 2.5),
+  row("NATGAS", "Commodities", "—", "—", "—", -1, 2, -4, -3),
+  row("COPPER", "Commodities", "—", "—", "—", -1, 0, -3, -2),
+  row("WHEAT", "Commodities", "—", "—", "—", 0, 1, -1, -2),
+  // ---- Indices ----
+  row("US500 (S&P 500)", "Indices", "4.15 %", "2.1 %", "2.4 %", -2, 1, 5, 4),
+  row("US100 (Nasdaq)", "Indices", "4.15 %", "2.1 %", "2.4 %", -3, 1, 6, 5),
+  row("US30 (Dow)", "Indices", "4.15 %", "2.1 %", "2.4 %", -2, 1, 4, 3),
+  row("US2000 (Russell)", "Indices", "4.15 %", "2.1 %", "2.4 %", -4, 0, 2, 1),
+  row("GER40 (DAX)", "Indices", "2.15 %", "2.2 %", "0.3 %", 2, 1, -2, 1),
+  row("UK100 (FTSE)", "Indices", "4.75 %", "2.8 %", "0.5 %", -1, 0, 0, 1),
+  row("FRA40 (CAC)", "Indices", "2.15 %", "2.0 %", "0.2 %", 2, 1, -2, 0),
+  row("EU50 (Euro Stoxx)", "Indices", "2.15 %", "2.1 %", "0.3 %", 2, 1, -1, 1),
+  row("JP225 (Nikkei)", "Indices", "0.50 %", "3.0 %", "0.9 %", 4, -1, 3, 3),
+  row("HK50 (Hang Seng)", "Indices", "3.10 %", "1.2 %", "4.7 %", 0, 2, 3, -1),
+  row("AUS200 (ASX)", "Indices", "3.60 %", "2.4 %", "0.2 %", -1, 0, -1, 0),
+  row("US_DXY (Dollar index)", "Indices", "4.15 %", "2.1 %", "2.4 %", 5, 3, 4, 5),
 ];
 
 
@@ -116,9 +116,9 @@ export const seasonality = [
   { month: "Feb", value: -0.4 },
   { month: "Mar", value: 1.6 },
   { month: "Apr", value: 2.1 },
-  { month: "Máj", value: -1.2 },
-  { month: "Jún", value: -0.6 },
-  { month: "Júl", value: 1.1 },
+  { month: "May", value: -1.2 },
+  { month: "Jun", value: -0.6 },
+  { month: "Jul", value: 1.1 },
   { month: "Aug", value: -1.9 },
   { month: "Sep", value: -2.4 },
   { month: "Okt", value: 0.9 },
@@ -147,7 +147,7 @@ export const newsFeed = [
     title: "Core CPI m/m",
     forecast: "0.3 %",
     previous: "0.2 %",
-    ai: "Vyššie CPI podporí USD; pri EURUSD očakávaj test 1.0720 a rozšírené spready 5 min pred vydaním.",
+    ai: "A higher CPI supports the USD; on EURUSD expect a test of 1.0720 and wider spreads 5 min before release.",
   },
   {
     time: "16:00",
@@ -156,16 +156,16 @@ export const newsFeed = [
     title: "ECB Lane prejav",
     forecast: "—",
     previous: "—",
-    ai: "Holubičí tón by potvrdil krátku fundamentálnu tézu na EUR.",
+    ai: "A dovish tone would confirm the short fundamental thesis on EUR.",
   },
   {
     time: "20:00",
     impact: "high" as const,
     currency: "USD",
-    title: "FOMC zápisnica",
+    title: "FOMC minutes",
     forecast: "—",
     previous: "—",
-    ai: "Zníž veľkosť pozície o 50 % do vydania — historicky priemerný rozsah 78 pipov.",
+    ai: "Cut position size by 50 % until release — historical average range is 78 pips.",
   },
 ];
 
@@ -182,8 +182,8 @@ export const journalEntries = [
     pair: "EURUSD",
     side: "Short",
     r: -1,
-    emotion: "Netrpezlivosť",
-    ai: "Vstup 12 minút pred CPI bez potvrdenia. Opakovaný vzorec: 4 z 5 stratových obchodov vzniklo pred správou s vysokým dopadom.",
+    emotion: "Impatience",
+    ai: "Entry 12 minutes before CPI without confirmation. Recurring pattern: 4 of 5 losing trades happened before a high-impact news release.",
   },
   {
     date: "15. 07.",
@@ -191,26 +191,26 @@ export const journalEntries = [
     side: "Long",
     r: 2.4,
     emotion: "Pokoj",
-    ai: "Čistá exekúcia podľa plánu — demand zóna H4 + slabý USD index. Toto je tvoj najziskovejší setup (avg +1.9R).",
+    ai: "Clean execution per plan — H4 demand zone + weak USD index. This is your most profitable setup (avg +1.9R).",
   },
   {
     date: "18. 07.",
     pair: "GBPUSD",
     side: "Long",
     r: 0.6,
-    emotion: "Chamtivosť",
-    ai: "Posun SL do BE bol správny, ale skoré ukončenie ťa stálo 1.3R. Zvýš čas držania pri trende D1.",
+    emotion: "Greed",
+    ai: "Moving the SL to BE was right, but the early exit cost you 1.3R. Hold longer when the D1 trend is intact.",
   },
 ];
 
 export const fundedAccounts = [
   { name: "FTMO 100k", phase: "Funded", balance: 111700, dd: 3.2, ddMax: 10, target: 68, profit: 11700 },
-  { name: "FundingPips 50k", phase: "Fáza 2", balance: 52340, dd: 1.4, ddMax: 8, target: 47, profit: 2340 },
-  { name: "The5ers 20k", phase: "Fáza 1", balance: 20480, dd: 4.9, ddMax: 6, target: 24, profit: 480 },
+  { name: "FundingPips 50k", phase: "Phase 2", balance: 52340, dd: 1.4, ddMax: 8, target: 47, profit: 2340 },
+  { name: "The5ers 20k", phase: "Phase 1", balance: 20480, dd: 4.9, ddMax: 6, target: 24, profit: 480 },
 ];
 
 export const backtests = [
   { name: "London Open — S&D", trades: 214, winrate: 58, pf: 1.84, dd: 6.2, expectancy: 0.41 },
   { name: "COT Extreme reversal", trades: 96, winrate: 47, pf: 2.31, dd: 9.8, expectancy: 0.72 },
-  { name: "Sezónnosť XAU november", trades: 41, winrate: 66, pf: 2.05, dd: 4.1, expectancy: 0.63 },
+  { name: "XAU November seasonality", trades: 41, winrate: 66, pf: 2.05, dd: 4.1, expectancy: 0.63 },
 ];

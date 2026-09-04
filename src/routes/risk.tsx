@@ -12,10 +12,10 @@ export const Route = createFileRoute("/risk")({
       { title: "Risk manager — Trading Analyzer AI" },
       {
         name: "description",
-        content: "Kalkulačka veľkosti pozície, denné limity a kontrola drawdownu pre funded účty.",
+        content: "Position size calculator, daily limits and drawdown control for funded accounts.",
       },
       { property: "og:title", content: "Risk manager — Trading Analyzer AI" },
-      { property: "og:description", content: "Veľkosť pozície a limity rizika pod kontrolou." },
+      { property: "og:description", content: "Position size and risk limits under control." },
     ],
   }),
   component: RiskPage,
@@ -31,19 +31,19 @@ function RiskPage() {
 
   return (
     <>
-      <PageHeader title="Risk manager" subtitle="Veľkosť pozície, denné limity a drawdown" />
+      <PageHeader title="Risk manager" subtitle="Position size, daily limits and drawdown" />
       <div className="space-y-5 p-6">
         <div className="grid gap-4 sm:grid-cols-3">
-          <Stat label="Denné riziko" value="1.8 % / 3.0 %" delta="ostáva 1.2 %" />
-          <Stat label="Aktuálny drawdown" value="3.2 %" delta="limit 10 %" tone="positive" />
-          <Stat label="Otvorené pozície" value="2" delta="EURUSD, XAUUSD" />
+          <Stat label="Daily risk" value="1.8 % / 3.0 %" delta="1.2 % remaining" />
+          <Stat label="Current drawdown" value="3.2 %" delta="limit 10 %" tone="positive" />
+          <Stat label="Open positions" value="2" delta="EURUSD, XAUUSD" />
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <Panel title="Kalkulačka veľkosti pozície">
+          <Panel title="Position size calculator">
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <Label htmlFor="balance">Kapitál (€)</Label>
+                <Label htmlFor="balance">Capital (€)</Label>
                 <Input
                   id="balance"
                   type="number"
@@ -52,7 +52,7 @@ function RiskPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="risk">Riziko (%)</Label>
+                <Label htmlFor="risk">Risk (%)</Label>
                 <Input
                   id="risk"
                   type="number"
@@ -62,7 +62,7 @@ function RiskPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="sl">Stop loss (pipy)</Label>
+                <Label htmlFor="sl">Stop loss (pips)</Label>
                 <Input
                   id="sl"
                   type="number"
@@ -74,15 +74,15 @@ function RiskPage() {
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="rounded-lg bg-secondary p-4">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Riziko na obchod
+                  Risk per trade
                 </div>
                 <div className="mt-1 font-mono text-2xl font-semibold">
-                  {riskAmount.toLocaleString("sk-SK", { maximumFractionDigits: 0 })} €
+                  {riskAmount.toLocaleString("en-US", { maximumFractionDigits: 0 })} €
                 </div>
               </div>
               <div className="rounded-lg bg-accent p-4">
                 <div className="text-xs uppercase tracking-wide text-accent-foreground/80">
-                  Veľkosť pozície
+                  Position size
                 </div>
                 <div className="mt-1 font-mono text-2xl font-semibold text-accent-foreground">
                   {lots.toFixed(2)} lot
@@ -91,13 +91,13 @@ function RiskPage() {
             </div>
           </Panel>
 
-          <Panel title="Limity a pravidlá" hint="AI blokuje obchody nad limit">
+          <Panel title="Limits and rules" hint="AI blocks trades above the limit">
             <div className="space-y-5">
               {[
-                { label: "Denná strata", value: 60, text: "1.8 % z 3.0 %" },
-                { label: "Celkový drawdown", value: 32, text: "3.2 % z 10 %" },
-                { label: "Počet obchodov / deň", value: 40, text: "2 z 5" },
-                { label: "Korelovaná expozícia", value: 75, text: "USD 75 %" },
+                { label: "Daily loss", value: 60, text: "1.8 % of 3.0 %" },
+                { label: "Total drawdown", value: 32, text: "3.2 % of 10 %" },
+                { label: "Trades per day", value: 40, text: "2 of 5" },
+                { label: "Correlated exposure", value: 75, text: "USD 75 %" },
               ].map((l) => (
                 <div key={l.label}>
                   <div className="flex items-center justify-between text-sm">

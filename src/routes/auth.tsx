@@ -11,16 +11,16 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Prihlásenie — Trading Analyzer AI" },
+      { title: "Sign in — Trading Analyzer AI" },
       {
         name: "description",
         content:
-          "Prihlás sa do Trading Analyzer AI a pripoj svoje funded účty z MT4, MT5, cTrader, Tradovate či TradeLocker.",
+          "Sign in to Trading Analyzer AI and connect your funded accounts from MT4, MT5, cTrader, Tradovate or TradeLocker.",
       },
-      { property: "og:title", content: "Prihlásenie — Trading Analyzer AI" },
+      { property: "og:title", content: "Sign in — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "Prístup k tvojim funded účtom a AI analýze trhu.",
+        content: "Access your funded accounts and AI market analysis.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -53,7 +53,7 @@ function AuthPage() {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast.success("Účet vytvorený. Môžeš sa prihlásiť.");
+        toast.success("Account created. You can sign in now.");
         setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -61,7 +61,7 @@ function AuthPage() {
         await navigate({ to: "/dashboard" });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Prihlásenie zlyhalo");
+      toast.error(err instanceof Error ? err.message : "Sign in failed");
     } finally {
       setBusy(false);
     }
@@ -74,7 +74,7 @@ function AuthPage() {
     });
     if (result.error) {
       setBusy(false);
-      toast.error("Prihlásenie cez Google zlyhalo");
+      toast.error("Google sign in failed");
       return;
     }
     if (result.redirected) return;
@@ -85,10 +85,10 @@ function AuthPage() {
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
         <h1 className="text-xl font-semibold tracking-tight">
-          {mode === "signin" ? "Prihlásenie" : "Registrácia"}
+          {mode === "signin" ? "Sign in" : "Sign up"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pripoj svoje funded účty a maj ich na jednom mieste.
+          Connect your funded accounts and keep them in one place.
         </p>
 
         <form onSubmit={submit} className="mt-6 space-y-4">
@@ -104,7 +104,7 @@ function AuthPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Heslo</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               type="password"
@@ -116,12 +116,12 @@ function AuthPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={busy}>
-            {mode === "signin" ? "Prihlásiť sa" : "Vytvoriť účet"}
+            {mode === "signin" ? "Sign in" : "Create account"}
           </Button>
         </form>
 
         <Button variant="outline" className="mt-3 w-full" onClick={google} disabled={busy}>
-          Pokračovať cez Google
+          Continue with Google
         </Button>
 
         <button

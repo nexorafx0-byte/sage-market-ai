@@ -1,4 +1,4 @@
-// Deterministické detailné dáta pre jeden inštrument (zdroje makra + COT história).
+// Deterministic detail data for a single instrument (macro sources + COT history).
 import type { FundamentRow } from "./mock-data";
 
 export type CotWeek = {
@@ -40,12 +40,12 @@ function seeded(seed: number) {
 }
 
 const WEEK_DATES = [
-  "27 Júl 2026",
-  "20 Júl 2026",
-  "13 Júl 2026",
-  "06 Júl 2026",
-  "29 Jún 2026",
-  "22 Jún 2026",
+  "27 Jul 2026",
+  "20 Jul 2026",
+  "13 Jul 2026",
+  "06 Jul 2026",
+  "29 Jun 2026",
+  "22 Jun 2026",
 ];
 
 export type CotGroup = "noncommercial" | "commercial" | "retail";
@@ -59,30 +59,30 @@ export const COT_GROUPS: {
   {
     key: "noncommercial",
     label: "Non-Commercial",
-    desc: "Veľkí špekulanti (hedge fondy, CTA) — trend-following peniaze.",
+    desc: "Large speculators (hedge funds, CTAs) — trend-following money.",
     source: "CFTC — Legacy report, Noncommercial positions",
   },
   {
     key: "commercial",
     label: "Commercial",
-    desc: "Hedgeri a producenti — zaisťujú sa, zvyčajne proti trendu.",
+    desc: "Hedgers and producers — hedging, usually against the trend.",
     source: "CFTC — Legacy report, Commercial positions",
   },
   {
     key: "retail",
     label: "Retail",
-    desc: "Drobní obchodníci (non-reportable + sentiment brokerov).",
+    desc: "Small traders (non-reportable + broker sentiment).",
     source: "CFTC Non-reportable + retail sentiment brokerov",
   },
 ];
 
-/** COT história pre danú skupinu – 6 týždňov, formát ako reporty CFTC. */
+/** COT history for a group - 6 weeks, in CFTC report format. */
 export function cotHistory(row: FundamentRow, group: CotGroup = "noncommercial"): CotWeek[] {
   const rand = seeded(hash(row.pair + group));
   const sizeFactor = group === "noncommercial" ? 1 : group === "commercial" ? 1.15 : 0.35;
   const base = (30000 + Math.round(rand() * 40000)) * sizeFactor;
 
-  // bias podľa COT skóre: non-commercial ide s trendom, commercial a retail proti nemu
+  // bias by COT score: non-commercial follows the trend, commercial and retail go against it
   const dir = group === "noncommercial" ? 1 : group === "commercial" ? -1 : -0.8;
   const tilt = 0.5 + ((row.cotScore * dir) / 10) * 0.12;
 
@@ -122,43 +122,43 @@ function bankFor(pair: string) {
   if (pair.startsWith("NZD")) return "RBNZ";
   if (pair.startsWith("CAD")) return "Bank of Canada";
   if (pair.startsWith("CHF")) return "SNB";
-  return "Centrálna banka (hlavná mena)";
+  return "Central bank (major currency)";
 }
 
-/** Rozpis makro faktorov so zdrojom dát. */
+/** Breakdown of macro factors with data source. */
 export function macroSources(row: FundamentRow): MacroSource[] {
   return [
     {
-      label: "Úroková sadzba",
+      label: "Interest rate",
       value: row.rate,
       score: row.rateScore,
       source: bankFor(row.pair),
-      updated: "24. júl 2026",
-      note: "Aktuálna kľúčová sadzba a očakávaná trajektória (OIS krivka).",
+      updated: "24. Jul 2026",
+      note: "Current policy rate and expected path (OIS curve).",
     },
     {
-      label: "Inflácia (CPI, r/r)",
+      label: "Inflation (CPI, y/y)",
       value: row.infl,
       score: row.inflScore,
-      source: "Národný štatistický úrad / Eurostat / BLS",
-      updated: "15. júl 2026",
-      note: "Jadrová aj celková inflácia vs. cieľ centrálnej banky.",
+      source: "National statistics office / Eurostat / BLS",
+      updated: "15. Jul 2026",
+      note: "Core and headline inflation vs. the central bank target.",
     },
     {
       label: "Rast HDP (q/q)",
       value: row.gdp,
       score: row.gdpScore,
-      source: "OECD / národné účty",
-      updated: "30. jún 2026",
-      note: "Tempo rastu ekonomiky a revízie predchádzajúcich období.",
+      source: "OECD / national accounts",
+      updated: "30. Jun 2026",
+      note: "Economic growth pace and revisions of previous periods.",
     },
     {
-      label: "COT pozície",
+      label: "COT positioning",
       value: `${row.cotScore > 0 ? "+" : ""}${row.cotScore}`,
       score: row.cotScore,
       source: "CFTC — Commitments of Traders (Noncommercial)",
-      updated: "27. júl 2026",
-      note: "Netto pozícia veľkých špekulantov a jej týždenná zmena.",
+      updated: "27. Jul 2026",
+      note: "Net position of large speculators and its weekly change.",
     },
   ];
 }

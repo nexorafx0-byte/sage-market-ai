@@ -83,21 +83,21 @@ export function AccountDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{account ? "Upraviť účet" : "Pridať obchodný účet"}</DialogTitle>
+          <DialogTitle>{account ? "Edit account" : "Add trading account"}</DialogTitle>
           <DialogDescription>
-            Zadaj parametre výzvy alebo funded účtu. Pripojenie k brokerovi je voliteľné.
+            Enter the parameters of your challenge or funded account. Broker connection is optional.
           </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="detail">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="detail">Detaily účtu</TabsTrigger>
+            <TabsTrigger value="detail">Account details</TabsTrigger>
             <TabsTrigger value="connect">Pripojenie</TabsTrigger>
           </TabsList>
 
           <TabsContent value="detail" className="space-y-4 pt-4">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Názov účtu">
+              <Field label="Account name">
                 <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
               </Field>
               <Field label="Prop firma">
@@ -124,13 +124,13 @@ export function AccountDialog({
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Fáza">
+              <Field label="Phase">
                 <Select value={form.phase} onValueChange={(v) => set("phase", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {["Fáza 1", "Fáza 2", "Funded", "Demo", "Live"].map((p) => (
+                    {["Phase 1", "Phase 2", "Funded", "Demo", "Live"].map((p) => (
                       <SelectItem key={p} value={p}>
                         {p}
                       </SelectItem>
@@ -141,21 +141,21 @@ export function AccountDialog({
               <Field label="Mena">
                 <Input value={form.currency} onChange={(e) => set("currency", e.target.value)} />
               </Field>
-              <Field label="Počiatočný kapitál">
+              <Field label="Initial capital">
                 <Input
                   type="number"
                   value={form.start_balance}
                   onChange={(e) => set("start_balance", num(e.target.value))}
                 />
               </Field>
-              <Field label="Aktuálny balance">
+              <Field label="Current balance">
                 <Input
                   type="number"
                   value={form.balance}
                   onChange={(e) => set("balance", num(e.target.value))}
                 />
               </Field>
-              <Field label="Cieľ zisku (%)">
+              <Field label="Profit target (%)">
                 <Input
                   type="number"
                   value={form.profit_target_pct}
@@ -169,7 +169,7 @@ export function AccountDialog({
                   onChange={(e) => set("max_dd_pct", num(e.target.value))}
                 />
               </Field>
-              <Field label="Aktuálny drawdown (%)">
+              <Field label="Current drawdown (%)">
                 <Input
                   type="number"
                   value={form.current_dd_pct}
@@ -177,7 +177,7 @@ export function AccountDialog({
                 />
               </Field>
             </div>
-            <Field label="Poznámka">
+            <Field label="Note">
               <Textarea
                 rows={2}
                 value={form.notes ?? ""}
@@ -188,12 +188,12 @@ export function AccountDialog({
 
           <TabsContent value="connect" className="space-y-4 pt-4">
             <p className="rounded-lg border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">
-              Zadaj <strong>iba read-only prístup</strong> (investor heslo pre MT4/MT5 alebo API
-              token pre cTrader, Tradovate a TradeLocker). Údaje sa ukladajú oddelene a nikdy sa
-              nevracajú do prehliadača. Po uložení dostane účet stav „Čaká na synchronizáciu“.
+              Enter <strong>read-only access only</strong> (investor password for MT4/MT5 or an API
+              token for cTrader, Tradovate and TradeLocker). Credentials are stored separately and are never
+              returned to the browser. After saving, the account gets the status “Waiting for sync”.
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Číslo účtu / login">
+              <Field label="Account number / login">
                 <Input
                   value={form.account_login ?? ""}
                   onChange={(e) => set("account_login", e.target.value)}

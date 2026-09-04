@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "AI platforma pre makro analýzu, COT, currency strength, journal a risk manažment.",
+          "AI platform for macro analysis, COT, currency strength, journal and risk management.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -110,7 +110,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="sk">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
@@ -148,11 +148,11 @@ function RootComponent() {
               <SidebarTrigger />
               <div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex">
                 <span className="inline-flex h-2 w-2 rounded-full bg-success" />
-                Trhy otvorené · Londýn
+                Markets open · London
               </div>
               <div className="ml-auto flex items-center gap-3">
                 <span className="hidden rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground md:inline">
-                  Plán: Pro
+                  Plan: Pro
                 </span>
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
                   MK

@@ -11,10 +11,10 @@ export const Route = createFileRoute("/backtesting")({
       { title: "Backtesting — Trading Analyzer AI" },
       {
         name: "description",
-        content: "Historické testovanie stratégií s metrikami winrate, profit factor a expectancy.",
+        content: "Historical strategy testing with winrate, profit factor and expectancy metrics.",
       },
       { property: "og:title", content: "Backtesting — Trading Analyzer AI" },
-      { property: "og:description", content: "Otestuj stratégiu na historických dátach." },
+      { property: "og:description", content: "Test your strategy on historical data." },
     ],
   }),
   component: BacktestingPage,
@@ -25,22 +25,22 @@ function BacktestingPage() {
     <>
       <PageHeader
         title="Backtesting"
-        subtitle="Výsledky uložených stratégií"
+        subtitle="Results of saved strategies"
         actions={
           <Button className="gap-2">
             <Play className="h-4 w-4" />
-            Spustiť nový test
+            Run new test
           </Button>
         }
       />
       <div className="p-6">
-        <Panel title="Stratégie" hint="Dáta od januára 2021">
+        <Panel title="Strategies" hint="Data since January 2021">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="pb-2 font-medium">Stratégia</th>
-                  <th className="pb-2 text-right font-medium">Obchody</th>
+                  <th className="pb-2 font-medium">Strategy</th>
+                  <th className="pb-2 text-right font-medium">Trades</th>
                   <th className="pb-2 text-right font-medium">Winrate</th>
                   <th className="pb-2 text-right font-medium">Profit factor</th>
                   <th className="pb-2 text-right font-medium">Max DD</th>

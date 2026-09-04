@@ -21,16 +21,16 @@ const TradingViewChart = lazy(() => import("@/components/tradingview-chart"));
 export const Route = createFileRoute("/grafy")({
   head: () => ({
     meta: [
-      { title: "Grafy, alerty a technická analýza — Trading Analyzer AI" },
+      { title: "Charts, alerts and technical analysis — Trading Analyzer AI" },
       {
         name: "description",
         content:
-          "Živé TradingView grafy na celú obrazovku s cenovými alertmi a obľúbenými inštrumentmi — forex, komodity, indexy aj krypto.",
+          "Live full-screen TradingView charts with price alerts and favorite instruments — forex, commodities, indices and crypto.",
       },
-      { property: "og:title", content: "Grafy, alerty a technická analýza — Trading Analyzer AI" },
+      { property: "og:title", content: "Charts, alerts and technical analysis — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "TradingView grafy na celú obrazovku, cenové alerty a obľúbené páry.",
+        content: "Full-screen TradingView charts, price alerts and favorite pairs.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -64,10 +64,10 @@ function ChartsPage() {
       items: CHART_INSTRUMENTS.filter((i) => i.group === g && match(i)),
     })).filter((g) => g.items.length > 0);
 
-    return favItems.length ? [{ title: "⭐ Obľúbené", items: favItems }, ...rest] : rest;
+    return favItems.length ? [{ title: "⭐ Favorites", items: favItems }, ...rest] : rest;
   }, [q, favorites]);
 
-  // Sledovanie cien pre aktívne alerty
+  // Price tracking for active alerts
   const fetchQuotes = useServerFn(getQuotes);
   const pending = alerts.filter((a) => !a.triggeredAt);
   const watched = [...new Set(pending.map((a) => a.yahoo))].slice(0, 20);
@@ -90,7 +90,7 @@ function ChartsPage() {
     if (!hit.length) return;
     hit.forEach((a) =>
       toast.warning(`Alert: ${a.label}`, {
-        description: `Cena ${a.direction === "above" ? "prekročila" : "klesla pod"} ${a.price} (aktuálne ${priceOf.get(a.yahoo)?.toFixed(5)})`,
+        description: `Price ${a.direction === "above" ? "rose above" : "fell below"} ${a.price} (now ${priceOf.get(a.yahoo)?.toFixed(5)})`,
       }),
     );
     markTriggered(hit.map((a) => a.id));
@@ -99,7 +99,7 @@ function ChartsPage() {
   const submitAlert = () => {
     const price = Number(alertPrice.replace(",", "."));
     if (!Number.isFinite(price) || price <= 0) {
-      toast.error("Zadaj platnú cenu");
+      toast.error("Enter a valid price");
       return;
     }
     add({
@@ -110,7 +110,7 @@ function ChartsPage() {
       price,
     });
     setAlertPrice("");
-    toast.success(`Alert nastavený: ${active.label} ${alertDir === "above" ? "≥" : "≤"} ${price}`);
+    toast.success(`Alert set: ${active.label} ${alertDir === "above" ? "≥" : "≤"} ${price}`);
   };
 
   return (
@@ -118,14 +118,14 @@ function ChartsPage() {
       <ClientOnly
         fallback={
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            Načítavam graf…
+            Loading chart…
           </div>
         }
       >
         <Suspense
           fallback={
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-              Načítavam graf…
+              Loading chart…
             </div>
           }
         >
@@ -137,7 +137,7 @@ function ChartsPage() {
         </Suspense>
       </ClientOnly>
 
-      {/* Ovládanie v ľavom rohu */}
+      {/* Controls in the left corner */}
       <div className="pointer-events-none absolute left-3 top-3 z-20 flex max-w-[calc(100%-1.5rem)] flex-col gap-2">
         <div className="pointer-events-auto flex flex-wrap items-center gap-1.5 rounded-xl border border-border bg-card/95 p-1.5 shadow-[var(--shadow-card)] backdrop-blur">
           <Button
@@ -152,7 +152,7 @@ function ChartsPage() {
           <Button
             size="icon"
             variant="ghost"
-            aria-label="Pridať do obľúbených"
+            aria-label="Add to favorites"
             onClick={() => toggle(active.id)}
           >
             <Star
@@ -176,7 +176,7 @@ function ChartsPage() {
           ))}
         </div>
 
-        {/* Rýchle obľúbené */}
+        {/* Quick favorites */}
         {favorites.length > 0 && (
           <div className="pointer-events-auto flex flex-wrap items-center gap-1 rounded-xl border border-border bg-card/95 p-1.5 shadow-[var(--shadow-card)] backdrop-blur">
             {CHART_INSTRUMENTS.filter((i) => favorites.includes(i.id)).map((i) => (
@@ -199,7 +199,7 @@ function ChartsPage() {
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Hľadať symbol…"
+              placeholder="Search symbol…"
               className="mb-3"
             />
             <div className="max-h-[60dvh] space-y-4 overflow-y-auto pr-1">
@@ -227,7 +227,7 @@ function ChartsPage() {
                         </button>
                         <button
                           type="button"
-                          aria-label={`Obľúbené ${i.label}`}
+                          aria-label={`Favorite ${i.label}`}
                           onClick={() => toggle(i.id)}
                           className="rounded-md p-1.5 hover:bg-muted"
                         >
@@ -245,7 +245,7 @@ function ChartsPage() {
                 </div>
               ))}
               {groups.length === 0 && (
-                <p className="text-sm text-muted-foreground">Žiadny výsledok.</p>
+                <p className="text-sm text-muted-foreground">No results.</p>
               )}
             </div>
           </div>
@@ -267,7 +267,7 @@ function ChartsPage() {
         {alertsOpen && (
           <div className="pointer-events-auto w-[300px] rounded-xl border border-border bg-card/95 p-3 shadow-[var(--shadow-card)] backdrop-blur">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Nový alert · {active.label}
+              New alert · {active.label}
             </p>
             <div className="mb-2 flex gap-1">
               <Button
@@ -296,13 +296,13 @@ function ChartsPage() {
                 inputMode="decimal"
               />
               <Button size="sm" onClick={submitAlert}>
-                Pridať
+                Add
               </Button>
             </div>
 
             <div className="mt-3 max-h-[45dvh] space-y-1 overflow-y-auto">
               {alerts.length === 0 && (
-                <p className="text-xs text-muted-foreground">Zatiaľ žiadne alerty.</p>
+                <p className="text-xs text-muted-foreground">No alerts yet.</p>
               )}
               {alerts.map((a) => (
                 <div
@@ -315,13 +315,13 @@ function ChartsPage() {
                     </p>
                     <p className="text-[11px] text-muted-foreground">
                       {a.triggeredAt
-                        ? `Spustený ${new Date(a.triggeredAt).toLocaleString("sk-SK")}`
-                        : "Čaká na cenu · kontrola každú minútu"}
+                        ? `Triggered ${new Date(a.triggeredAt).toLocaleString("en-US")}`
+                        : "Waiting for price · checked every minute"}
                     </p>
                   </div>
                   <button
                     type="button"
-                    aria-label="Zmazať alert"
+                    aria-label="Delete alert"
                     onClick={() => remove(a.id)}
                     className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
                   >

@@ -1,6 +1,6 @@
-// Reálne trhové dáta: CFTC (COT), BIS (sadzby centrálnych bánk),
-// World Bank (inflácia, HDP), Yahoo Finance (ceny → sezónnosť, S&D zóny).
-// Voliteľne FRED (ak je nastavený platný FRED_API_KEY) pre mesačnú US infláciu.
+// Real market data: CFTC (COT), BIS (central bank rates),
+// World Bank (inflation, GDP), Yahoo Finance (prices -> seasonality, S&D zones).
+// Optionally FRED (if a valid FRED_API_KEY is set) for monthly US inflation.
 
 import type { FundamentCategory, FundamentRow } from "./mock-data";
 import type {
@@ -18,9 +18,9 @@ const SK_MONTHS = [
   "Feb",
   "Mar",
   "Apr",
-  "Máj",
-  "Jún",
-  "Júl",
+  "May",
+  "Jun",
+  "Jul",
   "Aug",
   "Sep",
   "Okt",
@@ -99,19 +99,19 @@ const NON_FX: {
   category: FundamentCategory;
   kind: "commodity" | "index";
 }[] = [
-  { pair: "XAUUSD", cot: "088691", category: "Komodity", kind: "commodity" },
-  { pair: "XAGUSD", cot: "084691", category: "Komodity", kind: "commodity" },
-  { pair: "XPTUSD", cot: "076651", category: "Komodity", kind: "commodity" },
-  { pair: "COPPER", cot: "085692", category: "Komodity", kind: "commodity" },
-  { pair: "WTI (US Oil)", cot: "067651", category: "Komodity", kind: "commodity" },
-  { pair: "NATGAS", cot: "023651", category: "Komodity", kind: "commodity" },
-  { pair: "WHEAT", cot: "001602", category: "Komodity", kind: "commodity" },
-  { pair: "US500 (S&P 500)", cot: "13874A", category: "Indexy", kind: "index" },
-  { pair: "US100 (Nasdaq)", cot: "209742", category: "Indexy", kind: "index" },
-  { pair: "US30 (Dow)", cot: "124603", category: "Indexy", kind: "index" },
-  { pair: "US2000 (Russell)", cot: "239742", category: "Indexy", kind: "index" },
-  { pair: "BTCUSD", cot: "133741", category: "Komodity", kind: "commodity" },
-  { pair: "US_DXY (Dolár index)", cot: "098662", category: "Indexy", kind: "index" },
+  { pair: "XAUUSD", cot: "088691", category: "Commodities", kind: "commodity" },
+  { pair: "XAGUSD", cot: "084691", category: "Commodities", kind: "commodity" },
+  { pair: "XPTUSD", cot: "076651", category: "Commodities", kind: "commodity" },
+  { pair: "COPPER", cot: "085692", category: "Commodities", kind: "commodity" },
+  { pair: "WTI (US Oil)", cot: "067651", category: "Commodities", kind: "commodity" },
+  { pair: "NATGAS", cot: "023651", category: "Commodities", kind: "commodity" },
+  { pair: "WHEAT", cot: "001602", category: "Commodities", kind: "commodity" },
+  { pair: "US500 (S&P 500)", cot: "13874A", category: "Indices", kind: "index" },
+  { pair: "US100 (Nasdaq)", cot: "209742", category: "Indices", kind: "index" },
+  { pair: "US30 (Dow)", cot: "124603", category: "Indices", kind: "index" },
+  { pair: "US2000 (Russell)", cot: "239742", category: "Indices", kind: "index" },
+  { pair: "BTCUSD", cot: "133741", category: "Commodities", kind: "commodity" },
+  { pair: "US_DXY (Dollar index)", cot: "098662", category: "Indices", kind: "index" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -189,7 +189,7 @@ function cotWeeks(rows: CotRow[], group: "noncommercial" | "commercial" | "retai
   });
 }
 
-/** Netto pozícia non-commercial ako % z open interestu + percentil za dostupnú históriu. */
+/** Non-commercial net position as % of open interest + percentile over available history. */
 function cotStats(rows: CotRow[] | undefined) {
   if (!rows || rows.length === 0) return null;
   const nets = rows.map((r) => r.nc.l - r.nc.s);
@@ -207,7 +207,7 @@ function cotStats(rows: CotRow[] | undefined) {
 }
 
 /* ------------------------------------------------------------------ */
-/* BIS — sadzby centrálnych bánk                                       */
+/* BIS — central bank rates                                       */
 /* ------------------------------------------------------------------ */
 
 async function fetchPolicyRates(): Promise<Record<string, number>> {
@@ -229,13 +229,13 @@ async function fetchPolicyRates(): Promise<Record<string, number>> {
       out[area] = Number(obs[0]);
     }
   } catch {
-    /* prázdne = fallback */
+    /* empty = fallback */
   }
   return out;
 }
 
 /* ------------------------------------------------------------------ */
-/* World Bank — inflácia a rast HDP                                    */
+/* World Bank — inflation and GDP growth                                    */
 /* ------------------------------------------------------------------ */
 
 async function fetchWorldBank(indicator: string): Promise<Record<string, { v: number; year: string }>> {
@@ -259,7 +259,7 @@ async function fetchWorldBank(indicator: string): Promise<Record<string, { v: nu
 
 
 
-/** Mesačná US inflácia z FRED, ak je k dispozícii platný kľúč. */
+/** Monthly US inflation from FRED, if a valid key is available. */
 async function fetchFredCpi(): Promise<{ v: number; date: string } | null> {
   const key = process.env["FRED_API_KEY"];
   if (!key) return null;
@@ -327,17 +327,17 @@ function zonesFrom(bars: Bar[], pair: string, digits: number) {
       from: from.toFixed(digits),
       to: to.toFixed(digits),
       score: Math.max(35, Math.round(95 - dist * 6 - (tested ? 20 : 0))),
-      status: tested ? "Testovaná" : "Fresh",
+      status: tested ? "Tested" : "Fresh",
     });
   }
   return out;
 }
 
 /* ------------------------------------------------------------------ */
-/* Skórovanie                                                          */
+/* Scoring                                                          */
 /* ------------------------------------------------------------------ */
 
-const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutrálny");
+const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutral");
 
 function mkRow(
   pair: string,
@@ -367,13 +367,13 @@ function mkRow(
 }
 
 /* ------------------------------------------------------------------ */
-/* Hlavný build (s in-memory cache)                                    */
+/* Main build (with in-memory cache)                                    */
 /* ------------------------------------------------------------------ */
 
 let cache: { at: number; data: MarketAnalysis } | null = null;
 const TTL = 1000 * 60 * 60 * 6;
 
-/** Nikdy nehodí chybu — pri zlyhaní vráti prázdnu analýzu s varovaním. */
+/** Never throws — on failure returns an empty analysis with a warning. */
 export async function buildMarketAnalysisSafe(): Promise<MarketAnalysis> {
   try {
     return await buildMarketAnalysis();
@@ -386,10 +386,10 @@ export async function buildMarketAnalysisSafe(): Promise<MarketAnalysis> {
       details: {},
       cotSummary: [],
       seasonality: SK_MONTHS.map((month) => ({ month, value: 0 })),
-      seasonalityNote: "Reálne dáta nedostupné.",
+      seasonalityNote: "Real data unavailable.",
       zones: [],
       sources: [],
-      warnings: ["Externé dátové zdroje sú momentálne nedostupné — zobrazené sú ukážkové hodnoty."],
+      warnings: ["External data sources are currently unavailable — sample values are shown."],
     };
   }
 }
@@ -403,8 +403,8 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     ...NON_FX.map((n) => n.cot),
   ].filter((v, i, a) => a.indexOf(v) === i);
 
-  // Workerd povoľuje len obmedzený počet súbežných podpožiadaviek —
-  // dáta sťahujeme v menších skupinách, nie všetky naraz.
+  // Workerd allows only a limited number of concurrent subrequests —
+  // we fetch data in smaller batches, not all at once.
   const [cot, rates, fredCpi] = await Promise.all([
     fetchCot(codes),
     fetchPolicyRates(),
@@ -422,11 +422,11 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
 
 
   const warnings: string[] = [];
-  if (cot.size === 0) warnings.push("CFTC COT dáta sa nepodarilo načítať.");
-  if (Object.keys(rates).length === 0) warnings.push("BIS sadzby sa nepodarilo načítať.");
-  if (Object.keys(cpi).length === 0) warnings.push("World Bank inflácia sa nepodarila načítať.");
+  if (cot.size === 0) warnings.push("Could not load CFTC COT data.");
+  if (Object.keys(rates).length === 0) warnings.push("Could not load BIS rates.");
+  if (Object.keys(cpi).length === 0) warnings.push("Could not load World Bank inflation.");
   if (!fredCpi && process.env["FRED_API_KEY"])
-    warnings.push("FRED kľúč nefunguje — použitá ročná inflácia z World Bank.");
+    warnings.push("FRED key is not working — using annual World Bank inflation.");
 
   const rateOf = (c: Ccy) => rates[CCY[c].bis];
   const inflOf = (c: Ccy) => {
@@ -461,7 +461,7 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     const rateScore = rb != null && rq != null ? clamp((rb - rq) * 2) : 0;
     const inflScore = ib != null && iq != null ? clamp((ib - iq) * 1.5) : 0;
     const gdpScore = gb != null && gq != null ? clamp((gb - gq) * 2) : 0;
-    // USD "netto" je index dolára – proti nemu sa ostatné meny počítajú inverzne
+    // USD "net" is the dollar index - other currencies are computed inversely against it
     const netPct = (c: Ccy, s: ReturnType<typeof cotStats>) => (s ? s.pctOfOi * 20 : 0);
     const cotScore = clamp(netPct(b, cb) - netPct(q, cq));
 
@@ -494,15 +494,15 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
       },
       macro: [
         {
-          label: "Úroková sadzba (rozdiel)",
+          label: "Interest rate (differential)",
           value: rb != null && rq != null ? `${rb.toFixed(2)} % − ${rq.toFixed(2)} %` : "n/a",
           score: r1(rateScore),
           source: `BIS Policy Rates — ${CCY[b].bank} vs. ${CCY[q].bank}`,
-          updated: "posledný mesačný záznam BIS",
-          note: "Kladný rozdiel sadzieb podporuje bázovú menu (carry).",
+          updated: "latest monthly BIS record",
+          note: "A positive rate differential supports the base currency (carry).",
         },
         {
-          label: "Inflácia (r/r)",
+          label: "Inflation (y/y)",
           value: `${pct(ib, 1)} vs. ${pct(iq, 1)}`,
           score: r1(inflScore),
           source:
@@ -510,7 +510,7 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
               ? "FRED CPIAUCSL + World Bank FP.CPI.TOTL.ZG"
               : "World Bank — FP.CPI.TOTL.ZG",
           updated: inflOf(b)?.year ?? "n/a",
-          note: "Vyššia inflácia bázovej meny tlačí na sprísnenie politiky.",
+          note: "Higher base currency inflation pushes toward tighter policy.",
         },
         {
           label: "Rast HDP (r/r)",
@@ -518,23 +518,23 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
           score: r1(gdpScore),
           source: "World Bank — NY.GDP.MKTP.KD.ZG",
           updated: gdpOf(b)?.year ?? "n/a",
-          note: "Relatívne silnejší rast podporuje menu.",
+          note: "Relatively stronger growth supports the currency.",
         },
         {
-          label: "COT pozície",
+          label: "COT positioning",
           value: cb
             ? `${cotCcy} netto ${cb.net.toLocaleString("sk-SK")} (${cb.percentile}. percentil)`
             : "n/a",
           score: r1(cotScore),
           source: "CFTC — Commitments of Traders (Non-Commercial)",
           updated: fmtDate(cotDate),
-          note: "Netto pozícia veľkých špekulantov ako % open interestu.",
+          note: "Net position of large speculators as % of open interest.",
         },
       ],
     };
   }
 
-  // ---- Komodity a indexy ----
+  // ---- Commodities and indices ----
   const usRate = num(rateOf("USD")) ?? 0;
   const usInfl = num(inflOf("USD")?.v) ?? 0;
   const usGdp = num(gdpOf("USD")?.v) ?? 0;
@@ -573,23 +573,23 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
       },
       macro: [
         {
-          label: "Reálna sadzba USA",
+          label: "US real rate",
           value: `${real.toFixed(2)} % (${usRate.toFixed(2)} − ${usInfl.toFixed(1)})`,
           score: r1(rateScore),
-          source: "BIS Policy Rates + inflácia (World Bank/FRED)",
-          updated: "posledný dostupný záznam",
+          source: "BIS Policy Rates + inflation (World Bank/FRED)",
+          updated: "latest available record",
           note:
             item.kind === "commodity"
-              ? "Nižšie reálne sadzby podporujú komodity (najmä drahé kovy)."
-              : "Nižšie sadzby zvyšujú ocenenie akciových indexov.",
+              ? "Lower real rates support commodities (especially precious metals)."
+              : "Lower rates lift equity index valuations.",
         },
         {
-          label: "Inflácia USA (r/r)",
+          label: "US inflation (y/y)",
           value: pct(usInfl, 1),
           score: r1(inflScore),
           source: fredCpi ? "FRED — CPIAUCSL (r/r)" : "World Bank — FP.CPI.TOTL.ZG",
           updated: fredCpi ? fredCpi.date : (inflOf("USD")?.year ?? "n/a"),
-          note: "Inflácia je pozitívna pre komodity, negatívna pre indexy.",
+          note: "Inflation is positive for commodities, negative for indices.",
         },
         {
           label: "Rast HDP USA",
@@ -597,23 +597,23 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
           score: r1(gdpScore),
           source: "World Bank — NY.GDP.MKTP.KD.ZG",
           updated: gdpOf("USD")?.year ?? "n/a",
-          note: "Silnejší rast podporuje cyklické aktíva.",
+          note: "Stronger growth supports cyclical assets.",
         },
         {
-          label: "COT pozície",
+          label: "COT positioning",
           value: st
             ? `netto ${st.net.toLocaleString("sk-SK")} (${st.percentile}. percentil)`
             : "n/a",
           score: r1(cotScore),
           source: "CFTC — Commitments of Traders (Non-Commercial)",
           updated: fmtDate(cotDate),
-          note: "Netto pozícia veľkých špekulantov ako % open interestu.",
+          note: "Net position of large speculators as % of open interest.",
         },
       ],
     };
   }
 
-  // ---- COT prehľad ----
+  // ---- COT overview ----
   const summaryList: { asset: string; code: string }[] = [
     { asset: "EUR", code: CCY.EUR.cot },
     { asset: "GBP", code: CCY.GBP.cot },
@@ -630,7 +630,7 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     })
     .filter(Boolean) as MarketAnalysis["cotSummary"];
 
-  // ---- Sezónnosť a zóny ----
+  // ---- Seasonality and zones ----
   const seasonality =
     goldMonthly.length > 24
       ? seasonalityFrom(goldMonthly)
@@ -650,14 +650,14 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     details,
     cotSummary,
     seasonality,
-    seasonalityNote: `Priemerná mesačná zmena XAUUSD (COMEX GC futures) za ${Math.round(goldMonthly.length / 12)} rokov — zdroj Yahoo Finance.`,
+    seasonalityNote: `Average monthly change of XAUUSD (COMEX GC futures) over ${Math.round(goldMonthly.length / 12)} years — source Yahoo Finance.`,
     zones,
     sources: [
       "CFTC — Commitments of Traders (publicreporting.cftc.gov)",
       "BIS — Central bank policy rates (stats.bis.org)",
-      "World Bank — inflácia a rast HDP (api.worldbank.org)",
+      "World Bank — inflation and GDP growth (api.worldbank.org)",
       fredCpi ? "FRED — CPIAUCSL" : null,
-      "Yahoo Finance — ceny pre sezónnosť a S&D zóny",
+      "Yahoo Finance — prices for seasonality and S&D zones",
     ].filter(Boolean) as string[],
     warnings,
   };

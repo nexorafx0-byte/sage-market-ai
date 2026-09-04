@@ -12,12 +12,12 @@ export const Route = createFileRoute("/journal")({
       { title: "AI Journal — Trading Analyzer AI" },
       {
         name: "description",
-        content: "Obchodný denník s AI rozborom emócií, opakovaných chýb a najziskovejších setupov.",
+        content: "Trading journal with AI analysis of emotions, repeated mistakes and best setups.",
       },
       { property: "og:title", content: "AI Journal — Trading Analyzer AI" },
       {
         property: "og:description",
-        content: "AI vyhodnotí každý obchod a odhalí opakované chyby.",
+        content: "AI reviews every trade and reveals repeated mistakes.",
       },
     ],
   }),
@@ -29,30 +29,30 @@ function JournalPage() {
     <>
       <PageHeader
         title="AI Journal"
-        subtitle="Každý obchod dostane rozbor od AI — disciplína, emócie, kvalita vstupu"
+        subtitle="Every trade gets an AI review — discipline, emotions, entry quality"
       />
       <div className="space-y-5 p-6">
         <div className="grid gap-4 sm:grid-cols-3">
-          <Stat label="Priemerné R" value="+0.67" delta="posledných 30 obchodov" tone="positive" />
-          <Stat label="Disciplína" value="74 / 100" delta="+6 oproti minulému mesiacu" tone="positive" />
-          <Stat label="Chyby pred správami" value="4 z 5" delta="hlavný zdroj strát" tone="negative" />
+          <Stat label="Average R" value="+0.67" delta="last 30 trades" tone="positive" />
+          <Stat label="Discipline" value="74 / 100" delta="+6 vs. last month" tone="positive" />
+          <Stat label="Mistakes before news" value="4 of 5" delta="main source of losses" tone="negative" />
         </div>
 
-        <Panel title="Nový záznam" hint="AI doplní rozbor po uložení">
+        <Panel title="New entry" hint="AI adds the review after saving">
           <Textarea
             rows={4}
-            placeholder="Popíš obchod: pár, dôvod vstupu, emócia počas držania…"
+            placeholder="Describe the trade: pair, entry reason, emotion while holding…"
             className="resize-none"
           />
           <div className="mt-3 flex justify-end">
             <Button className="gap-2">
               <Sparkles className="h-4 w-4" />
-              Uložiť a analyzovať
+              Save and analyze
             </Button>
           </div>
         </Panel>
 
-        <Panel title="História obchodov">
+        <Panel title="Trade history">
           <div className="space-y-4">
             {journalEntries.map((e) => (
               <article key={`${e.date}-${e.pair}`} className="rounded-lg border border-border p-4">
@@ -72,7 +72,7 @@ function JournalPage() {
                     {e.r > 0 ? "+" : ""}
                     {e.r}R
                   </span>
-                  <span className="ml-auto text-xs text-muted-foreground">Emócia: {e.emotion}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">Emotion: {e.emotion}</span>
                 </div>
                 <p className="mt-3 rounded-lg bg-accent p-3 text-xs leading-relaxed text-accent-foreground">
                   {e.ai}

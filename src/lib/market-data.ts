@@ -1,4 +1,4 @@
-// Deterministické ukážkové OHLC dáta + výpočty indikátorov pre graf.
+// Deterministic sample OHLC data + indicator calculations for the chart.
 
 export type Candle = {
   time: number; // unix seconds (UTC)
@@ -45,7 +45,7 @@ function hash(str: string) {
   return h >>> 0;
 }
 
-/** Vygeneruje realisticky vyzerajúce sviečky (náhodná prechádzka s trendom a šumom). */
+/** Generates realistic looking candles (random walk with trend and noise). */
 export function generateCandles(symbol: string, tf: TimeframeKey, count = 260): Candle[] {
   const meta = PAIRS.find((p) => p.symbol === symbol) ?? PAIRS[0];
   const step = TIMEFRAMES.find((t) => t.key === tf)?.seconds ?? 3600;
@@ -53,7 +53,7 @@ export function generateCandles(symbol: string, tf: TimeframeKey, count = 260): 
   const scale = Math.sqrt(step / 3600);
   const vol = meta.vol * scale;
 
-  // zarovnaný koniec, aby sa čas nemenil pri každom renderi
+  // aligned end so time does not change on every render
   const end = Math.floor(Date.UTC(2026, 6, 29, 12, 0, 0) / 1000 / step) * step;
   let price = meta.base * (0.97 + rand() * 0.06);
   let drift = (rand() - 0.5) * vol * 0.25;
@@ -143,7 +143,7 @@ export function macd(values: number[], fast = 12, slow = 26, signal = 9) {
   return { line, signal: sig, hist };
 }
 
-/** Jednoduchá detekcia supply/demand zón zo swing high/low. */
+/** Simple supply/demand zone detection from swing highs/lows. */
 export function detectZones(candles: Candle[], lookback = 4) {
   const zones: { type: "supply" | "demand"; from: number; to: number; time: number }[] = [];
   for (let i = lookback; i < candles.length - lookback; i++) {

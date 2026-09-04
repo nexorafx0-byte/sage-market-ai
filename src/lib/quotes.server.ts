@@ -1,4 +1,4 @@
-// Aktuálne ceny z Yahoo Finance (server-only).
+// Live prices from Yahoo Finance (server-only).
 
 export type Quote = { symbol: string; price: number };
 
@@ -21,7 +21,7 @@ export async function fetchQuotes(symbols: string[]): Promise<Quote[]> {
         (r?.indicators?.quote?.[0]?.close ?? []).filter((v: number | null) => v != null).pop();
       if (typeof price === "number") out.push({ symbol, price });
     } catch {
-      // ticho preskoč
+      // silently skip
     }
   }
   return out;

@@ -1,12 +1,12 @@
-// Klientsky bezpečné typy a konštanty pre sezónnosť.
+// Client-safe types and constants for seasonality.
 
 export type SeasonalPoint = {
   key: string; // MM-DD
   label: string; // 01 Jan
   dayIndex: number; // 1..365
-  value: number; // priemerná kumulatívna zmena od začiatku roka (%)
-  detrended: number; // po odstránení priemerného ročného driftu (%)
-  years: number; // počet rokov v priemere
+  value: number; // average cumulative change since start of year (%)
+  detrended: number; // after removing average annual drift (%)
+  years: number; // number of years averaged
 };
 
 export type SeasonalityResult = {
@@ -24,58 +24,58 @@ export type SeasonalityResult = {
 };
 
 export type SeasonalityGroup =
-  | "USD páry"
-  | "EUR kríže"
-  | "GBP kríže"
-  | "JPY kríže"
-  | "AUD / NZD / CAD kríže"
-  | "Exotické páry"
+  | "USD pairs"
+  | "EUR crosses"
+  | "GBP crosses"
+  | "JPY crosses"
+  | "AUD / NZD / CAD crosses"
+  | "Exotic pairs"
   | "Forex futures"
-  | "Komodity"
-  | "Indexy"
+  | "Commodities"
+  | "Indices"
   | "Krypto";
 
 export const SEASONALITY_SYMBOLS = [
-  // ---- USD páry ----
-  { id: "EURUSD", label: "EURUSD", yahoo: "EURUSD=X", group: "USD páry" },
-  { id: "GBPUSD", label: "GBPUSD", yahoo: "GBPUSD=X", group: "USD páry" },
-  { id: "USDJPY", label: "USDJPY", yahoo: "USDJPY=X", group: "USD páry" },
-  { id: "USDCHF", label: "USDCHF", yahoo: "USDCHF=X", group: "USD páry" },
-  { id: "USDCAD", label: "USDCAD", yahoo: "USDCAD=X", group: "USD páry" },
-  { id: "AUDUSD", label: "AUDUSD", yahoo: "AUDUSD=X", group: "USD páry" },
-  { id: "NZDUSD", label: "NZDUSD", yahoo: "NZDUSD=X", group: "USD páry" },
-  // ---- EUR kríže ----
-  { id: "EURGBP", label: "EURGBP", yahoo: "EURGBP=X", group: "EUR kríže" },
-  { id: "EURJPY", label: "EURJPY", yahoo: "EURJPY=X", group: "EUR kríže" },
-  { id: "EURCHF", label: "EURCHF", yahoo: "EURCHF=X", group: "EUR kríže" },
-  { id: "EURAUD", label: "EURAUD", yahoo: "EURAUD=X", group: "EUR kríže" },
-  { id: "EURCAD", label: "EURCAD", yahoo: "EURCAD=X", group: "EUR kríže" },
-  { id: "EURNZD", label: "EURNZD", yahoo: "EURNZD=X", group: "EUR kríže" },
-  // ---- GBP kríže ----
-  { id: "GBPJPY", label: "GBPJPY", yahoo: "GBPJPY=X", group: "GBP kríže" },
-  { id: "GBPCHF", label: "GBPCHF", yahoo: "GBPCHF=X", group: "GBP kríže" },
-  { id: "GBPAUD", label: "GBPAUD", yahoo: "GBPAUD=X", group: "GBP kríže" },
-  { id: "GBPCAD", label: "GBPCAD", yahoo: "GBPCAD=X", group: "GBP kríže" },
-  { id: "GBPNZD", label: "GBPNZD", yahoo: "GBPNZD=X", group: "GBP kríže" },
-  // ---- JPY kríže ----
-  { id: "AUDJPY", label: "AUDJPY", yahoo: "AUDJPY=X", group: "JPY kríže" },
-  { id: "CADJPY", label: "CADJPY", yahoo: "CADJPY=X", group: "JPY kríže" },
-  { id: "CHFJPY", label: "CHFJPY", yahoo: "CHFJPY=X", group: "JPY kríže" },
-  { id: "NZDJPY", label: "NZDJPY", yahoo: "NZDJPY=X", group: "JPY kríže" },
-  // ---- AUD / NZD / CAD kríže ----
-  { id: "AUDNZD", label: "AUDNZD", yahoo: "AUDNZD=X", group: "AUD / NZD / CAD kríže" },
-  { id: "AUDCAD", label: "AUDCAD", yahoo: "AUDCAD=X", group: "AUD / NZD / CAD kríže" },
-  { id: "AUDCHF", label: "AUDCHF", yahoo: "AUDCHF=X", group: "AUD / NZD / CAD kríže" },
-  { id: "NZDCAD", label: "NZDCAD", yahoo: "NZDCAD=X", group: "AUD / NZD / CAD kríže" },
-  { id: "NZDCHF", label: "NZDCHF", yahoo: "NZDCHF=X", group: "AUD / NZD / CAD kríže" },
-  { id: "CADCHF", label: "CADCHF", yahoo: "CADCHF=X", group: "AUD / NZD / CAD kríže" },
-  // ---- Exotické ----
-  { id: "USDMXN", label: "USDMXN", yahoo: "USDMXN=X", group: "Exotické páry" },
-  { id: "USDZAR", label: "USDZAR", yahoo: "USDZAR=X", group: "Exotické páry" },
-  { id: "USDSEK", label: "USDSEK", yahoo: "USDSEK=X", group: "Exotické páry" },
-  { id: "USDNOK", label: "USDNOK", yahoo: "USDNOK=X", group: "Exotické páry" },
-  { id: "USDTRY", label: "USDTRY", yahoo: "USDTRY=X", group: "Exotické páry" },
-  { id: "USDPLN", label: "USDPLN", yahoo: "USDPLN=X", group: "Exotické páry" },
+  // ---- USD pairs ----
+  { id: "EURUSD", label: "EURUSD", yahoo: "EURUSD=X", group: "USD pairs" },
+  { id: "GBPUSD", label: "GBPUSD", yahoo: "GBPUSD=X", group: "USD pairs" },
+  { id: "USDJPY", label: "USDJPY", yahoo: "USDJPY=X", group: "USD pairs" },
+  { id: "USDCHF", label: "USDCHF", yahoo: "USDCHF=X", group: "USD pairs" },
+  { id: "USDCAD", label: "USDCAD", yahoo: "USDCAD=X", group: "USD pairs" },
+  { id: "AUDUSD", label: "AUDUSD", yahoo: "AUDUSD=X", group: "USD pairs" },
+  { id: "NZDUSD", label: "NZDUSD", yahoo: "NZDUSD=X", group: "USD pairs" },
+  // ---- EUR crosses ----
+  { id: "EURGBP", label: "EURGBP", yahoo: "EURGBP=X", group: "EUR crosses" },
+  { id: "EURJPY", label: "EURJPY", yahoo: "EURJPY=X", group: "EUR crosses" },
+  { id: "EURCHF", label: "EURCHF", yahoo: "EURCHF=X", group: "EUR crosses" },
+  { id: "EURAUD", label: "EURAUD", yahoo: "EURAUD=X", group: "EUR crosses" },
+  { id: "EURCAD", label: "EURCAD", yahoo: "EURCAD=X", group: "EUR crosses" },
+  { id: "EURNZD", label: "EURNZD", yahoo: "EURNZD=X", group: "EUR crosses" },
+  // ---- GBP crosses ----
+  { id: "GBPJPY", label: "GBPJPY", yahoo: "GBPJPY=X", group: "GBP crosses" },
+  { id: "GBPCHF", label: "GBPCHF", yahoo: "GBPCHF=X", group: "GBP crosses" },
+  { id: "GBPAUD", label: "GBPAUD", yahoo: "GBPAUD=X", group: "GBP crosses" },
+  { id: "GBPCAD", label: "GBPCAD", yahoo: "GBPCAD=X", group: "GBP crosses" },
+  { id: "GBPNZD", label: "GBPNZD", yahoo: "GBPNZD=X", group: "GBP crosses" },
+  // ---- JPY crosses ----
+  { id: "AUDJPY", label: "AUDJPY", yahoo: "AUDJPY=X", group: "JPY crosses" },
+  { id: "CADJPY", label: "CADJPY", yahoo: "CADJPY=X", group: "JPY crosses" },
+  { id: "CHFJPY", label: "CHFJPY", yahoo: "CHFJPY=X", group: "JPY crosses" },
+  { id: "NZDJPY", label: "NZDJPY", yahoo: "NZDJPY=X", group: "JPY crosses" },
+  // ---- AUD / NZD / CAD crosses ----
+  { id: "AUDNZD", label: "AUDNZD", yahoo: "AUDNZD=X", group: "AUD / NZD / CAD crosses" },
+  { id: "AUDCAD", label: "AUDCAD", yahoo: "AUDCAD=X", group: "AUD / NZD / CAD crosses" },
+  { id: "AUDCHF", label: "AUDCHF", yahoo: "AUDCHF=X", group: "AUD / NZD / CAD crosses" },
+  { id: "NZDCAD", label: "NZDCAD", yahoo: "NZDCAD=X", group: "AUD / NZD / CAD crosses" },
+  { id: "NZDCHF", label: "NZDCHF", yahoo: "NZDCHF=X", group: "AUD / NZD / CAD crosses" },
+  { id: "CADCHF", label: "CADCHF", yahoo: "CADCHF=X", group: "AUD / NZD / CAD crosses" },
+  // ---- Exotics ----
+  { id: "USDMXN", label: "USDMXN", yahoo: "USDMXN=X", group: "Exotic pairs" },
+  { id: "USDZAR", label: "USDZAR", yahoo: "USDZAR=X", group: "Exotic pairs" },
+  { id: "USDSEK", label: "USDSEK", yahoo: "USDSEK=X", group: "Exotic pairs" },
+  { id: "USDNOK", label: "USDNOK", yahoo: "USDNOK=X", group: "Exotic pairs" },
+  { id: "USDTRY", label: "USDTRY", yahoo: "USDTRY=X", group: "Exotic pairs" },
+  { id: "USDPLN", label: "USDPLN", yahoo: "USDPLN=X", group: "Exotic pairs" },
   // ---- Forex futures (CME) ----
   { id: "6E", label: "6E — Euro FX futures", yahoo: "6E=F", group: "Forex futures" },
   { id: "6B", label: "6B — British Pound futures", yahoo: "6B=F", group: "Forex futures" },
@@ -88,28 +88,28 @@ export const SEASONALITY_SYMBOLS = [
   { id: "6L", label: "6L — Brazilian Real futures", yahoo: "6L=F", group: "Forex futures" },
   { id: "6Z", label: "6Z — South African Rand futures", yahoo: "6Z=F", group: "Forex futures" },
   { id: "DXFUT", label: "DX — Dollar Index futures", yahoo: "DX=F", group: "Forex futures" },
-  // ---- Komodity ----
-  { id: "XAUUSD", label: "XAUUSD (zlato)", yahoo: "GC=F", group: "Komodity" },
-  { id: "XAGUSD", label: "XAGUSD (striebro)", yahoo: "SI=F", group: "Komodity" },
-  { id: "XPTUSD", label: "XPTUSD (platina)", yahoo: "PL=F", group: "Komodity" },
-  { id: "WTI", label: "WTI ropa", yahoo: "CL=F", group: "Komodity" },
-  { id: "BRENT", label: "Brent ropa", yahoo: "BZ=F", group: "Komodity" },
-  { id: "NATGAS", label: "Zemný plyn", yahoo: "NG=F", group: "Komodity" },
-  { id: "COPPER", label: "Meď", yahoo: "HG=F", group: "Komodity" },
-  { id: "WHEAT", label: "Pšenica", yahoo: "ZW=F", group: "Komodity" },
-  // ---- Indexy ----
-  { id: "DXY", label: "DXY (dolárový index)", yahoo: "DX-Y.NYB", group: "Indexy" },
-  { id: "SPX", label: "US500 (S&P 500)", yahoo: "^GSPC", group: "Indexy" },
-  { id: "NDX", label: "US100 (Nasdaq 100)", yahoo: "^NDX", group: "Indexy" },
-  { id: "DJI", label: "US30 (Dow Jones)", yahoo: "^DJI", group: "Indexy" },
-  { id: "RUT", label: "US2000 (Russell)", yahoo: "^RUT", group: "Indexy" },
-  { id: "DAX", label: "GER40 (DAX)", yahoo: "^GDAXI", group: "Indexy" },
-  { id: "FTSE", label: "UK100 (FTSE)", yahoo: "^FTSE", group: "Indexy" },
-  { id: "CAC", label: "FRA40 (CAC)", yahoo: "^FCHI", group: "Indexy" },
-  { id: "STOXX", label: "EU50 (Euro Stoxx)", yahoo: "^STOXX50E", group: "Indexy" },
-  { id: "NIKKEI", label: "JP225 (Nikkei)", yahoo: "^N225", group: "Indexy" },
-  { id: "HSI", label: "HK50 (Hang Seng)", yahoo: "^HSI", group: "Indexy" },
-  { id: "ASX", label: "AUS200 (ASX)", yahoo: "^AXJO", group: "Indexy" },
+  // ---- Commodities ----
+  { id: "XAUUSD", label: "XAUUSD (zlato)", yahoo: "GC=F", group: "Commodities" },
+  { id: "XAGUSD", label: "XAGUSD (striebro)", yahoo: "SI=F", group: "Commodities" },
+  { id: "XPTUSD", label: "XPTUSD (platina)", yahoo: "PL=F", group: "Commodities" },
+  { id: "WTI", label: "WTI ropa", yahoo: "CL=F", group: "Commodities" },
+  { id: "BRENT", label: "Brent ropa", yahoo: "BZ=F", group: "Commodities" },
+  { id: "NATGAS", label: "Natural gas", yahoo: "NG=F", group: "Commodities" },
+  { id: "COPPER", label: "Copper", yahoo: "HG=F", group: "Commodities" },
+  { id: "WHEAT", label: "Wheat", yahoo: "ZW=F", group: "Commodities" },
+  // ---- Indices ----
+  { id: "DXY", label: "DXY (Dollar index)", yahoo: "DX-Y.NYB", group: "Indices" },
+  { id: "SPX", label: "US500 (S&P 500)", yahoo: "^GSPC", group: "Indices" },
+  { id: "NDX", label: "US100 (Nasdaq 100)", yahoo: "^NDX", group: "Indices" },
+  { id: "DJI", label: "US30 (Dow Jones)", yahoo: "^DJI", group: "Indices" },
+  { id: "RUT", label: "US2000 (Russell)", yahoo: "^RUT", group: "Indices" },
+  { id: "DAX", label: "GER40 (DAX)", yahoo: "^GDAXI", group: "Indices" },
+  { id: "FTSE", label: "UK100 (FTSE)", yahoo: "^FTSE", group: "Indices" },
+  { id: "CAC", label: "FRA40 (CAC)", yahoo: "^FCHI", group: "Indices" },
+  { id: "STOXX", label: "EU50 (Euro Stoxx)", yahoo: "^STOXX50E", group: "Indices" },
+  { id: "NIKKEI", label: "JP225 (Nikkei)", yahoo: "^N225", group: "Indices" },
+  { id: "HSI", label: "HK50 (Hang Seng)", yahoo: "^HSI", group: "Indices" },
+  { id: "ASX", label: "AUS200 (ASX)", yahoo: "^AXJO", group: "Indices" },
   // ---- Krypto ----
   { id: "BTCUSD", label: "BTCUSD", yahoo: "BTC-USD", group: "Krypto" },
   { id: "ETHUSD", label: "ETHUSD", yahoo: "ETH-USD", group: "Krypto" },
@@ -121,15 +121,15 @@ export const SEASONALITY_SYMBOLS = [
 }[];
 
 export const SEASONALITY_GROUPS: SeasonalityGroup[] = [
-  "USD páry",
-  "EUR kríže",
-  "GBP kríže",
-  "JPY kríže",
-  "AUD / NZD / CAD kríže",
-  "Exotické páry",
+  "USD pairs",
+  "EUR crosses",
+  "GBP crosses",
+  "JPY crosses",
+  "AUD / NZD / CAD crosses",
+  "Exotic pairs",
   "Forex futures",
-  "Komodity",
-  "Indexy",
+  "Commodities",
+  "Indices",
   "Krypto",
 ];
 
