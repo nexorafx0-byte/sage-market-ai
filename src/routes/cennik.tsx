@@ -64,12 +64,12 @@ function PricingPage() {
   return (
     <>
       <PageHeader title="Pricing" subtitle="Cancel anytime · 7 days free" />
-      <div className="grid gap-5 p-6 lg:grid-cols-3">
+      <div className="stagger-children grid gap-5 p-6 lg:grid-cols-3">
         {plans.map((p) => (
           <div
             key={p.name}
             className={cn(
-              "rounded-xl border bg-card p-6 shadow-[var(--shadow-card)]",
+              "card-luxe rounded-xl border bg-card p-6 shadow-[var(--shadow-card)]",
               p.highlight ? "border-primary ring-1 ring-primary" : "border-border",
             )}
           >

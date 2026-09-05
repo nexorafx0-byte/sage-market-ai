@@ -131,11 +131,11 @@ function Landing() {
         <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
           Everything a trader needs
         </h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="stagger-children mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div
               key={f.title}
-              className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] transition-colors hover:border-primary/50"
+              className="card-luxe rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <f.icon className="h-5 w-5" />
@@ -153,11 +153,11 @@ function Landing() {
           <p className="mt-2 text-center text-sm text-muted-foreground">
             Cancel anytime. No commitment.
           </p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="stagger-children mt-10 grid gap-4 md:grid-cols-3">
             {plans.map((p) => (
               <div
                 key={p.name}
-                className={`rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] ${
+                className={`card-luxe rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] ${
                   p.highlight ? "border-primary ring-1 ring-primary/40" : "border-border"
                 }`}
               >

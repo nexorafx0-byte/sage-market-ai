@@ -106,7 +106,7 @@ function Dashboard() {
       />
 
       <div className="space-y-5 p-6">
-        <div className="grid gap-5 xl:grid-cols-3">
+        <div className="stagger-children grid gap-5 xl:grid-cols-3">
           {/* Left column — account summary */}
           <section className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
             <div className="flex items-start justify-between border-l-2 border-primary pl-3">
@@ -297,7 +297,7 @@ function Dashboard() {
           </Panel>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-3">
+        <div className="stagger-children grid gap-5 xl:grid-cols-3">
           <Panel title="Currency Strength" hint="Weighted index for 24h" className="xl:col-span-2">
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
@@ -344,7 +344,7 @@ function Dashboard() {
           </Panel>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="stagger-children grid gap-5 xl:grid-cols-2">
           <Panel title="Important News Today" hint="AI commentary for each event">
             <div className="space-y-4">
               {newsFeed.map((n) => (

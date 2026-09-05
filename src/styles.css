@@ -202,3 +202,180 @@
   background-clip: text;
   color: transparent;
 }
+
+/* ---------------------------------------------------------------
+ * Premium motion layer: page transitions, reveals, hover polish.
+ * --------------------------------------------------------------- */
+
+@keyframes luxe-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes luxe-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes luxe-sheen {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes luxe-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 oklch(0.74 0.16 162 / 45%);
+  }
+  70% {
+    box-shadow: 0 0 0 10px oklch(0.74 0.16 162 / 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.74 0.16 162 / 0%);
+  }
+}
+
+@keyframes luxe-shimmer-text {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@utility animate-page-in {
+  animation: luxe-page-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-rise {
+  animation: luxe-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-pulse-ring {
+  animation: luxe-pulse-ring 2.4s ease-out infinite;
+}
+
+/* Staggered reveal for grids/lists: add to the wrapper element. */
+@utility stagger-children {
+  & > * {
+    animation: luxe-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  & > *:nth-child(1) { animation-delay: 0.02s; }
+  & > *:nth-child(2) { animation-delay: 0.07s; }
+  & > *:nth-child(3) { animation-delay: 0.12s; }
+  & > *:nth-child(4) { animation-delay: 0.17s; }
+  & > *:nth-child(5) { animation-delay: 0.22s; }
+  & > *:nth-child(6) { animation-delay: 0.27s; }
+  & > *:nth-child(7) { animation-delay: 0.32s; }
+  & > *:nth-child(8) { animation-delay: 0.37s; }
+  & > *:nth-child(n + 9) { animation-delay: 0.42s; }
+}
+
+/* Card that lifts, brightens its border and casts an emerald glow. */
+@utility card-luxe {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s ease,
+    background-color 0.45s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      oklch(0.86 0.14 168 / 10%) 50%,
+      transparent 80%
+    );
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: oklch(0.74 0.16 162 / 40%);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  &:hover::after {
+    opacity: 1;
+    animation: luxe-sheen 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@utility text-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--primary) 0%,
+    var(--primary-glow) 35%,
+    var(--foreground) 55%,
+    var(--primary) 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: luxe-shimmer-text 6s linear infinite;
+}
+
+@layer base {
+  a,
+  button,
+  [role="tab"],
+  [data-slot="sidebar-menu-button"] {
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.3s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease;
+  }
+
+  button:not(:disabled):active,
+  [data-slot="sidebar-menu-button"]:active {
+    transform: scale(0.975);
+  }
+
+  [data-slot="sidebar-menu-button"]:hover {
+    transform: translateX(2px);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

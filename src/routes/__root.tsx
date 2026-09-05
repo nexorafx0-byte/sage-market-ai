@@ -130,7 +130,7 @@ function RootComponent() {
   if (bare) {
     return (
       <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen w-full bg-background font-sans">
+        <div key={pathname} className="animate-page-in min-h-screen w-full bg-background font-sans">
           <Outlet />
         </div>
         <Toaster />
@@ -147,7 +147,7 @@ function RootComponent() {
             <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-border bg-card/80 px-4 backdrop-blur">
               <SidebarTrigger />
               <div className="hidden items-center gap-2 text-sm text-muted-foreground sm:flex">
-                <span className="inline-flex h-2 w-2 rounded-full bg-success" />
+                <span className="animate-pulse-ring inline-flex h-2 w-2 rounded-full bg-success" />
                 Markets open · London
               </div>
               <div className="ml-auto flex items-center gap-3">
@@ -160,7 +160,7 @@ function RootComponent() {
               </div>
             </header>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <main className="flex-1">
+            <main key={pathname} className="animate-page-in flex-1">
               <Outlet />
             </main>
           </div>
