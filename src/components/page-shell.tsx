@@ -12,7 +12,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border bg-card px-6 py-6">
+    <div className="animate-rise flex flex-wrap items-end justify-between gap-4 border-b border-border bg-card px-6 py-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
@@ -38,7 +38,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-xl border border-border bg-card shadow-[var(--shadow-card)]",
+        "card-luxe animate-rise rounded-xl border border-border bg-card shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -66,7 +66,7 @@ export function Stat({
   tone?: "neutral" | "positive" | "negative";
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-card)]">
+    <div className="card-luxe rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-card)]">
       <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </div>
@@ -93,7 +93,10 @@ export function ScoreBar({ value, max = 100 }: { value: number; max?: number }) 
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
       <div
-        className={cn("h-full rounded-full", negative ? "bg-destructive" : "bg-primary")}
+        className={cn(
+          "h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          negative ? "bg-destructive" : "bg-primary",
+        )}
         style={{ width: `${pct}%` }}
       />
     </div>
