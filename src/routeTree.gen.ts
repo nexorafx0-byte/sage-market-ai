@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RiskRouteImport } from './routes/risk'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as GrafyRouteImport } from './routes/grafy'
 import { Route as CennikRouteImport } from './routes/cennik'
@@ -30,6 +31,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const RiskRoute = RiskRouteImport.update({
   id: '/risk',
   path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JournalRoute = JournalRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
+  '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
+  '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
+  '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/cennik'
     | '/grafy'
     | '/journal'
+    | '/news'
     | '/risk'
     | '/sitemap.xml'
     | '/dashboard'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/cennik'
     | '/grafy'
     | '/journal'
+    | '/news'
     | '/risk'
     | '/sitemap.xml'
     | '/dashboard'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/cennik'
     | '/grafy'
     | '/journal'
+    | '/news'
     | '/risk'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   CennikRoute: typeof CennikRoute
   GrafyRoute: typeof GrafyRoute
   JournalRoute: typeof JournalRoute
+  NewsRoute: typeof NewsRoute
   RiskRoute: typeof RiskRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/risk'
       fullPath: '/risk'
       preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journal': {
@@ -290,6 +310,7 @@ const rootRouteChildren: RootRouteChildren = {
   CennikRoute: CennikRoute,
   GrafyRoute: GrafyRoute,
   JournalRoute: JournalRoute,
+  NewsRoute: NewsRoute,
   RiskRoute: RiskRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
