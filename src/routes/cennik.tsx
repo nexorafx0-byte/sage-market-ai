@@ -64,7 +64,7 @@ function PricingPage() {
   return (
     <>
       <PageHeader title="Pricing" subtitle="Cancel anytime · 7 days free" />
-      <div className="grid gap-5 p-6 lg:grid-cols-3">
+      <div className="stagger-children grid gap-5 p-6 lg:grid-cols-3">
         {plans.map((p) => (
           <div
             key={p.name}

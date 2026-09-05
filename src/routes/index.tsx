@@ -131,7 +131,7 @@ function Landing() {
         <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
           Everything a trader needs
         </h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="stagger-children mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div
               key={f.title}
@@ -153,7 +153,7 @@ function Landing() {
           <p className="mt-2 text-center text-sm text-muted-foreground">
             Cancel anytime. No commitment.
           </p>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="stagger-children mt-10 grid gap-4 md:grid-cols-3">
             {plans.map((p) => (
               <div
                 key={p.name}
