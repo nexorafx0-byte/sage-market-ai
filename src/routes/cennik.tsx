@@ -69,7 +69,7 @@ function PricingPage() {
           <div
             key={p.name}
             className={cn(
-              "rounded-xl border bg-card p-6 shadow-[var(--shadow-card)]",
+              "card-luxe rounded-xl border bg-card p-6 shadow-[var(--shadow-card)]",
               p.highlight ? "border-primary ring-1 ring-primary" : "border-border",
             )}
           >

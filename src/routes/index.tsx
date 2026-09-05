@@ -135,7 +135,7 @@ function Landing() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] transition-colors hover:border-primary/50"
+              className="card-luxe rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <f.icon className="h-5 w-5" />
@@ -157,7 +157,7 @@ function Landing() {
             {plans.map((p) => (
               <div
                 key={p.name}
-                className={`rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] ${
+                className={`card-luxe rounded-xl border bg-card p-6 shadow-[var(--shadow-card)] ${
                   p.highlight ? "border-primary ring-1 ring-primary/40" : "border-border"
                 }`}
               >
