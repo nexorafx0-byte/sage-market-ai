@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -22,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
 import { cotData, fundamentScore } from "@/lib/mock-data";
+import { scoreHistory } from "@/lib/score-history";
+
 
 export const Route = createFileRoute("/analyza")({
   head: () => ({
@@ -46,6 +50,37 @@ export const Route = createFileRoute("/analyza")({
 
 const CATEGORIES = ["All", "Forex", "Commodities", "Indices"] as const;
 
+function ScoreSpark({ pair, score }: { pair: string; score: number }) {
+  const data = scoreHistory(pair, score);
+  const up = score >= 0;
+  const stroke = up ? "hsl(var(--chart-2, 152 60% 45%))" : "hsl(var(--destructive))";
+  const id = `spark-${pair}`;
+  return (
+    <div className="h-10 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 2, right: 0, bottom: 2, left: 0 }}>
+          <defs>
+            <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={stroke} stopOpacity={0.35} />
+              <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <YAxis hide domain={[-10, 10]} />
+          <Area
+            type="monotone"
+            dataKey="score"
+            stroke={stroke}
+            strokeWidth={1.6}
+            fill={`url(#${id})`}
+            dot={false}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => void }) {
   return (
     <button
@@ -67,6 +102,13 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
           {r.score.toFixed(1)}
         </span>
       </div>
+      <div className="mt-2">
+        <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Last 30 days
+        </div>
+        <ScoreSpark pair={r.pair} score={r.score} />
+      </div>
+
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
         <span>
           Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
