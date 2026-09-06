@@ -16,7 +16,7 @@ const newsQueryOptions = queryOptions({
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "Forex news & economic calendar — Trading Analyzer AI" },
+      { title: "Forex news & economic calendar — MARKETMIND" },
       {
         name: "description",
         content:

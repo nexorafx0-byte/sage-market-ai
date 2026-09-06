@@ -36,13 +36,13 @@ import {
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Trading Analyzer AI" },
+      { title: "Dashboard — MARKETMIND" },
       {
         name: "description",
         content:
           "Account overview: gain, net P&L, drawdown, statistics, trading calendar and AI macro analysis.",
       },
-      { property: "og:title", content: "Dashboard — Trading Analyzer AI" },
+      { property: "og:title", content: "Dashboard — MARKETMIND" },
       {
         property: "og:description",
         content: "One platform for macro analysis, journaling and risk management.",

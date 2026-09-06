@@ -8,12 +8,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/cennik")({
   head: () => ({
     meta: [
-      { title: "Pricing — Trading Analyzer AI" },
+      { title: "Pricing — MARKETMIND" },
       {
         name: "description",
         content: "Basic €29, Pro €79, and Elite €149 per month. Choose the plan for your trading.",
       },
-      { property: "og:title", content: "Pricing — Trading Analyzer AI" },
+      { property: "og:title", content: "Pricing — MARKETMIND" },
       { property: "og:description", content: "Basic €29 · Pro €79 · Elite €149 per month." },
     ],
   }),

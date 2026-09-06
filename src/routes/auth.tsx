@@ -11,13 +11,13 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Trading Analyzer AI" },
+      { title: "Sign in — MARKETMIND" },
       {
         name: "description",
         content:
-          "Sign in to Trading Analyzer AI and connect your funded accounts from MT4, MT5, cTrader, Tradovate or TradeLocker.",
+          "Sign in to MARKETMIND and connect your funded accounts from MT4, MT5, cTrader, Tradovate or TradeLocker.",
       },
-      { property: "og:title", content: "Sign in — Trading Analyzer AI" },
+      { property: "og:title", content: "Sign in — MARKETMIND" },
       {
         property: "og:description",
         content: "Access your funded accounts and AI market analysis.",

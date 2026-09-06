@@ -8,12 +8,12 @@ import { backtests } from "@/lib/mock-data";
 export const Route = createFileRoute("/backtesting")({
   head: () => ({
     meta: [
-      { title: "Backtesting — Trading Analyzer AI" },
+      { title: "Backtesting — MARKETMIND" },
       {
         name: "description",
         content: "Historical strategy testing with winrate, profit factor and expectancy metrics.",
       },
-      { property: "og:title", content: "Backtesting — Trading Analyzer AI" },
+      { property: "og:title", content: "Backtesting — MARKETMIND" },
       { property: "og:description", content: "Test your strategy on historical data." },
     ],
   }),

@@ -9,12 +9,12 @@ import { Progress } from "@/components/ui/progress";
 export const Route = createFileRoute("/risk")({
   head: () => ({
     meta: [
-      { title: "Risk manager — Trading Analyzer AI" },
+      { title: "Risk manager — MARKETMIND" },
       {
         name: "description",
         content: "Position size calculator, daily limits and drawdown control for funded accounts.",
       },
-      { property: "og:title", content: "Risk manager — Trading Analyzer AI" },
+      { property: "og:title", content: "Risk manager — MARKETMIND" },
       { property: "og:description", content: "Position size and risk limits under control." },
     ],
   }),
