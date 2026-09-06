@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -22,6 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getMarketAnalysis } from "@/lib/market-analysis.functions";
 import type { FundamentRow } from "@/lib/mock-data";
 import { cotData, fundamentScore } from "@/lib/mock-data";
+import { scoreHistory } from "@/lib/score-history";
+
 
 export const Route = createFileRoute("/analyza")({
   head: () => ({
