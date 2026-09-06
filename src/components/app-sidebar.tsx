@@ -30,6 +30,7 @@ const analysisItems = [
   { title: "AI market analysis", url: "/analyza", icon: Brain },
   { title: "Charts", url: "/grafy", icon: CandlestickChart },
   { title: "Backtesting", url: "/backtesting", icon: FlaskConical },
+  { title: "News", url: "/news", icon: Newspaper },
 ];
 
 const tradingItems = [
