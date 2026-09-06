@@ -1,4 +1,4 @@
-// Sample (mock) data for the Trading Analyzer AI UI prototype.
+// Sample (mock) data for the MARKETMIND UI prototype.
 
 export const currencyStrength = [
   { code: "USD", value: 82 },

@@ -21,13 +21,13 @@ const TradingViewChart = lazy(() => import("@/components/tradingview-chart"));
 export const Route = createFileRoute("/grafy")({
   head: () => ({
     meta: [
-      { title: "Charts, alerts and technical analysis — Trading Analyzer AI" },
+      { title: "Charts, alerts and technical analysis — MARKETMIND" },
       {
         name: "description",
         content:
           "Live full-screen TradingView charts with price alerts and favorite instruments — forex, commodities, indices and crypto.",
       },
-      { property: "og:title", content: "Charts, alerts and technical analysis — Trading Analyzer AI" },
+      { property: "og:title", content: "Charts, alerts and technical analysis — MARKETMIND" },
       {
         property: "og:description",
         content: "Full-screen TradingView charts, price alerts and favorite pairs.",

@@ -26,13 +26,13 @@ import { cotData, fundamentScore } from "@/lib/mock-data";
 export const Route = createFileRoute("/analyza")({
   head: () => ({
     meta: [
-      { title: "AI market analysis — Trading Analyzer AI" },
+      { title: "AI market analysis — MARKETMIND" },
       {
         name: "description",
         content:
           "Fundamental score from real data (CFTC COT, BIS rates, World Bank) and seasonality.",
       },
-      { property: "og:title", content: "AI market analysis — Trading Analyzer AI" },
+      { property: "og:title", content: "AI market analysis — MARKETMIND" },
       {
         property: "og:description",
         content: "Real macro data, COT positioning and seasonality with AI commentary.",

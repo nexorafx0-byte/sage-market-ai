@@ -23,13 +23,13 @@ import {
 export const Route = createFileRoute("/_authenticated/ucty")({
   head: () => ({
     meta: [
-      { title: "Funded accounts — Trading Analyzer AI" },
+      { title: "Funded accounts — MARKETMIND" },
       {
         name: "description",
         content:
           "Connect MT4, MT5, cTrader, Tradovate and TradeLocker accounts and track targets and drawdown in one place.",
       },
-      { property: "og:title", content: "Funded accounts — Trading Analyzer AI" },
+      { property: "og:title", content: "Funded accounts — MARKETMIND" },
       {
         property: "og:description",
         content: "All prop firm accounts and broker connections on one screen.",

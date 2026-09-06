@@ -9,12 +9,12 @@ import { journalEntries } from "@/lib/mock-data";
 export const Route = createFileRoute("/journal")({
   head: () => ({
     meta: [
-      { title: "AI Journal — Trading Analyzer AI" },
+      { title: "AI Journal — MARKETMIND" },
       {
         name: "description",
         content: "Trading journal with AI analysis of emotions, repeated mistakes and best setups.",
       },
-      { property: "og:title", content: "AI Journal — Trading Analyzer AI" },
+      { property: "og:title", content: "AI Journal — MARKETMIND" },
       {
         property: "og:description",
         content: "AI reviews every trade and reveals repeated mistakes.",

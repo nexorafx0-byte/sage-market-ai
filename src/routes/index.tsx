@@ -20,13 +20,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Trading Analyzer AI — AI market analysis, COT and funded accounts" },
+      { title: "MARKETMIND — AI market analysis, COT and funded accounts" },
       {
         name: "description",
         content:
           "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality, journal, backtesting and funded account management.",
       },
-      { property: "og:title", content: "Trading Analyzer AI" },
+      { property: "og:title", content: "MARKETMIND" },
       {
         property: "og:description",
         content:
@@ -76,7 +76,7 @@ function Landing() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <LineChart className="h-5 w-5" />
           </span>
-          <span className="text-sm font-semibold tracking-tight">Trading Analyzer AI</span>
+          <span className="text-sm font-semibold tracking-tight">MARKETMIND</span>
           <nav className="ml-8 hidden gap-6 text-sm text-muted-foreground md:flex">
             <a href="#funkcie" className="hover:text-foreground">Features</a>
             <a href="#cennik" className="hover:text-foreground">Pricing</a>
@@ -196,7 +196,7 @@ function Landing() {
 
       <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} Trading Analyzer AI</span>
+          <span>© {new Date().getFullYear()} MARKETMIND</span>
           <Link to="/auth" className="hover:text-foreground">Sign in</Link>
         </div>
       </footer>
