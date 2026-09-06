@@ -1,4 +1,17 @@
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { CotOverview } from "@/components/cot-overview";
 import { ScoreBar } from "@/components/page-shell";
@@ -14,6 +27,74 @@ import { COT_GROUPS, cotHistory, macroSources } from "@/lib/instrument-detail";
 import type { CotGroup } from "@/lib/instrument-detail";
 import type { InstrumentDetailReal } from "@/lib/market-types";
 import type { FundamentRow } from "@/lib/mock-data";
+import { scoreHistory } from "@/lib/score-history";
+
+function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
+  const points = scoreHistory(pair, score).map((p) => {
+    const d = new Date();
+    d.setDate(d.getDate() + p.day);
+    return {
+      ...p,
+      label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }),
+    };
+  });
+  const up = score >= 0;
+  const stroke = up ? "var(--color-success)" : "var(--color-destructive)";
+
+  return (
+    <div className="rounded-lg border border-border p-4">
+      <div className="mb-2 flex items-center justify-between">
+        <h3 className="text-sm font-semibold">Score history — last 30 days</h3>
+        <span className="font-mono text-xs text-muted-foreground">
+          now {score > 0 ? "+" : ""}
+          {score.toFixed(1)}
+        </span>
+      </div>
+      <div className="h-56">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={points} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
+            <defs>
+              <linearGradient id="score-hist" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={stroke} stopOpacity={0.4} />
+                <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 10 }}
+              interval={4}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis domain={[-10, 10]} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+            <ReferenceLine y={0} stroke="var(--color-border)" />
+            <Tooltip
+              formatter={(v: number) => [`${v > 0 ? "+" : ""}${v.toFixed(2)}`, "Score"]}
+              contentStyle={{
+                borderRadius: 12,
+                border: "1px solid var(--color-border)",
+                background: "var(--color-card)",
+                fontSize: 12,
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="score"
+              stroke={stroke}
+              strokeWidth={2}
+              fill="url(#score-hist)"
+              dot={{ r: 1.6, fill: stroke }}
+              activeDot={{ r: 4 }}
+              isAnimationActive={false}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 
 const nf = (n: number) => n.toLocaleString("sk-SK");
 
