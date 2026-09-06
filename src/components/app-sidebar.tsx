@@ -9,6 +9,7 @@ import {
   Tags,
   LineChart,
   CandlestickChart,
+  Newspaper,
 } from "lucide-react";
 
 import {
