@@ -70,7 +70,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="leading-tight">
               <div className="text-shimmer text-sm font-semibold tracking-tight">MARKETMIND</div>
-              <div className="text-[11px] text-muted-foreground">AI platforma</div>
+              <div className="text-[11px] text-muted-foreground">AI platform</div>
             </div>
           )}
         </div>
