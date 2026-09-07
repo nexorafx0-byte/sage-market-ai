@@ -222,7 +222,7 @@ function AnalysisPage() {
                       <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                         {s.title}
                       </h3>
-                      <div className="space-y-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {s.items.map((r) => (
                           <RowCard key={r.pair} r={r} onOpen={setSelected} />
                         ))}
