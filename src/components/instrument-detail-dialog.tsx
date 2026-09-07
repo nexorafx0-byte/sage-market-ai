@@ -245,6 +245,9 @@ export function InstrumentDetailDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Score history — last 30 days */}
+        <ScoreHistoryChart pair={row.pair} score={row.score} />
+
         {/* Makro rozpis */}
         <div className="space-y-3">
           {sources.map((s) => (
