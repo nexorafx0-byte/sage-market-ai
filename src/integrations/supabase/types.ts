@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -44,6 +44,95 @@ export type Database = {
             foreignKeyName: "account_connection_secrets_account_id_fkey"
             columns: ["account_id"]
             isOneToOne: true
+            referencedRelation: "trading_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_trades: {
+        Row: {
+          account_id: string | null
+          created_at: string
+          direction: string
+          entry_price: number | null
+          entry_reason: string | null
+          fundamental: string | null
+          id: string
+          instrument: string
+          lot_size: number | null
+          pnl: number | null
+          psychology: string | null
+          risk_pct: number | null
+          rr: number | null
+          rules_broken: string | null
+          rules_followed: boolean
+          screenshot_url: string | null
+          sd_zone: string | null
+          seasonality: string | null
+          stop_loss: number | null
+          take_profit: number | null
+          timeframe: string | null
+          traded_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          created_at?: string
+          direction?: string
+          entry_price?: number | null
+          entry_reason?: string | null
+          fundamental?: string | null
+          id?: string
+          instrument: string
+          lot_size?: number | null
+          pnl?: number | null
+          psychology?: string | null
+          risk_pct?: number | null
+          rr?: number | null
+          rules_broken?: string | null
+          rules_followed?: boolean
+          screenshot_url?: string | null
+          sd_zone?: string | null
+          seasonality?: string | null
+          stop_loss?: number | null
+          take_profit?: number | null
+          timeframe?: string | null
+          traded_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          created_at?: string
+          direction?: string
+          entry_price?: number | null
+          entry_reason?: string | null
+          fundamental?: string | null
+          id?: string
+          instrument?: string
+          lot_size?: number | null
+          pnl?: number | null
+          psychology?: string | null
+          risk_pct?: number | null
+          rr?: number | null
+          rules_broken?: string | null
+          rules_followed?: boolean
+          screenshot_url?: string | null
+          sd_zone?: string | null
+          seasonality?: string | null
+          stop_loss?: number | null
+          take_profit?: number | null
+          timeframe?: string | null
+          traded_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_trades_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
             referencedRelation: "trading_accounts"
             referencedColumns: ["id"]
           },
