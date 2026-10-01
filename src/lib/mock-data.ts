@@ -27,6 +27,8 @@ export type FundamentRow = {
   inflScore: number;
   gdpScore: number;
   cotScore: number;
+  /** Full factor breakdown from real sources (COT, GDP, Trend, Retail Sales, PMI, …). */
+  factors?: { key: string; label: string; value: string; score: number; source: string }[];
 };
 
 const bias = (s: number) => (s >= 2 ? "Bullish" : s <= -2 ? "Bearish" : "Neutral");

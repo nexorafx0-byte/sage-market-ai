@@ -613,6 +613,18 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
     };
   }
 
+  // ---- Extended factors (OECD, Yahoo, CFTC retail) ----
+  try {
+    await enrichFactors(fundament, details, cot, {
+      rate: rateOf,
+      infl: (c) => num(inflOf(c)?.v),
+      gdp: (c) => num(gdpOf(c)?.v),
+    });
+  } catch (e) {
+    console.error("enrichFactors failed", e);
+    warnings.push("Some extended factors (OECD / trend) could not be loaded.");
+  }
+
   // ---- COT overview ----
   const summaryList: { asset: string; code: string }[] = [
     { asset: "EUR", code: CCY.EUR.cot },
