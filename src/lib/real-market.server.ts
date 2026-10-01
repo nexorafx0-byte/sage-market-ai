@@ -677,3 +677,193 @@ export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
   cache = { at: Date.now(), data };
   return data;
 }
+
+/* ------------------------------------------------------------------ */
+/* Extended factors: Trend, Seasonality, Retail Sales, mPMI, sPMI,     */
+/* Employment, Retail positioning                                      */
+/* ------------------------------------------------------------------ */
+
+const OECD_AREA: Record<Ccy, string> = {
+  USD: "USA", EUR: "EA20", GBP: "GBR", JPY: "JPN", CHF: "CHE", AUD: "AUS", CAD: "CAN", NZD: "NZL",
+};
+const OECD_AREAS = Object.values(OECD_AREA).join("+");
+
+type OecdObs = { area: string; measure: string; period: string; value: number };
+
+async function fetchOecd(path: string): Promise<OecdObs[]> {
+  try {
+    const res = await fetch(`https://sdmx.oecd.org/public/rest/data/${path}&format=csv`, {
+      headers: { "User-Agent": "MarketMind/1.0" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return [];
+    const lines = (await res.text()).trim().split(/\r?\n/);
+    const head = lines[0].split(",");
+    const ia = head.indexOf("REF_AREA");
+    const im = head.indexOf("MEASURE");
+    const ip = head.indexOf("TIME_PERIOD");
+    const iv = head.indexOf("OBS_VALUE");
+    return lines.slice(1).map((l) => {
+      const c = l.split(",");
+      return { area: c[ia], measure: c[im], period: c[ip], value: Number(c[iv]) };
+    }).filter((o) => Number.isFinite(o.value));
+  } catch {
+    return [];
+  }
+}
+
+/** Latest + value N periods back per area. */
+function seriesBy(obs: OecdObs[], measure?: string) {
+  const out: Record<string, { last: number; prev: number; period: string }> = {};
+  const grouped: Record<string, OecdObs[]> = {};
+  for (const o of obs) {
+    if (measure && o.measure !== measure) continue;
+    (grouped[o.area] ??= []).push(o);
+  }
+  for (const [a, arr] of Object.entries(grouped)) {
+    arr.sort((x, y) => (x.period < y.period ? 1 : -1));
+    out[a] = { last: arr[0].value, prev: arr[Math.min(3, arr.length - 1)].value, period: arr[0].period };
+  }
+  return out;
+}
+
+type PriceStats = { trend: number; season: number; years: number };
+
+async function priceStats(symbol: string, invert = false): Promise<PriceStats | null> {
+  const bars = await fetchBars(symbol, "10y", "1mo");
+  if (bars.length < 24) return null;
+  const closes = bars.map((b) => (invert ? 1 / b.c : b.c));
+  const last = closes[closes.length - 1];
+  const sma = closes.slice(-10).reduce((a, b) => a + b, 0) / Math.min(10, closes.length);
+  const month = new Date().getUTCMonth();
+  const rets: number[] = [];
+  for (let i = 1; i < closes.length; i++) {
+    if (new Date(bars[i].t * 1000).getUTCMonth() === month)
+      rets.push(((closes[i] - closes[i - 1]) / closes[i - 1]) * 100);
+  }
+  return {
+    trend: ((last - sma) / sma) * 100,
+    season: rets.length ? rets.reduce((a, b) => a + b, 0) / rets.length : 0,
+    years: Math.round(bars.length / 12),
+  };
+}
+
+const CCY_YAHOO: Record<Exclude<Ccy, "USD">, [string, boolean]> = {
+  EUR: ["EURUSD=X", false], GBP: ["GBPUSD=X", false], AUD: ["AUDUSD=X", false],
+  NZD: ["NZDUSD=X", false], JPY: ["JPY=X", true], CHF: ["CHF=X", true], CAD: ["CAD=X", true],
+};
+const NONFX_YAHOO: Record<string, string> = {
+  XAUUSD: "GC=F", XAGUSD: "SI=F", XPTUSD: "PL=F", COPPER: "HG=F", "WTI (US Oil)": "CL=F",
+  NATGAS: "NG=F", WHEAT: "ZW=F", "US500 (S&P 500)": "^GSPC", "US100 (Nasdaq)": "^NDX",
+  "US30 (Dow)": "^DJI", "US2000 (Russell)": "^RUT", BTCUSD: "BTC-USD", "US_DXY (Dollar index)": "DX-Y.NYB",
+};
+
+async function batched<T, R>(items: T[], size: number, fn: (t: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += size) out.push(...(await Promise.all(items.slice(i, i + size).map(fn))));
+  return out;
+}
+
+async function enrichFactors(
+  fundament: FundamentRow[],
+  details: Record<string, InstrumentDetailReal>,
+  cot: Map<string, CotRow[]>,
+  base: { rate: (c: Ccy) => number | undefined; infl: (c: Ccy) => number | null; gdp: (c: Ccy) => number | null },
+) {
+  const [cli, une, kei] = await Promise.all([
+    fetchOecd(`OECD.SDD.STES,DSD_STES@DF_CLI,4.1/${OECD_AREAS}.M.BCICP+CCICP.......?lastNObservations=4`),
+    fetchOecd(`OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0/${OECD_AREAS}..._Z.Y._T.Y_GE15..M?lastNObservations=4`),
+    fetchOecd(`OECD.SDD.STES,DSD_KEI@DF_KEI,/${OECD_AREAS}.M.TOVM.GR..Y.GY?lastNObservations=2`),
+  ]);
+  const bci = seriesBy(cli, "BCICP");
+  const cci = seriesBy(cli, "CCICP");
+  const unemp = seriesBy(une);
+  const retail = seriesBy(kei);
+
+  const ccyList = Object.keys(CCY_YAHOO) as Exclude<Ccy, "USD">[];
+  const ccyStats = await batched(ccyList, 4, (c) => priceStats(CCY_YAHOO[c][0], CCY_YAHOO[c][1]));
+  const px: Partial<Record<Ccy, PriceStats>> = { USD: { trend: 0, season: 0, years: 10 } };
+  ccyList.forEach((c, i) => { if (ccyStats[i]) px[c] = ccyStats[i]!; });
+  const nonFxNames = Object.keys(NONFX_YAHOO);
+  const nfStats = await batched(nonFxNames, 4, (n) => priceStats(NONFX_YAHOO[n]));
+  const pxNon: Record<string, PriceStats> = {};
+  nonFxNames.forEach((n, i) => { if (nfStats[i]) pxNon[n] = nfStats[i]!; });
+
+  const retailPos = (rows?: CotRow[]) => {
+    const r = rows?.[0];
+    if (!r || !r.oi) return null;
+    return (r.rt.l - r.rt.s) / r.oi;
+  };
+  const f = (v: number | null | undefined, d = 1, suf = "") => (v == null || !Number.isFinite(v) ? "n/a" : `${v.toFixed(d)}${suf}`);
+  const area = (c: Ccy) => OECD_AREA[c];
+
+  type Factor = NonNullable<FundamentRow["factors"]>[number];
+
+  const finalize = (row: FundamentRow, extra: Factor[]) => {
+    const core: Factor[] = [
+      { key: "cot", label: "COT", value: "Non-commercial net", score: row.cotScore, source: "CFTC COT" },
+      { key: "gdp", label: "GDP", value: row.gdp, score: row.gdpScore, source: "World Bank" },
+      { key: "rates", label: "Interest rates", value: row.rate, score: row.rateScore, source: "BIS policy rates" },
+      { key: "infl", label: "Inflation", value: row.infl, score: row.inflScore, source: "World Bank / FRED" },
+    ];
+    const all = [...core, ...extra].map((x) => ({ ...x, score: r1(clamp(x.score)) }));
+    const order = ["cot", "gdp", "season", "trend", "retail", "retailpos", "mpmi", "spmi", "rates", "infl", "emp"];
+    all.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+    row.factors = all;
+    const valid = all.filter((x) => x.value !== "n/a" && !x.value.startsWith("n/a"));
+    row.score = r1(valid.reduce((a, b) => a + b.score, 0) / (valid.length || 1));
+    row.bias = bias(row.score);
+    const d = details[row.pair];
+    if (d) {
+      for (const x of extra) {
+        d.macro.push({ label: x.label, value: x.value, score: x.score, source: x.source, updated: "latest available", note: "" });
+      }
+    }
+  };
+
+  const diffNum = (a?: number | null, b?: number | null) => (a == null || b == null || !Number.isFinite(a) || !Number.isFinite(b) ? null : a - b);
+
+  for (const [b, q] of FX_PAIRS) {
+    const row = fundament.find((r) => r.pair === `${b}${q}`);
+    if (!row) continue;
+    const tr = diffNum(px[b]?.trend, px[q]?.trend);
+    const se = diffNum(px[b]?.season, px[q]?.season);
+    const rs = diffNum(retail[area(b)]?.last, retail[area(q)]?.last);
+    const mp = diffNum(bci[area(b)]?.last, bci[area(q)]?.last);
+    const sp = diffNum(cci[area(b)]?.last, cci[area(q)]?.last);
+    const ub = unemp[area(b)], uq = unemp[area(q)];
+    const em = ub && uq ? (uq.last - uq.prev) - (ub.last - ub.prev) : null;
+    const rpB = retailPos(cot.get(CCY[b].cot)), rpQ = retailPos(cot.get(CCY[q].cot));
+    const rp = diffNum(rpB, rpQ);
+    finalize(row, [
+      { key: "season", label: "Seasonality", value: se == null ? "n/a" : `${f(se, 2)} % avg this month`, score: se == null ? 0 : se * 4, source: `Yahoo Finance — ${px[b]?.years ?? px[q]?.years ?? 10}y monthly` },
+      { key: "trend", label: "Trend", value: tr == null ? "n/a" : `${f(tr, 2)} % vs 10M avg`, score: tr == null ? 0 : tr * 2, source: "Yahoo Finance — price vs 10-month SMA" },
+      { key: "retail", label: "Retail Sales", value: rs == null ? "n/a" : `${f(retail[area(b)]?.last)} / ${f(retail[area(q)]?.last)} % y/y`, score: rs == null ? 0 : rs * 1.5, source: "OECD KEI — retail trade volume" },
+      { key: "retailpos", label: "Retail positioning", value: rp == null ? "n/a" : `${f((rpB ?? 0) * 100)} / ${f((rpQ ?? 0) * 100)} % OI`, score: rp == null ? 0 : -rp * 25, source: "CFTC non-reportables (contrarian)" },
+      { key: "mpmi", label: "mPMI", value: mp == null ? "n/a" : `${f(bci[area(b)]?.last)} / ${f(bci[area(q)]?.last)}`, score: mp == null ? 0 : mp * 3, source: "OECD business confidence (manufacturing)" },
+      { key: "spmi", label: "sPMI", value: sp == null ? "n/a" : `${f(cci[area(b)]?.last)} / ${f(cci[area(q)]?.last)}`, score: sp == null ? 0 : sp * 3, source: "OECD consumer confidence (services proxy)" },
+      { key: "emp", label: "Employment", value: em == null ? "n/a" : `Unemp. ${f(ub?.last)} / ${f(uq?.last)} %`, score: em == null ? 0 : em * 10, source: "OECD monthly unemployment (3M change)" },
+    ]);
+  }
+
+  const us = area("USD");
+  for (const item of NON_FX) {
+    const row = fundament.find((r) => r.pair === item.pair);
+    if (!row) continue;
+    const p = pxNon[item.pair];
+    const gold = ["XAUUSD", "XAGUSD"].includes(item.pair);
+    const growthSign = gold ? -0.5 : 1;
+    const rsv = retail[us]?.last;
+    const ue = unemp[us];
+    const rp = retailPos(cot.get(item.cot));
+    finalize(row, [
+      { key: "season", label: "Seasonality", value: p ? `${f(p.season, 2)} % avg this month` : "n/a", score: p ? p.season * 3 : 0, source: `Yahoo Finance — ${p?.years ?? 10}y monthly` },
+      { key: "trend", label: "Trend", value: p ? `${f(p.trend, 2)} % vs 10M avg` : "n/a", score: p ? p.trend * 1.2 : 0, source: "Yahoo Finance — price vs 10-month SMA" },
+      { key: "retail", label: "Retail Sales", value: rsv == null ? "n/a" : `US ${f(rsv)} % y/y`, score: rsv == null ? 0 : (rsv - 2) * 1.5 * growthSign, source: "OECD KEI — US retail trade volume" },
+      { key: "retailpos", label: "Retail positioning", value: rp == null ? "n/a" : `${f(rp * 100)} % OI`, score: rp == null ? 0 : -rp * 25, source: "CFTC non-reportables (contrarian)" },
+      { key: "mpmi", label: "mPMI", value: bci[us] ? `US ${f(bci[us].last)}` : "n/a", score: bci[us] ? (bci[us].last - 100) * 4 * growthSign : 0, source: "OECD business confidence (manufacturing)" },
+      { key: "spmi", label: "sPMI", value: cci[us] ? `US ${f(cci[us].last)}` : "n/a", score: cci[us] ? (cci[us].last - 100) * 4 * growthSign : 0, source: "OECD consumer confidence (services proxy)" },
+      { key: "emp", label: "Employment", value: ue ? `US unemp. ${f(ue.last)} %` : "n/a", score: ue ? -(ue.last - ue.prev) * 10 * growthSign : 0, source: "OECD monthly unemployment (3M change)" },
+    ]);
+  }
+}
