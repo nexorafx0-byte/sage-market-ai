@@ -81,6 +81,31 @@ function ScoreSpark({ pair, score }: { pair: string; score: number }) {
   );
 }
 
+function FactorBars({ score }: { score: number | null }) {
+  // 3 red bars (bearish) + 3 green bars (bullish); filled according to strength.
+  const lvl = score == null ? 0 : Math.min(3, Math.ceil(Math.abs(score) / 3.34));
+  const heights = [6, 9, 12];
+  return (
+    <span className="flex shrink-0 items-end gap-[2px]" aria-label={score == null ? "no data" : `score ${score}`}>
+      {[2, 1, 0].map((i) => (
+        <span
+          key={`b${i}`}
+          style={{ height: heights[2 - i] }}
+          className={`w-[3px] rounded-sm ${score != null && score < 0 && i < lvl ? "bg-destructive" : "bg-destructive/20"}`}
+        />
+      ))}
+      <span className="w-1" />
+      {[0, 1, 2].map((i) => (
+        <span
+          key={`g${i}`}
+          style={{ height: heights[i] }}
+          className={`w-[3px] rounded-sm ${score != null && score > 0 && i < lvl ? "bg-success" : "bg-success/20"}`}
+        />
+      ))}
+    </span>
+  );
+}
+
 function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => void }) {
   return (
     <button
@@ -109,24 +134,27 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
         <ScoreSpark pair={r.pair} score={r.score} />
       </div>
 
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-        <span>
-          Sadzba {r.rate} ({r.rateScore > 0 ? "+" : ""}
-          {r.rateScore})
-        </span>
-        <span>
-          Inflation {r.infl} ({r.inflScore > 0 ? "+" : ""}
-          {r.inflScore})
-        </span>
-        <span>
-          HDP {r.gdp} ({r.gdpScore > 0 ? "+" : ""}
-          {r.gdpScore})
-        </span>
-        <span>
-          COT {r.cotScore > 0 ? "+" : ""}
-          {r.cotScore}
-        </span>
-      </div>
+      {r.factors?.length ? (
+        <div className="mt-3 grid grid-cols-2 gap-1.5">
+          {r.factors.map((f) => (
+            <div
+              key={f.key}
+              title={`${f.value} · ${f.source}`}
+              className="flex items-center justify-between rounded-md border border-border/60 bg-background/40 px-2 py-1"
+            >
+              <span className="truncate text-[11px]">{f.label}</span>
+              <FactorBars score={f.value.startsWith("n/a") ? null : f.score} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
+          <span>Rate {r.rateScore}</span>
+          <span>Inflation {r.inflScore}</span>
+          <span>GDP {r.gdpScore}</span>
+          <span>COT {r.cotScore}</span>
+        </div>
+      )}
     </button>
   );
 }
