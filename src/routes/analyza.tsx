@@ -170,7 +170,8 @@ function AnalysisPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["market-analysis"],
     queryFn: () => fetchAnalysis(),
-    staleTime: 1000 * 60 * 30,
+    staleTime: 0,
+    refetchInterval: 1000,
   });
 
   const live = data ?? null;
