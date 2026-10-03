@@ -147,17 +147,13 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
                   <span className="truncate text-[11px]">{f.label}</span>
                   <FactorBars score={score} />
                 </div>
-                <div className="mt-1 flex items-baseline justify-between gap-2">
-                  <span
-                    className={`shrink-0 font-mono text-[11px] font-medium ${
-                      score == null ? "text-muted-foreground" : score >= 0 ? "text-success" : "text-destructive"
-                    }`}
-                  >
+                <div className="mt-1 font-mono text-[11px] font-medium leading-tight">
+                  <span className={score == null ? "text-muted-foreground" : score >= 0 ? "text-success" : "text-destructive"}>
                     {f.value}
                   </span>
-                  <span className="truncate text-[9px] uppercase tracking-wide text-muted-foreground">
-                    {f.source}
-                  </span>
+                </div>
+                <div className="mt-0.5 truncate text-[9px] uppercase tracking-wide text-muted-foreground">
+                  {f.source}
                 </div>
               </div>
             );
