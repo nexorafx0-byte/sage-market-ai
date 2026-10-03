@@ -394,24 +394,36 @@ export async function buildMarketAnalysisSafe(): Promise<MarketAnalysis> {
   }
 }
 
+let inflight: Promise<MarketAnalysis> | null = null;
+
+/** Deduplicates concurrent builds and serves stale data while refreshing. */
 export async function buildMarketAnalysis(): Promise<MarketAnalysis> {
-
   if (cache && Date.now() - cache.at < TTL) return cache.data;
+  if (!inflight) {
+    inflight = buildFresh().finally(() => {
+      inflight = null;
+    });
+  }
+  if (cache) {
+    inflight.catch(() => {});
+    return cache.data; // stale-while-revalidate
+  }
+  return inflight;
+}
 
+async function buildFresh(): Promise<MarketAnalysis> {
   const codes = [
     ...Object.values(CCY).map((c) => c.cot),
     ...NON_FX.map((n) => n.cot),
   ].filter((v, i, a) => a.indexOf(v) === i);
 
-  // Workerd allows only a limited number of concurrent subrequests —
-  // we fetch data in smaller batches, not all at once.
-  const [cot, rates, fredCpi] = await Promise.all([
+  const [cot, rates, fredCpi, cpi, gdpG] = await Promise.all([
     fetchCot(codes),
     fetchPolicyRates(),
     fetchFredCpi(),
+    fetchWorldBank("FP.CPI.TOTL.ZG"),
+    fetchWorldBank("NY.GDP.MKTP.KD.ZG"),
   ]);
-  const cpi = await fetchWorldBank("FP.CPI.TOTL.ZG");
-  const gdpG = await fetchWorldBank("NY.GDP.MKTP.KD.ZG");
   const [goldMonthly, eurBars, jpyBars, gbpBars, goldBars] = await Promise.all([
     fetchBars("GC=F", "15y", "1mo"),
     fetchBars("EURUSD=X", "6mo", "1d"),
