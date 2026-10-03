@@ -136,16 +136,32 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
 
       {r.factors?.length ? (
         <div className="mt-3 grid grid-cols-2 gap-1.5">
-          {r.factors.map((f) => (
-            <div
-              key={f.key}
-              title={`${f.value} · ${f.source}`}
-              className="flex items-center justify-between rounded-md border border-border/60 bg-background/40 px-2 py-1"
-            >
-              <span className="truncate text-[11px]">{f.label}</span>
-              <FactorBars score={f.value.startsWith("n/a") ? null : f.score} />
-            </div>
-          ))}
+          {r.factors.map((f) => {
+            const score = f.value.startsWith("n/a") ? null : f.score;
+            return (
+              <div
+                key={f.key}
+                className="rounded-md border border-border/60 bg-background/40 px-2 py-1.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="truncate text-[11px]">{f.label}</span>
+                  <FactorBars score={score} />
+                </div>
+                <div className="mt-1 flex items-baseline justify-between gap-2">
+                  <span
+                    className={`shrink-0 font-mono text-[11px] font-medium ${
+                      score == null ? "text-muted-foreground" : score >= 0 ? "text-success" : "text-destructive"
+                    }`}
+                  >
+                    {f.value}
+                  </span>
+                  <span className="truncate text-[9px] uppercase tracking-wide text-muted-foreground">
+                    {f.source}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
@@ -205,7 +221,7 @@ function AnalysisPage() {
         <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
           <p>{statusLine}</p>
           {live?.sources?.length ? (
-            <p className="mt-1">Zdroje: {live.sources.join(" · ")}</p>
+            <p className="mt-1">Sources: {live.sources.join(" · ")}</p>
           ) : null}
           {live?.warnings?.length ? (
             <p className="mt-1 text-destructive">{live.warnings.join(" ")}</p>
