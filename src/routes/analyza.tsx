@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Area,
@@ -179,14 +179,28 @@ function AnalysisPage() {
 
 
   const fetchAnalysis = useServerFn(getMarketAnalysis);
-  const { data, isLoading, isError } = useQuery({
+  const [cached, setCached] = useState<Awaited<ReturnType<typeof getMarketAnalysis>> | null>(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mm-analysis");
+      if (raw) setCached(JSON.parse(raw));
+    } catch {}
+  }, []);
+  const { data, isLoading: qLoading, isError } = useQuery({
     queryKey: ["market-analysis"],
-    queryFn: () => fetchAnalysis(),
+    queryFn: async () => {
+      const d = await fetchAnalysis();
+      try {
+        if (d?.fundament?.length) localStorage.setItem("mm-analysis", JSON.stringify(d));
+      } catch {}
+      return d;
+    },
     staleTime: 0,
     refetchInterval: 1000,
   });
 
-  const live = data ?? null;
+  const live = data ?? cached ?? null;
+  const isLoading = qLoading && !cached;
   const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
   const cotRow = allRows.find((r) => r.pair === cotPair) ?? allRows[0] ?? null;
