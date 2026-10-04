@@ -30,7 +30,7 @@ const NEWS_FEEDS: { url: string; source: string }[] = [
 
 type CacheEntry<T> = { at: number; data: T };
 const cache = new Map<string, CacheEntry<unknown>>();
-const TTL = 10 * 60 * 1000; // 10 minutes
+const TTL = 60 * 1000; // 1 minute — Forex Factory blocks more frequent polling
 
 async function cached<T>(key: string, loader: () => Promise<T>): Promise<T> {
   const hit = cache.get(key) as CacheEntry<T> | undefined;
