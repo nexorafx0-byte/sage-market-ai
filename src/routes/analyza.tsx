@@ -56,7 +56,7 @@ function ScoreSpark({ pair, score }: { pair: string; score: number }) {
   const stroke = up ? "hsl(var(--chart-2, 152 60% 45%))" : "hsl(var(--destructive))";
   const id = `spark-${pair}`;
   return (
-    <div className="h-10 w-full">
+    <div className="h-10 w-full opacity-75 transition-opacity duration-500 group-hover:opacity-100">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 2, right: 0, bottom: 2, left: 0 }}>
           <defs>
@@ -67,6 +67,7 @@ function ScoreSpark({ pair, score }: { pair: string; score: number }) {
           </defs>
           <YAxis hide domain={[-10, 10]} />
           <Area
+            className="score-spark-path"
             type="monotone"
             dataKey="score"
             stroke={stroke}
@@ -90,16 +91,16 @@ function FactorBars({ score }: { score: number | null }) {
       {[2, 1, 0].map((i) => (
         <span
           key={`b${i}`}
-          style={{ height: heights[2 - i] }}
-          className={`w-[3px] rounded-sm ${score != null && score < 0 && i < lvl ? "bg-destructive" : "bg-destructive/20"}`}
+          style={{ height: heights[2 - i], animationDelay: `${(2 - i) * 70}ms` }}
+          className={`fx-bar w-[3px] rounded-sm ${score != null && score < 0 && i < lvl ? "bg-destructive" : "bg-destructive/20"}`}
         />
       ))}
       <span className="w-1" />
       {[0, 1, 2].map((i) => (
         <span
           key={`g${i}`}
-          style={{ height: heights[i] }}
-          className={`w-[3px] rounded-sm ${score != null && score > 0 && i < lvl ? "bg-success" : "bg-success/20"}`}
+          style={{ height: heights[i], animationDelay: `${(i + 3) * 70}ms` }}
+          className={`fx-bar w-[3px] rounded-sm ${score != null && score > 0 && i < lvl ? "bg-success" : "bg-success/20"}`}
         />
       ))}
     </span>
@@ -111,10 +112,10 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
     <button
       type="button"
       onClick={() => onOpen(r)}
-      className="w-full rounded-lg border border-border p-3 text-left transition-colors hover:bg-secondary"
+      className="card-luxe group w-full rounded-lg border border-border p-3 text-left transition-colors hover:bg-secondary"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="font-mono text-sm font-medium">{r.pair}</span>
+        <span className="font-mono text-sm font-medium transition-colors duration-300 group-hover:text-primary">{r.pair}</span>
         <span className="text-xs text-muted-foreground">
           {r.bias} · {r.score > 0 ? "+" : ""}
           {r.score.toFixed(1)}
@@ -252,11 +253,11 @@ function AnalysisPage() {
                   key={c}
                   type="button"
                   onClick={() => setCat(c)}
-                  className={
-                    c === cat
-                      ? "rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-                      : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
-                  }
+                    className={
+                      c === cat
+                        ? "scale-[1.04] rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-[0_0_18px_-4px_oklch(0.74_0.16_162/70%)]"
+                        : "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary"
+                    }
                 >
                   {c}
                 </button>
@@ -277,7 +278,7 @@ function AnalysisPage() {
                       <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                         {s.title}
                       </h3>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {s.items.map((r) => (
                           <RowCard key={r.pair} r={r} onOpen={setSelected} />
                         ))}
