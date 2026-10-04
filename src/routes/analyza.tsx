@@ -230,7 +230,10 @@ function AnalysisPage() {
       <PageHeader title="AI market analysis" subtitle="Fundamentals · COT · Seasonality" />
       <div className="p-6">
         <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
-          <p>{statusLine}</p>
+          <p className="flex items-center gap-2">
+            <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary animate-pulse" />
+            {statusLine}
+          </p>
           {live?.sources?.length ? (
             <p className="mt-1">Sources: {live.sources.join(" · ")}</p>
           ) : null}
@@ -246,7 +249,7 @@ function AnalysisPage() {
             <TabsTrigger value="sezonnost">Seasonality</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="fundament" className="mt-5">
+          <TabsContent value="fundament" className="animate-rise mt-5">
             <div className="mb-4 flex flex-wrap items-center gap-2">
               {CATEGORIES.map((c) => (
                 <button
@@ -307,7 +310,7 @@ function AnalysisPage() {
             </p>
           </TabsContent>
 
-          <TabsContent value="cot" className="mt-5">
+          <TabsContent value="cot" className="animate-rise mt-5">
             <div className="mb-5 rounded-lg border border-border bg-card p-4">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="text-sm font-semibold">COT data by instrument</span>
@@ -368,7 +371,7 @@ function AnalysisPage() {
             </Panel>
           </TabsContent>
 
-          <TabsContent value="sezonnost" className="mt-5">
+          <TabsContent value="sezonnost" className="animate-rise mt-5">
             <SeasonalityPanel />
           </TabsContent>
 
