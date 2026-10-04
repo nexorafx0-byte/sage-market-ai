@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 const newsQueryOptions = queryOptions({
   queryKey: ["news-feed"],
   queryFn: () => getNewsFeed(),
-  staleTime: 5 * 60 * 1000,
+  staleTime: 0,
+  refetchInterval: 30 * 1000,
+  refetchIntervalInBackground: true,
 });
 
 export const Route = createFileRoute("/news")({
