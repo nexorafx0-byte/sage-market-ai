@@ -91,14 +91,16 @@ export function ScoreBar({ value, max = 100 }: { value: number; max?: number }) 
   const pct = Math.min(100, Math.max(0, (Math.abs(value) / max) * 100));
   const negative = value < 0;
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+    <div className="score-bar relative h-2 w-full overflow-hidden rounded-full bg-secondary">
       <div
         className={cn(
-          "h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "score-bar-fill relative h-full overflow-hidden rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
           negative ? "bg-destructive" : "bg-primary",
         )}
         style={{ width: `${pct}%` }}
-      />
+      >
+        <span className="score-bar-sweep absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      </div>
     </div>
   );
 }

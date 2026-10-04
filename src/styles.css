@@ -379,3 +379,87 @@
     }
   }
 }
+
+/* ---------------------------------------------------------------
+ * Kinetic Emerald Terminal refinements
+ * --------------------------------------------------------------- */
+
+@keyframes luxe-bar-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes luxe-fx-rise {
+  from {
+    transform: scaleY(0.15);
+    opacity: 0.2;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes luxe-draw {
+  from {
+    stroke-dashoffset: 600;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Score bar: fills from the left on mount, sweeps light on hover. */
+.score-bar .score-bar-fill {
+  transform-origin: left center;
+  animation: luxe-bar-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.score-bar .score-bar-sweep {
+  opacity: 0;
+}
+
+.score-bar:hover .score-bar-sweep {
+  opacity: 1;
+  animation: luxe-sheen 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sparkline draws itself in left to right. */
+.score-spark-path {
+  stroke-dasharray: 600;
+  animation: luxe-draw 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Factor mini-bars pop up from the baseline. */
+.fx-bar {
+  transform-origin: bottom center;
+  animation: luxe-fx-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Emerald underline slides in under the active tab label. */
+[role="tab"] {
+  position: relative;
+}
+
+[role="tab"]::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 10px oklch(0.74 0.16 162 / 70%);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[role="tab"][data-state="active"]::after {
+  transform: scaleX(1);
+}
