@@ -217,6 +217,36 @@ function CotSection({
   );
 }
 
+function InstrumentFactors({ factors }: { factors: NonNullable<FundamentRow["factors"]> }) {
+  return (
+    <div className="grid grid-cols-2 gap-2" aria-label="Fundamental factors">
+      {factors.map((factor) => {
+        const unavailable = /^n\/a/i.test(factor.value);
+        const score = unavailable ? null : factor.score;
+        const level = score == null ? 0 : Math.min(3, Math.ceil(Math.abs(score) / 3.34));
+        return (
+          <div key={factor.key} className="min-w-0 rounded-lg border border-border bg-background/40 p-3">
+            <div className="flex items-start justify-between gap-2">
+              <span className="min-w-0 break-words text-xs leading-4">{factor.label}</span>
+              <span className="flex h-4 shrink-0 items-end gap-0.5" aria-label={score == null ? "No data" : `Score ${score}`}>
+                {[2, 1, 0].map((i) => (
+                  <span key={`bear-${i}`} className={`fx-bar w-[3px] rounded-sm ${i === 2 ? "h-3" : i === 1 ? "h-2" : "h-1.5"} ${score != null && score < 0 && i < level ? "bg-destructive" : "bg-destructive/20"}`} />
+                ))}
+                <span className="w-1" />
+                {[0, 1, 2].map((i) => (
+                  <span key={`bull-${i}`} className={`fx-bar w-[3px] rounded-sm ${i === 2 ? "h-3" : i === 1 ? "h-2" : "h-1.5"} ${score != null && score > 0 && i < level ? "bg-success" : "bg-success/20"}`} />
+                ))}
+              </span>
+            </div>
+            <p className={`mt-1.5 break-words font-mono text-xs leading-5 ${score == null ? "text-muted-foreground" : score >= 0 ? "text-success" : "text-destructive"}`}>{factor.value}</p>
+            <p className="mt-1 break-words text-[10px] uppercase leading-4 text-muted-foreground">{factor.source}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function InstrumentDetailDialog({
   row,
   detail,
@@ -248,8 +278,10 @@ export function InstrumentDetailDialog({
         {/* Score history — last 30 days */}
         <ScoreHistoryChart pair={row.pair} score={row.score} />
 
-        {/* Makro rozpis */}
-        <div className="space-y-3">
+        {row.factors?.length ? (
+          <InstrumentFactors factors={row.factors} />
+        ) : (
+          <div className="space-y-3">
           {sources.map((s) => (
             <div key={s.label} className="rounded-lg border border-border p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -269,7 +301,8 @@ export function InstrumentDetailDialog({
               </p>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* COT overview - donuts + group table */}
         <div className="mt-2">
