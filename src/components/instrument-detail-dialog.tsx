@@ -35,6 +35,7 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
     d.setDate(d.getDate() + p.day);
     return {
       ...p,
+       score: Math.round(Math.max(-10, Math.min(10, p.score))),
       label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }),
     };
   });
@@ -47,7 +48,7 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
         <h3 className="text-sm font-semibold">Score history — last 30 days</h3>
         <span className="font-mono text-xs text-muted-foreground">
           now {score > 0 ? "+" : ""}
-          {score.toFixed(1)}
+           {Math.round(Math.max(-10, Math.min(10, score)))}
         </span>
       </div>
       <div className="h-56">
@@ -70,7 +71,7 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
             <YAxis domain={[-10, 10]} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
             <ReferenceLine y={0} stroke="var(--color-border)" />
             <Tooltip
-              formatter={(v: number) => [`${v > 0 ? "+" : ""}${v.toFixed(2)}`, "Score"]}
+               formatter={(v: number) => [`${v > 0 ? "+" : ""}${Math.round(v)}`, "Score"]}
               contentStyle={{
                 borderRadius: 12,
                 border: "1px solid var(--color-border)",
@@ -222,7 +223,7 @@ function InstrumentFactors({ factors }: { factors: NonNullable<FundamentRow["fac
     <div className="grid grid-cols-2 gap-2" aria-label="Fundamental factors">
       {factors.map((factor) => {
         const unavailable = /^n\/a/i.test(factor.value);
-        const score = unavailable ? null : factor.score;
+         const score = unavailable ? null : Math.round(Math.max(-10, Math.min(10, factor.score)));
         const level = score == null ? 0 : Math.min(3, Math.ceil(Math.abs(score) / 3.34));
         return (
           <div key={factor.key} className="min-w-0 rounded-lg border border-border bg-background/40 p-3">
@@ -266,7 +267,7 @@ export function InstrumentDetailDialog({
         <DialogHeader>
           <DialogTitle className="font-mono">
             {row.pair} · {row.bias} ({row.score > 0 ? "+" : ""}
-            {row.score.toFixed(1)})
+             {Math.round(Math.max(-10, Math.min(10, row.score)))})
           </DialogTitle>
           <DialogDescription>
             {isReal
@@ -289,10 +290,10 @@ export function InstrumentDetailDialog({
                 <span className="font-mono text-sm">{s.value}</span>
               </div>
               <div className="mt-2 flex items-center gap-3">
-                <ScoreBar value={s.score} max={10} />
+                 <ScoreBar value={Math.round(Math.max(-10, Math.min(10, s.score)))} max={10} />
                 <span className="w-12 shrink-0 text-right font-mono text-xs">
                   {s.score > 0 ? "+" : ""}
-                  {s.score}
+                   {Math.round(Math.max(-10, Math.min(10, s.score)))}
                 </span>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{s.note}</p>
