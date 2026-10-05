@@ -51,7 +51,7 @@ export const Route = createFileRoute("/analyza")({
 const CATEGORIES = ["All", "Forex", "Commodities", "Indices"] as const;
 
 function ScoreSpark({ pair, score }: { pair: string; score: number }) {
-  const data = scoreHistory(pair, score);
+  const data = scoreHistory(pair, score).map((point) => ({ ...point, score: Math.round(Math.max(-10, Math.min(10, point.score))) }));
   const up = score >= 0;
   const stroke = up ? "hsl(var(--chart-2, 152 60% 45%))" : "hsl(var(--destructive))";
   const id = `spark-${pair}`;
@@ -118,14 +118,14 @@ function RowCard({ r, onOpen }: { r: FundamentRow; onOpen: (r: FundamentRow) => 
         <span className="font-mono text-sm font-medium transition-colors duration-300 group-hover:text-primary">{r.pair}</span>
         <span className="text-xs text-muted-foreground">
           {r.bias} · {r.score > 0 ? "+" : ""}
-          {r.score.toFixed(1)}
+           {r.score}
         </span>
       </div>
       <div className="mt-2 flex items-center gap-3">
         <ScoreBar value={r.score} max={10} />
         <span className="w-12 shrink-0 text-right font-mono text-xs">
           {r.score > 0 ? "+" : ""}
-          {r.score.toFixed(1)}
+           {r.score}
         </span>
       </div>
       <div className="mt-2">
@@ -202,7 +202,18 @@ function AnalysisPage() {
 
   const live = data ?? cached ?? null;
   const isLoading = qLoading && !cached;
-  const allRows = live?.fundament?.length ? live.fundament : fundamentScore;
+  const allRows = (live?.fundament?.length ? live.fundament : fundamentScore).map((row) => {
+    const whole = (value: number) => Math.round(Math.max(-10, Math.min(10, value)));
+    return {
+      ...row,
+      score: whole(row.score),
+      rateScore: whole(row.rateScore),
+      inflScore: whole(row.inflScore),
+      gdpScore: whole(row.gdpScore),
+      cotScore: whole(row.cotScore),
+      factors: row.factors?.map((factor) => ({ ...factor, score: whole(factor.score) })),
+    };
+  });
   const cotRows = live?.cotSummary?.length ? live.cotSummary : cotData;
   const cotRow = allRows.find((r) => r.pair === cotPair) ?? allRows[0] ?? null;
 
