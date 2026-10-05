@@ -49,6 +49,33 @@ export type Database = {
           },
         ]
       }
+      ai_bias_reports: {
+        Row: {
+          generated_at: string | null
+          lease_until: string
+          paused_reason: string | null
+          paused_status: number | null
+          report: Json | null
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string | null
+          lease_until?: string
+          paused_reason?: string | null
+          paused_status?: number | null
+          report?: Json | null
+          user_id: string
+        }
+        Update: {
+          generated_at?: string | null
+          lease_until?: string
+          paused_reason?: string | null
+          paused_status?: number | null
+          report?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       journal_trades: {
         Row: {
           account_id: string | null
@@ -239,7 +266,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_ai_bias: { Args: never; Returns: boolean }
     }
     Enums: {
       account_connection_status: "manual" | "pending" | "connected" | "error"
