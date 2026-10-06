@@ -31,6 +31,7 @@ const analysisItems = [
   { title: "Charts", url: "/grafy", icon: CandlestickChart },
   { title: "Backtesting", url: "/backtesting", icon: FlaskConical },
   { title: "News", url: "/news", icon: Newspaper },
+  { title: "AI chat", url: "/ai-chat", icon: Brain },
 ];
 
 const tradingItems = [

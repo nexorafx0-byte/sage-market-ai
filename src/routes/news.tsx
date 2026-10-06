@@ -2,6 +2,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
+import { EventAi } from "@/components/event-ai";
 import { PageHeader, Panel } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
 import { getNewsFeed } from "@/lib/news.functions";
@@ -183,7 +184,7 @@ function NewsPage() {
                               {timeLabel(e.date)}
                             </td>
                             <td className="px-3 py-2 font-semibold">{e.country}</td>
-                            <td className="px-3 py-2">{e.title}</td>
+                            <td className="px-3 py-2">{e.title}<EventAi event={e} /></td>
                             <td className="px-3 py-2">
                               <span
                                 className={cn(

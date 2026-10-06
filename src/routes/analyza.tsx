@@ -16,6 +16,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { BiasPanel } from "@/components/bias-panel";
 import { CotOverview } from "@/components/cot-overview";
 import { InstrumentDetailDialog } from "@/components/instrument-detail-dialog";
 import { PageHeader, Panel, ScoreBar } from "@/components/page-shell";
@@ -258,6 +259,7 @@ function AnalysisPage() {
             <TabsTrigger value="fundament">Fundament</TabsTrigger>
             <TabsTrigger value="cot">COT</TabsTrigger>
             <TabsTrigger value="sezonnost">Seasonality</TabsTrigger>
+            <TabsTrigger value="bias">Daily & Weekly Bias</TabsTrigger>
           </TabsList>
 
           <TabsContent value="fundament" className="animate-rise mt-5">
@@ -385,6 +387,11 @@ function AnalysisPage() {
           <TabsContent value="sezonnost" className="animate-rise mt-5">
             <SeasonalityPanel />
           </TabsContent>
+
+          <TabsContent value="bias" className="animate-rise mt-5">
+            <BiasPanel />
+          </TabsContent>
+
 
         </Tabs>
       </div>
