@@ -81,7 +81,7 @@ function ScoreSpark({ pair, score }: { pair: string; score: number }) {
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 function FactorBars({ score }: { score: number | null }) {
   // 3 red bars (bearish) + 3 green bars (bullish); filled according to strength.
