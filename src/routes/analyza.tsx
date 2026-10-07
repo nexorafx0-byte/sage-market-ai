@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import {
   Area,
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/analyza")({
 
 const CATEGORIES = ["All", "Forex", "Commodities", "Indices"] as const;
 
-function ScoreSpark({ pair, score }: { pair: string; score: number }) {
+const ScoreSpark = memo(function ScoreSparkInner({ pair, score }: { pair: string; score: number }) {
   const data = scoreHistory(pair, score).map((point) => ({ ...point, score: Math.round(Math.max(-10, Math.min(10, point.score))) }));
   const up = score >= 0;
   const stroke = up ? "hsl(var(--chart-2, 152 60% 45%))" : "hsl(var(--destructive))";
@@ -81,7 +81,7 @@ function ScoreSpark({ pair, score }: { pair: string; score: number }) {
       </ResponsiveContainer>
     </div>
   );
-}
+});
 
 function FactorBars({ score }: { score: number | null }) {
   // 3 red bars (bearish) + 3 green bars (bullish); filled according to strength.
@@ -181,6 +181,7 @@ function AnalysisPage() {
 
 
   const fetchAnalysis = useServerFn(getMarketAnalysis);
+  const lastSaved = useRef<string | null>(null);
   const [cached, setCached] = useState<Awaited<ReturnType<typeof getMarketAnalysis>> | null>(null);
   useEffect(() => {
     try {
@@ -193,12 +194,16 @@ function AnalysisPage() {
     queryFn: async () => {
       const d = await fetchAnalysis();
       try {
-        if (d?.fundament?.length) localStorage.setItem("mm-analysis", JSON.stringify(d));
+        if (d?.fundament?.length && lastSaved.current !== d.updatedAt) {
+          lastSaved.current = d.updatedAt;
+          localStorage.setItem("mm-analysis", JSON.stringify(d));
+        }
       } catch {}
       return d;
     },
-    staleTime: 0,
-    refetchInterval: 1000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const live = data ?? cached ?? null;
