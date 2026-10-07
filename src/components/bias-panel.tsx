@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { generateBias, getMyBias, type BiasItem, type BiasReport } from "@/lib/ai-bias.functions";
+
+type Inst = { pair: string; category: string };
 
 function Pill({ b }: { b: BiasItem["daily"] }) {
   const cls =
@@ -26,7 +28,9 @@ function Pill({ b }: { b: BiasItem["daily"] }) {
   );
 }
 
-export function BiasPanel() {
+const GROUPS = ["Forex", "Commodities", "Indices"];
+
+export function BiasPanel({ instruments }: { instruments: Inst[] }) {
   const fetchBias = useServerFn(getMyBias);
   const runBias = useServerFn(generateBias);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
@@ -34,6 +38,7 @@ export function BiasPanel() {
   const [at, setAt] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sel, setSel] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -43,15 +48,26 @@ export function BiasPanel() {
         const r = await fetchBias();
         setReport(r.report);
         setAt(r.generatedAt);
+        if (r.error) setErr(r.error);
       } catch {}
     });
   }, [fetchBias]);
+
+  const toggle = (p: string) =>
+    setSel((s) => {
+      const n = new Set(s);
+      if (n.has(p)) n.delete(p);
+      else n.add(p);
+      return n;
+    });
+  const setGroup = (g: string | null) =>
+    setSel(new Set(instruments.filter((i) => g === null || i.category === g).map((i) => i.pair)));
 
   const run = async () => {
     setBusy(true);
     setErr(null);
     try {
-      const r = await runBias();
+      const r = await runBias({ data: { pairs: [...sel] } });
       setReport(r.report);
       setAt(r.generatedAt);
     } catch (e) {
@@ -61,6 +77,11 @@ export function BiasPanel() {
     }
   };
 
+  const shown = useMemo(
+    () => (report?.items ?? []).filter((i) => sel.size === 0 || sel.has(i.pair)),
+    [report, sel],
+  );
+
   if (signedIn === false)
     return (
       <div className="rounded-lg border border-border bg-card p-6 text-sm">
@@ -68,50 +89,80 @@ export function BiasPanel() {
       </div>
     );
 
-  const groups = ["Forex", "Commodities", "Indices"];
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
-        <span>
-          {at ? `Generated ${new Date(at).toLocaleString("en-US")}` : "No report yet."} Percent = AI confidence, not a guaranteed probability. Not financial advice.
-        </span>
-        <button
-          type="button"
-          onClick={run}
-          disabled={busy}
-          className="ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
-        >
-          {busy ? "AI is analyzing…" : report ? "Regenerate" : "Generate bias"}
-        </button>
+      <div className="mb-4 rounded-lg border border-border bg-card p-3">
+        <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-semibold">Instruments</span>
+          <button type="button" onClick={() => setGroup(null)} className="rounded-full border border-border px-2.5 py-1 hover:bg-secondary">All</button>
+          {GROUPS.map((g) => (
+            <button key={g} type="button" onClick={() => setGroup(g)} className="rounded-full border border-border px-2.5 py-1 hover:bg-secondary">{g}</button>
+          ))}
+          <button type="button" onClick={() => setSel(new Set())} className="rounded-full border border-border px-2.5 py-1 text-muted-foreground hover:bg-secondary">Clear</button>
+          <span className="ml-auto text-muted-foreground">{sel.size ? `${sel.size} selected` : "None selected = all"}</span>
+        </div>
+        {GROUPS.map((g) => (
+          <div key={g} className="mt-2">
+            <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">{g}</div>
+            <div className="flex flex-wrap gap-1.5">
+              {instruments.filter((i) => i.category === g).map((i) => (
+                <button
+                  key={i.pair}
+                  type="button"
+                  onClick={() => toggle(i.pair)}
+                  className={
+                    sel.has(i.pair)
+                      ? "rounded-md bg-primary px-2 py-1 font-mono text-[11px] text-primary-foreground"
+                      : "rounded-md border border-border px-2 py-1 font-mono text-[11px] text-muted-foreground hover:bg-secondary"
+                  }
+                >
+                  {i.pair}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <span>
+            {at ? `Last generated ${new Date(at).toLocaleString("en-US")}.` : "No report yet."} Percent = AI confidence, not a guaranteed probability. Not financial advice.
+          </span>
+          <button
+            type="button"
+            onClick={run}
+            disabled={busy}
+            className="ml-auto rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
+          >
+            {busy ? "AI is analyzing…" : `Generate bias${sel.size ? ` (${sel.size})` : " (all)"}`}
+          </button>
+        </div>
       </div>
       {err && <p className="mb-4 text-sm text-destructive">{err}</p>}
-      {report &&
-        groups.map((g) => {
-          const items = report.items.filter((i) => i.category === g);
-          if (!items.length) return null;
-          return (
-            <section key={g} className="mb-8">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{g}</h3>
-              <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {items.map((i) => (
-                  <div key={i.pair} className="card-luxe rounded-lg border border-border p-3">
-                    <div className="mb-2 font-mono text-sm font-medium">{i.pair}</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Daily</div>
-                        <Pill b={i.daily} />
-                      </div>
-                      <div>
-                        <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Weekly</div>
-                        <Pill b={i.weekly} />
-                      </div>
+      {GROUPS.map((g) => {
+        const items = shown.filter((i) => i.category === g);
+        if (!items.length) return null;
+        return (
+          <section key={g} className="mb-8">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">{g}</h3>
+            <div className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {items.map((i) => (
+                <div key={i.pair} className="card-luxe rounded-lg border border-border p-3">
+                  <div className="mb-2 font-mono text-sm font-medium">{i.pair}</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Daily</div>
+                      <Pill b={i.daily} />
+                    </div>
+                    <div>
+                      <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Weekly</div>
+                      <Pill b={i.weekly} />
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
