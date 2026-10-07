@@ -389,7 +389,7 @@ function AnalysisPage() {
           </TabsContent>
 
           <TabsContent value="bias" className="animate-rise mt-5">
-            <BiasPanel />
+            <BiasPanel instruments={allRows.map((r) => ({ pair: r.pair, category: r.category }))} />
           </TabsContent>
 
 

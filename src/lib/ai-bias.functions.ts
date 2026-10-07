@@ -181,11 +181,25 @@ For EVERY instrument above return a daily and weekly directional bias with your 
       });
       return { pair: r.pair, category: r.category, daily: mk(a.daily), weekly: mk(a.weekly) };
     });
-    const report: BiasReport = { items };
+    const { data: prev } = await sb
+      .from("ai_bias_reports")
+      .select("report")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const prevItems = ((prev?.report as BiasReport | null)?.items ?? []).filter(
+      (p) => !items.some((n) => n.pair === p.pair),
+    );
+    const report: BiasReport = { items: [...prevItems, ...items] };
     const generatedAt = new Date().toISOString();
     await sb
       .from("ai_bias_reports")
-      .update({ report, generated_at: generatedAt, paused_reason: null, paused_status: null })
+      .update({
+        report: report as never,
+        generated_at: generatedAt,
+        paused_reason: null,
+        paused_status: null,
+        lease_until: new Date(0).toISOString(),
+      })
       .eq("user_id", context.userId);
     return { report, generatedAt, error: null };
   });
