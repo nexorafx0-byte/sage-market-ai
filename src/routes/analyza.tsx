@@ -51,7 +51,7 @@ export const Route = createFileRoute("/analyza")({
 
 const CATEGORIES = ["All", "Forex", "Commodities", "Indices"] as const;
 
-function ScoreSpark({ pair, score }: { pair: string; score: number }) {
+const ScoreSpark = memo(function ScoreSparkInner({ pair, score }: { pair: string; score: number }) {
   const data = scoreHistory(pair, score).map((point) => ({ ...point, score: Math.round(Math.max(-10, Math.min(10, point.score))) }));
   const up = score >= 0;
   const stroke = up ? "hsl(var(--chart-2, 152 60% 45%))" : "hsl(var(--destructive))";
