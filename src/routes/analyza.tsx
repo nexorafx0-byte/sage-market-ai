@@ -181,6 +181,7 @@ function AnalysisPage() {
 
 
   const fetchAnalysis = useServerFn(getMarketAnalysis);
+  const lastSaved = useRef<string | null>(null);
   const [cached, setCached] = useState<Awaited<ReturnType<typeof getMarketAnalysis>> | null>(null);
   useEffect(() => {
     try {
