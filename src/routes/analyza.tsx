@@ -193,12 +193,16 @@ function AnalysisPage() {
     queryFn: async () => {
       const d = await fetchAnalysis();
       try {
-        if (d?.fundament?.length) localStorage.setItem("mm-analysis", JSON.stringify(d));
+        if (d?.fundament?.length && lastSaved.current !== d.updatedAt) {
+          lastSaved.current = d.updatedAt;
+          localStorage.setItem("mm-analysis", JSON.stringify(d));
+        }
       } catch {}
       return d;
     },
-    staleTime: 0,
-    refetchInterval: 1000,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const live = data ?? cached ?? null;
