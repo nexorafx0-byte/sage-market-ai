@@ -30,48 +30,65 @@ import type { FundamentRow } from "@/lib/mock-data";
 import { scoreHistory } from "@/lib/score-history";
 
 function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
-  const points = scoreHistory(pair, score).map((p) => {
+  const points = scoreHistory(pair, score, 365).map((p) => {
     const d = new Date();
     d.setDate(d.getDate() + p.day);
     return {
       ...p,
-       score: Math.round(Math.max(-10, Math.min(10, p.score))),
-      label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }),
+      score: Math.max(-10, Math.min(10, p.score)),
+      label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" }),
+      month: d.toLocaleDateString("en-GB", { month: "short" }),
     };
   });
-  const up = score >= 0;
-  const stroke = up ? "var(--color-success)" : "var(--color-destructive)";
+  const vals = points.map((p) => p.score);
+  const max = Math.max(...vals);
+  const min = Math.min(...vals);
+  // Fraction of the plot height (from top) where y = 0 sits, for the green/red split.
+  const zero = max <= 0 ? 0 : min >= 0 ? 1 : max / (max - min);
+  const monthTicks = points.filter((p, i) => i === 0 || p.month !== points[i - 1].month).map((p) => p.label);
 
   return (
     <div className="rounded-lg border border-border p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Score history — last 30 days</h3>
-        <span className="font-mono text-xs text-muted-foreground">
-          now {score > 0 ? "+" : ""}
-           {Math.round(Math.max(-10, Math.min(10, score)))}
+        <h3 className="text-sm font-semibold">
+          Score history — last year{" "}
+          <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">
+            now {score > 0 ? "+" : ""}
+            {Math.round(Math.max(-10, Math.min(10, score)))}
+          </span>
+        </h3>
+        <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+          Sample data
         </span>
       </div>
       <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={points} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
             <defs>
-              <linearGradient id="score-hist" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={stroke} stopOpacity={0.4} />
-                <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+              <linearGradient id="score-hist-stroke" x1="0" y1="0" x2="0" y2="1">
+                <stop offset={zero} stopColor="var(--color-success)" />
+                <stop offset={zero} stopColor="var(--color-destructive)" />
+              </linearGradient>
+              <linearGradient id="score-hist-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset={0} stopColor="var(--color-success)" stopOpacity={0.35} />
+                <stop offset={zero} stopColor="var(--color-success)" stopOpacity={0.08} />
+                <stop offset={zero} stopColor="var(--color-destructive)" stopOpacity={0.08} />
+                <stop offset={1} stopColor="var(--color-destructive)" stopOpacity={0.35} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
             <XAxis
               dataKey="label"
+              ticks={monthTicks}
+              tickFormatter={(l: string) => l.split(" ")[1] ?? l}
               tick={{ fontSize: 10 }}
-              interval={4}
               tickLine={false}
               axisLine={false}
             />
-            <YAxis domain={[-10, 10]} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+            <YAxis domain={[-10, 10]} ticks={[-10, -5, 0, 5, 10]} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
             <ReferenceLine y={0} stroke="var(--color-border)" />
             <Tooltip
-               formatter={(v: number) => [`${v > 0 ? "+" : ""}${Math.round(v)}`, "Score"]}
+              formatter={(v: number) => [`${v > 0 ? "+" : ""}${Math.round(v)}`, "Score"]}
               contentStyle={{
                 borderRadius: 12,
                 border: "1px solid var(--color-border)",
@@ -82,10 +99,11 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
             <Area
               type="monotone"
               dataKey="score"
-              stroke={stroke}
-              strokeWidth={2}
-              fill="url(#score-hist)"
-              dot={{ r: 1.6, fill: stroke }}
+              baseValue={0}
+              stroke="url(#score-hist-stroke)"
+              strokeWidth={1.8}
+              fill="url(#score-hist-fill)"
+              dot={false}
               activeDot={{ r: 4 }}
               isAnimationActive={false}
             />
