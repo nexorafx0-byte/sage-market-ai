@@ -378,10 +378,6 @@ export function InstrumentDetailDialog({
             <InstrumentAiSummary key={row.pair} row={row} isReal={isReal} />
             </div>
 
-        {/* COT overview - donuts + group table */}
-        <div className="p-4 sm:p-6">
-          <CotOverview row={row} detail={detail} />
-        </div>
           </TabsContent>
           <TabsContent value="cot" className="m-0 p-4 sm:p-6">
             <CotOverview row={row} detail={detail} />
