@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+Instrument detail uses a full-viewport Radix dialog with internal scrolling and dismissal controls, preserving analysis filters and scroll position on return.

@@ -14,6 +14,9 @@ import {
 } from "recharts";
 
 import { CotOverview } from "@/components/cot-overview";
+import { ArrowLeft, Activity } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { ScoreBar } from "@/components/page-shell";
 import {
   Dialog,
@@ -30,28 +33,28 @@ import type { FundamentRow } from "@/lib/mock-data";
 import { scoreHistory } from "@/lib/score-history";
 
 function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
+  const [period, setPeriod] = useState(365);
   const points = scoreHistory(pair, score, 365).map((p) => {
     const d = new Date();
     d.setDate(d.getDate() + p.day);
     return {
       ...p,
-      score: Math.max(-10, Math.min(10, p.score)),
+      score: Math.round(Math.max(-10, Math.min(10, p.score))),
       label: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" }),
       month: d.toLocaleDateString("en-GB", { month: "short" }),
     };
-  });
-  const vals = points.map((p) => p.score);
-  const max = Math.max(...vals);
-  const min = Math.min(...vals);
-  // Fraction of the plot height (from top) where y = 0 sits, for the green/red split.
-  const zero = max <= 0 ? 0 : min >= 0 ? 1 : max / (max - min);
+  }).slice(-period);
+  const values = points.map((point) => point.score);
+  const high = Math.max(...values);
+  const low = Math.min(...values);
+  const zero = high <= 0 ? 0 : low >= 0 ? 1 : high / (high - low);
   const monthTicks = points.filter((p, i) => i === 0 || p.month !== points[i - 1].month).map((p) => p.label);
 
   return (
-    <div className="rounded-lg border border-border p-4">
+    <section className="min-w-0 p-4 sm:p-6">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-semibold">
-          Score history — last year{" "}
+          Score <span className="font-mono text-muted-foreground">{pair}</span>{" "}
           <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">
             now {score > 0 ? "+" : ""}
             {Math.round(Math.max(-10, Math.min(10, score)))}
@@ -61,7 +64,7 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
           Sample data
         </span>
       </div>
-      <div className="h-56">
+      <div className="h-[320px] sm:h-[380px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={points} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
             <defs>
@@ -90,7 +93,7 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
             <Tooltip
               formatter={(v: number) => [`${v > 0 ? "+" : ""}${Math.round(v)}`, "Score"]}
               contentStyle={{
-                borderRadius: 12,
+                borderRadius: 8,
                 border: "1px solid var(--color-border)",
                 background: "var(--color-card)",
                 fontSize: 12,
@@ -110,7 +113,14 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3">
+        <span className="mr-2 text-xs text-muted-foreground">Time period</span>
+        {[{ label: "1m", days: 30 }, { label: "3m", days: 90 }, { label: "6m", days: 180 }, { label: "1y", days: 365 }].map((item) => (
+          <Button key={item.label} size="sm" variant={period === item.days ? "default" : "ghost"} aria-pressed={period === item.days} onClick={() => setPeriod(item.days)}>{item.label}</Button>
+        ))}
+        <span className="ml-auto text-xs text-muted-foreground">Fundamental score · −10 / +10</span>
+      </div>
+    </section>
   );
 }
 
@@ -244,7 +254,7 @@ function InstrumentFactors({ factors }: { factors: NonNullable<FundamentRow["fac
          const score = unavailable ? null : Math.round(Math.max(-10, Math.min(10, factor.score)));
         const level = score == null ? 0 : Math.min(3, Math.ceil(Math.abs(score) / 3.34));
         return (
-          <div key={factor.key} className="min-w-0 rounded-lg border border-border bg-background/40 p-3">
+          <div key={factor.key} className="min-w-0 border-b border-border p-3">
             <div className="flex items-start justify-between gap-2">
               <span className="min-w-0 break-words text-xs leading-4">{factor.label}</span>
               <span className="flex h-4 shrink-0 items-end gap-0.5" aria-label={score == null ? "No data" : `Score ${score}`}>
@@ -281,21 +291,53 @@ export function InstrumentDetailDialog({
 
   return (
     <Dialog open={!!row} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-mono">
+      <DialogContent className="inset-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 p-0 sm:rounded-none">
+        <DialogHeader className="shrink-0 border-b border-border bg-background px-4 py-4 pr-14 sm:px-6 sm:pr-16">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}><ArrowLeft />Back</Button>
+            <Activity className="hidden h-6 w-6 text-primary sm:block" />
+          <DialogTitle className="font-mono text-xl sm:text-2xl">
             {row.pair} · {row.bias} ({row.score > 0 ? "+" : ""}
              {Math.round(Math.max(-10, Math.min(10, row.score)))})
           </DialogTitle>
-          <DialogDescription>
+          <span className="ml-auto hidden text-xs font-semibold tracking-wider text-primary sm:block">MARKETMIND</span>
+          </div>
+          <DialogDescription className="sr-only">
             {isReal
               ? "Real data: BIS (rates), World Bank (inflation, GDP) and CFTC COT (Non-Commercial, Commercial, Retail)."
               : "Breakdown of macroeconomic data and COT positioning (Non-Commercial, Commercial, Retail)."}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Score history — last 30 days */}
-        <ScoreHistoryChart pair={row.pair} score={row.score} />
+        <Tabs defaultValue="overall" className="flex min-h-0 flex-1 flex-col">
+          <div className="shrink-0 border-b border-border px-4 py-2 sm:px-6">
+            <TabsList>
+              <TabsTrigger value="overall">Overall</TabsTrigger>
+              <TabsTrigger value="cot">COT</TabsTrigger>
+              <TabsTrigger value="history">COT history</TabsTrigger>
+            </TabsList>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <TabsContent value="overall" className="m-0">
+            <div className="grid border-b border-border lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
+              <ScoreHistoryChart pair={row.pair} score={row.score} />
+              <section className="border-t border-border p-4 sm:p-6 lg:border-t-0 lg:border-l">
+                <h3 className="mb-6 text-sm font-semibold">Fundamental summary <span className="font-mono text-muted-foreground">{row.pair}</span></h3>
+                <p className={`font-mono text-4xl ${row.score >= 0 ? "text-success" : "text-destructive"}`}>{row.score > 0 ? "+" : ""}{Math.round(row.score)}<span className="text-base text-muted-foreground"> / 10</span></p>
+                <p className="mt-2 text-sm font-medium">{row.bias}</p>
+                <div className="my-5"><ScoreBar value={row.score} max={10} /></div>
+                <div className="space-y-3">
+                  {(row.factors?.length ? row.factors.filter((f) => !/^n\/a/i.test(f.value)).slice().sort((a, b) => Math.abs(b.score) - Math.abs(a.score)).slice(0, 4) : sources).slice(0, 4).map((f) => (
+                    <div key={f.label} className="flex items-start justify-between gap-4 border-b border-border pb-3 text-xs">
+                      <span className="text-muted-foreground">{f.label}</span><span className="text-right font-mono">{f.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-5 text-[11px] leading-5 text-muted-foreground">{isReal ? "Current factors from published market sources." : "Sample macro values — live data unavailable."} Historical score curve is illustrative, not recorded daily fundamentals.</p>
+              </section>
+            </div>
+            <section className="border-b border-border p-4 sm:p-6">
+            <h3 className="mb-4 text-sm font-semibold">Score overview <span className="font-mono text-muted-foreground">{row.pair}</span></h3>
 
         {row.factors?.length ? (
           <InstrumentFactors factors={row.factors} />
@@ -322,14 +364,19 @@ export function InstrumentDetailDialog({
           ))}
           </div>
         )}
+            </section>
 
         {/* COT overview - donuts + group table */}
-        <div className="mt-2">
+        <div className="p-4 sm:p-6">
           <CotOverview row={row} detail={detail} />
         </div>
+          </TabsContent>
+          <TabsContent value="cot" className="m-0 p-4 sm:p-6">
+            <CotOverview row={row} detail={detail} />
+          </TabsContent>
 
         {/* COT by group */}
-        <div className="mt-2">
+        <TabsContent value="history" className="m-0 p-4 sm:p-6">
           <h3 className="mb-3 text-sm font-semibold">COT history — by group</h3>
           <Tabs defaultValue="noncommercial">
             <TabsList>
@@ -352,7 +399,9 @@ export function InstrumentDetailDialog({
               </TabsContent>
             ))}
           </Tabs>
-        </div>
+        </TabsContent>
+          </div>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
