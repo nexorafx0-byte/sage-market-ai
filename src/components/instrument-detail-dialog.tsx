@@ -44,7 +44,10 @@ function ScoreHistoryChart({ pair, score }: { pair: string; score: number }) {
       month: d.toLocaleDateString("en-GB", { month: "short" }),
     };
   }).slice(-period);
-  const zero = 0.5;
+  const values = points.map((point) => point.score);
+  const high = Math.max(...values);
+  const low = Math.min(...values);
+  const zero = high <= 0 ? 0 : low >= 0 ? 1 : high / (high - low);
   const monthTicks = points.filter((p, i) => i === 0 || p.month !== points[i - 1].month).map((p) => p.label);
 
   return (
