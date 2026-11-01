@@ -6,3 +6,8 @@
 # Instrument overview
 - [x] Compact score overview with adjacent AI explanation
 - [x] Remove COT overview from the Overall tab; retain dedicated COT tabs
+
+# Instrument detail tabs
+- [ ] Remove COT history
+- [ ] Add Seasonality, Bank reports and Calendar
+- [ ] Verify tab switching and dismissal
