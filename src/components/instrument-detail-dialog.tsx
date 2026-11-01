@@ -14,8 +14,9 @@ import {
 } from "recharts";
 
 import { CotOverview } from "@/components/cot-overview";
-import { ArrowLeft, Activity } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Activity, Sparkles, Square } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { streamAi } from "@/lib/ai-stream";
 import { Button } from "@/components/ui/button";
 import { ScoreBar } from "@/components/page-shell";
 import {
@@ -248,31 +249,63 @@ function CotSection({
 
 function InstrumentFactors({ factors }: { factors: NonNullable<FundamentRow["factors"]> }) {
   return (
-    <div className="grid grid-cols-2 gap-2" aria-label="Fundamental factors">
+    <div className="grid grid-cols-2 gap-x-5 gap-y-3" aria-label="Fundamental factors">
       {factors.map((factor) => {
         const unavailable = /^n\/a/i.test(factor.value);
          const score = unavailable ? null : Math.round(Math.max(-10, Math.min(10, factor.score)));
-        const level = score == null ? 0 : Math.min(3, Math.ceil(Math.abs(score) / 3.34));
         return (
-          <div key={factor.key} className="min-w-0 border-b border-border p-3">
-            <div className="flex items-start justify-between gap-2">
-              <span className="min-w-0 break-words text-xs leading-4">{factor.label}</span>
-              <span className="flex h-4 shrink-0 items-end gap-0.5" aria-label={score == null ? "No data" : `Score ${score}`}>
-                {[2, 1, 0].map((i) => (
-                  <span key={`bear-${i}`} className={`fx-bar w-[3px] rounded-sm ${i === 2 ? "h-3" : i === 1 ? "h-2" : "h-1.5"} ${score != null && score < 0 && i < level ? "bg-destructive" : "bg-destructive/20"}`} />
-                ))}
-                <span className="w-1" />
-                {[0, 1, 2].map((i) => (
-                  <span key={`bull-${i}`} className={`fx-bar w-[3px] rounded-sm ${i === 2 ? "h-3" : i === 1 ? "h-2" : "h-1.5"} ${score != null && score > 0 && i < level ? "bg-success" : "bg-success/20"}`} />
-                ))}
-              </span>
+          <div key={factor.key} className="min-w-0 border-b border-border/50 pb-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="min-w-0 break-words text-[11px] leading-4 text-muted-foreground">{factor.label}</span>
+              <span aria-label={score == null ? "No data" : `Score ${score}`} className={`flex h-5 min-w-6 shrink-0 items-center justify-center rounded-sm bg-secondary px-1 font-mono text-[10px] ${score == null || score === 0 ? "text-muted-foreground" : score > 0 ? "text-success" : "text-destructive"}`}>{score == null ? "—" : score}</span>
             </div>
-            <p className={`mt-1.5 break-words font-mono text-xs leading-5 ${score == null ? "text-muted-foreground" : score >= 0 ? "text-success" : "text-destructive"}`}>{factor.value}</p>
-            <p className="mt-1 break-words text-[10px] uppercase leading-4 text-muted-foreground">{factor.source}</p>
+            <p className="mt-1 break-words font-mono text-[10px] leading-4">{factor.value}</p>
+            <p className="break-words text-[9px] leading-3 text-muted-foreground">{factor.source}</p>
           </div>
         );
       })}
     </div>
+  );
+}
+
+function InstrumentAiSummary({ row, isReal }: { row: FundamentRow; isReal: boolean }) {
+  const [text, setText] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const controller = useRef<AbortController | null>(null);
+  useEffect(() => () => controller.current?.abort(), []);
+  const generate = async () => {
+    if (busy) return;
+    const abort = new AbortController();
+    controller.current = abort;
+    setBusy(true);
+    setError("");
+    setText("");
+    try {
+      await streamAi({ mode: "chat", messages: [{ role: "user", content: `Write an English fundamental summary for ${row.pair} in 180 words or fewer, plain text with short paragraphs and bullet points (no markdown headings). Explain the meaning of the score, the strongest supportive and opposing factors, and risks that could reverse the outlook. Explain economic mechanisms using general macro knowledge, without claiming certainty. The displayed snapshot is ${isReal ? "published-source data" : "SAMPLE DATA, not a live market assessment"}: ${JSON.stringify(row)}. Base numerical claims only on this snapshot; distinguish general knowledge from observations. Do not invent current price, news, probabilities, missing factors or historical scores. If sample data, clearly call it an illustrative explanation. Scores are −10 to +10 ratings, not percentages. Include a short not-financial-advice disclaimer.` }] }, setText, abort.signal);
+    } catch (e) {
+      if (!abort.signal.aborted) setError(e instanceof Error ? e.message : "AI summary is unavailable.");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section className="min-w-0 border-t border-border p-4 sm:p-5 lg:border-t-0 lg:border-l" aria-label="AI summary">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h3 className="flex items-center gap-2 text-sm font-semibold"><Sparkles className="h-4 w-4 text-primary" />AI summary <span className="font-mono text-muted-foreground">{row.pair}</span></h3>
+        {busy ? <Button variant="ghost" size="sm" onClick={() => controller.current?.abort()}><Square />Stop</Button> : <Button variant="outline" size="sm" onClick={generate}><Sparkles />{text ? "Refresh summary" : "Generate summary"}</Button>}
+      </div>
+      {text ? <div className="whitespace-pre-wrap text-xs leading-6">{text}</div> : (
+        <div className="space-y-3 text-xs leading-6 text-muted-foreground">
+          <p>{row.pair} has a fundamental rating of {Math.round(row.score)} out of 10. {row.score > 0 ? "Positive readings indicate that the scored factors lean toward support for the instrument." : row.score < 0 ? "Negative readings indicate that the scored factors lean toward downward pressure on the instrument." : "The scored factors are balanced, with no clear directional edge."}</p>
+          <p>Interest-rate expectations influence capital flows; growth and inflation shape central-bank policy. COT describes futures positioning, not a guaranteed price direction. Conflicting factors can weaken the overall signal.</p>
+          <p>This score is not a probability or a trade recommendation. {isReal ? "" : "Displayed values are sample data, so this is only an illustrative interpretation."}</p>
+        </div>
+      )}
+      {busy && <p className="mt-3 animate-pulse text-xs text-primary" role="status">AI is analyzing the displayed factors…</p>}
+      {error && <p className="mt-3 text-xs text-destructive" role="alert">{error}</p>}
+      <p className="mt-4 text-[10px] text-muted-foreground">{text ? "AI-generated explanation · verify against original sources." : "General score interpretation · AI generation uses credits."}</p>
+    </section>
   );
 }
 
@@ -336,35 +369,14 @@ export function InstrumentDetailDialog({
                 <p className="mt-5 text-[11px] leading-5 text-muted-foreground">{isReal ? "Current factors from published market sources." : "Sample macro values — live data unavailable."} Historical score curve is illustrative, not recorded daily fundamentals.</p>
               </section>
             </div>
-            <section className="border-b border-border p-4 sm:p-6">
+            <div className="grid border-b border-border lg:grid-cols-[minmax(320px,440px)_minmax(0,1fr)]">
+            <section className="min-w-0 p-4 sm:p-5">
             <h3 className="mb-4 text-sm font-semibold">Score overview <span className="font-mono text-muted-foreground">{row.pair}</span></h3>
 
-        {row.factors?.length ? (
-          <InstrumentFactors factors={row.factors} />
-        ) : (
-          <div className="space-y-3">
-          {sources.map((s) => (
-            <div key={s.label} className="rounded-lg border border-border p-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-medium">{s.label}</span>
-                <span className="font-mono text-sm">{s.value}</span>
-              </div>
-              <div className="mt-2 flex items-center gap-3">
-                 <ScoreBar value={Math.round(Math.max(-10, Math.min(10, s.score)))} max={10} />
-                <span className="w-12 shrink-0 text-right font-mono text-xs">
-                  {s.score > 0 ? "+" : ""}
-                   {Math.round(Math.max(-10, Math.min(10, s.score)))}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">{s.note}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                Source: {s.source} · updated {s.updated}
-              </p>
-            </div>
-          ))}
-          </div>
-        )}
+          <InstrumentFactors factors={row.factors?.length ? row.factors : sources.map((source) => ({ ...source, key: source.label }))} />
             </section>
+            <InstrumentAiSummary key={row.pair} row={row} isReal={isReal} />
+            </div>
 
         {/* COT overview - donuts + group table */}
         <div className="p-4 sm:p-6">
