@@ -19,6 +19,7 @@ export type SeasonalityResult = {
   path: SeasonalPoint[];
   months: { month: string; value: number; positive: number; total: number }[];
   avgAnnual: number;
+  yearly?: { year: number; closes: number[] }[];
   source: string;
   updatedAt: string;
 };

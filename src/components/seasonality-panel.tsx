@@ -19,6 +19,7 @@ import {
 
 import { Panel } from "@/components/page-shell";
 import { getSeasonality } from "@/lib/seasonality.functions";
+import { SeasonalityStats } from "@/components/seasonality-stats";
 import { SEASONALITY_GROUPS, SEASONALITY_SYMBOLS, SEASONALITY_WINDOWS } from "@/lib/seasonality-types";
 
 const pct = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(2)} %`;
@@ -105,6 +106,8 @@ export function SeasonalityPanel({ initialSymbol }: { initialSymbol?: string } =
 
   return (
     <div className="space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="min-w-0">
       <Panel
         title={`Seasonality ${data?.label ?? symbol}`}
         hint={
@@ -344,6 +347,15 @@ export function SeasonalityPanel({ initialSymbol }: { initialSymbol?: string } =
           )}
         </div>
       </Panel>
+      </div>
+      <aside className="min-w-0">
+        {data ? (
+          <SeasonalityStats data={data} start={sel?.fromIdx ?? 0} end={sel?.toIdx ?? 364} />
+        ) : (
+          <p className="text-xs text-muted-foreground">{isLoading ? "Loading statistics…" : "No data"}</p>
+        )}
+      </aside>
+      </div>
 
       <Panel title="Average return podľa mesiaca" hint={`${years} rokov · reálne dáta`}>
         <div className="h-72">

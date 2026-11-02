@@ -97,6 +97,7 @@ export async function buildSeasonality(
   const monthly: number[][] = Array.from({ length: 12 }, () => []);
 
   const yearList = [...byYear.keys()].sort((a, b) => a - b);
+  const yearly: { year: number; closes: number[] }[] = [];
   for (const y of yearList) {
     const arr = byYear.get(y)!.sort((a, b) => a.t - b.t);
     if (arr.length < 150) continue;
@@ -107,6 +108,10 @@ export async function buildSeasonality(
       const d = new Date(b.t * 1000);
       perDay.set(dayKey(d), ((b.c - base) / base) * 100);
     }
+    const closeBy = new Map<string, number>();
+    for (const b of arr) closeBy.set(dayKey(new Date(b.t * 1000)), b.c);
+    let lc = arr[0].c;
+    yearly.push({ year: y, closes: keys.map((k) => { const c = closeBy.get(k.key); if (c != null) lc = c; return Number(lc.toPrecision(7)); }) });
     let last = 0;
     for (const k of keys) {
       const v = perDay.get(k.key);
@@ -161,6 +166,7 @@ export async function buildSeasonality(
     path,
     months,
     avgAnnual: Math.round(avgAnnual * 100) / 100,
+    yearly,
     source: `Yahoo Finance · ${meta.yahoo} · daily closing prices`,
     updatedAt: new Date().toISOString(),
   };
