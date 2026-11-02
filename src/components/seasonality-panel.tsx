@@ -37,8 +37,8 @@ const isoToIdx = (iso: string) => {
   return Math.max(0, Math.min(364, i));
 };
 
-export function SeasonalityPanel() {
-  const [symbol, setSymbol] = useState<string>("XAUUSD");
+export function SeasonalityPanel({ initialSymbol }: { initialSymbol?: string } = {}) {
+  const [symbol, setSymbol] = useState<string>(initialSymbol && SEASONALITY_SYMBOLS.some((s) => s.id === initialSymbol) ? initialSymbol : "XAUUSD");
   const [years, setYears] = useState<number>(10);
   const [detrend, setDetrend] = useState(true);
   const [range, setRange] = useState<{ start: number; end: number } | null>(null);

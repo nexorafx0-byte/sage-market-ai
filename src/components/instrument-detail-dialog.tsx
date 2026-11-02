@@ -14,6 +14,8 @@ import {
 } from "recharts";
 
 import { CotOverview } from "@/components/cot-overview";
+import { InstrumentBankReports, InstrumentCalendar } from "@/components/instrument-extra-tabs";
+import { SeasonalityPanel } from "@/components/seasonality-panel";
 import { ArrowLeft, Activity, Sparkles, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { streamAi } from "@/lib/ai-stream";
@@ -347,7 +349,9 @@ export function InstrumentDetailDialog({
             <TabsList>
               <TabsTrigger value="overall">Overall</TabsTrigger>
               <TabsTrigger value="cot">COT</TabsTrigger>
-              <TabsTrigger value="history">COT history</TabsTrigger>
+              <TabsTrigger value="seasonality">Seasonality</TabsTrigger>
+              <TabsTrigger value="bank">Bank reports</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
             </TabsList>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -383,31 +387,15 @@ export function InstrumentDetailDialog({
             <CotOverview row={row} detail={detail} />
           </TabsContent>
 
-        {/* COT by group */}
-        <TabsContent value="history" className="m-0 p-4 sm:p-6">
-          <h3 className="mb-3 text-sm font-semibold">COT history — by group</h3>
-          <Tabs defaultValue="noncommercial">
-            <TabsList>
-              {COT_GROUPS.map((g) => (
-                <TabsTrigger key={g.key} value={g.key}>
-                  {g.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {COT_GROUPS.map((g) => (
-              <TabsContent key={g.key} value={g.key} className="mt-4">
-                <CotSection
-                  row={row}
-                  group={g.key}
-                  label={g.label}
-                  desc={g.desc}
-                  source={detail?.cotSource ?? g.source}
-                  real={detail}
-                />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </TabsContent>
+          <TabsContent value="seasonality" className="m-0 p-4 sm:p-6">
+            <SeasonalityPanel key={row.pair} initialSymbol={row.pair} />
+          </TabsContent>
+          <TabsContent value="bank" className="m-0 p-4 sm:p-6">
+            <InstrumentBankReports row={row} />
+          </TabsContent>
+          <TabsContent value="calendar" className="m-0 p-4 sm:p-6">
+            <InstrumentCalendar row={row} />
+          </TabsContent>
           </div>
         </Tabs>
       </DialogContent>
