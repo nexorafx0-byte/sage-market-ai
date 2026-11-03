@@ -5,7 +5,6 @@ import {
   BookOpen,
   ShieldCheck,
   Wallet,
-  FlaskConical,
   CandlestickChart,
   BarChart3,
   Bell,
@@ -24,7 +23,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality, journal, backtesting and funded account management.",
+          "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality, journal and funded account management.",
       },
       { property: "og:title", content: "MARKETMIND" },
       {
@@ -47,14 +46,13 @@ const features = [
   { icon: BookOpen, title: "AI Journal", desc: "Automatic trade review and an AI-generated trading plan." },
   { icon: ShieldCheck, title: "Risk manager", desc: "Position size, daily limit and real-time drawdown control." },
   { icon: Wallet, title: "Funded accounts", desc: "Connect MT4, MT5, cTrader, Tradovate or TradeLocker to one dashboard." },
-  { icon: FlaskConical, title: "Backtesting", desc: "Test your strategy on historical data and compare results." },
   { icon: Bell, title: "AI alerts", desc: "Important news and events that move your pairs." },
 ];
 
 const plans = [
   { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Currency Strength", "1 funded account"] },
   { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "AI Journal + plan", "5 funded accounts"] },
-  { name: "Elite", price: "149", items: ["Everything in Pro", "Backtesting", "Priority AI alerts", "Unlimited accounts"] },
+  { name: "Elite", price: "149", items: ["Everything in Pro", "Priority AI alerts", "Unlimited accounts"] },
 ];
 
 function Landing() {
@@ -84,8 +82,8 @@ function Landing() {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {authed ? (
-              <Button size="sm" onClick={() => navigate({ to: "/dashboard" })}>
-                Open dashboard
+              <Button size="sm" onClick={() => navigate({ to: "/analyza" })}>
+                Open analysis
               </Button>
             ) : (
               <>
@@ -116,8 +114,8 @@ function Landing() {
             COT, seasonality, journal and funded accounts — all in one place.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button size="lg" onClick={() => navigate({ to: authed ? "/dashboard" : "/auth" })}>
-              {authed ? "Open dashboard" : "Start for free"}
+            <Button size="lg" onClick={() => navigate({ to: authed ? "/analyza" : "/auth" })}>
+              {authed ? "Open analysis" : "Start for free"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button variant="outline" size="lg" onClick={() => navigate({ to: "/analyza" })}>
