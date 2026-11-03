@@ -10,7 +10,7 @@
 # Instrument detail tabs
 - [x] Remove COT history
 - [x] Add Seasonality, Bank reports and Calendar
-- [ ] Verify tab switching and dismissal
+- [x] Verify tab switching and dismissal
 
 # Removed pages
 - [x] Delete Dashboard and Backtesting pages, sidebar links, landing/pricing/sitemap mentions
