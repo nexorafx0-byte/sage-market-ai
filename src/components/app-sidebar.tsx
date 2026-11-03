@@ -3,7 +3,6 @@ import {
   Brain,
   BookOpen,
   ShieldCheck,
-  Wallet,
   Tags,
   LineChart,
   CandlestickChart,
@@ -33,7 +32,6 @@ const analysisItems = [
 const tradingItems = [
   { title: "Journal", url: "/journal", icon: BookOpen },
   { title: "Risk manager", url: "/risk", icon: ShieldCheck },
-  { title: "Funded accounts", url: "/ucty", icon: Wallet },
   { title: "Pricing", url: "/cennik", icon: Tags },
 ];
 

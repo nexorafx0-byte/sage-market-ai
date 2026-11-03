@@ -205,12 +205,6 @@ export const journalEntries = [
   },
 ];
 
-export const fundedAccounts = [
-  { name: "FTMO 100k", phase: "Funded", balance: 111700, dd: 3.2, ddMax: 10, target: 68, profit: 11700 },
-  { name: "FundingPips 50k", phase: "Phase 2", balance: 52340, dd: 1.4, ddMax: 8, target: 47, profit: 2340 },
-  { name: "The5ers 20k", phase: "Phase 1", balance: 20480, dd: 4.9, ddMax: 6, target: 24, profit: 480 },
-];
-
 export const backtests = [
   { name: "London Open — S&D", trades: 214, winrate: 58, pf: 1.84, dd: 6.2, expectancy: 0.41 },
   { name: "COT Extreme reversal", trades: 96, winrate: 47, pf: 2.31, dd: 9.8, expectancy: 0.72 },

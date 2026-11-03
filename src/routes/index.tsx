@@ -4,7 +4,6 @@ import {
   Brain,
   BookOpen,
   ShieldCheck,
-  Wallet,
   CandlestickChart,
   BarChart3,
   Bell,
@@ -19,11 +18,11 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MARKETMIND — AI market analysis, COT and funded accounts" },
+      { title: "MARKETMIND — AI market analysis, COT and seasonality" },
       {
         name: "description",
         content:
-          "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality, journal and funded account management.",
+          "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality and journal.",
       },
       { property: "og:title", content: "MARKETMIND" },
       {
@@ -45,14 +44,13 @@ const features = [
   { icon: LineChart, title: "Seasonality", desc: "5, 10, 15 and 20-year seasonal paths with precise period selection." },
   { icon: BookOpen, title: "AI Journal", desc: "Automatic trade review and an AI-generated trading plan." },
   { icon: ShieldCheck, title: "Risk manager", desc: "Position size, daily limit and real-time drawdown control." },
-  { icon: Wallet, title: "Funded accounts", desc: "Connect MT4, MT5, cTrader, Tradovate or TradeLocker to one dashboard." },
   { icon: Bell, title: "AI alerts", desc: "Important news and events that move your pairs." },
 ];
 
 const plans = [
-  { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Currency Strength", "1 funded account"] },
-  { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "AI Journal + plan", "5 funded accounts"] },
-  { name: "Elite", price: "149", items: ["Everything in Pro", "Priority AI alerts", "Unlimited accounts"] },
+  { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Currency Strength", "Risk manager"] },
+  { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "AI Journal + plan", "Supply & Demand analysis"] },
+  { name: "Elite", price: "149", items: ["Everything in Pro", "Priority AI alerts", "Mobile app"] },
 ];
 
 function Landing() {
@@ -111,7 +109,7 @@ function Landing() {
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
             TradingView, Forex Factory, Finviz and MyFxBook in one platform. Macro analysis,
-            COT, seasonality, journal and funded accounts — all in one place.
+            COT, seasonality and journal — all in one place.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button size="lg" onClick={() => navigate({ to: authed ? "/analyza" : "/auth" })}>

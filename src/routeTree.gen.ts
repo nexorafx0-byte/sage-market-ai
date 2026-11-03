@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -20,16 +19,11 @@ import { Route as JournalRouteImport } from './routes/journal'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedUctyRouteImport } from './routes/_authenticated/ucty'
 import { Route as ApiAiRouteImport } from './routes/api/ai'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiChatRoute = AiChatRouteImport.update({
@@ -77,11 +71,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedUctyRoute = AuthenticatedUctyRouteImport.update({
-  id: '/ucty',
-  path: '/ucty',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const ApiAiRoute = ApiAiRouteImport.update({
   id: '/api/ai',
   path: '/api/ai',
@@ -99,7 +88,6 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
 export interface FileRoutesByTo {
@@ -113,13 +101,11 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
@@ -129,7 +115,6 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
 export interface FileRouteTypes {
@@ -145,7 +130,6 @@ export interface FileRouteTypes {
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/ucty'
     | '/api/ai'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -159,12 +143,10 @@ export interface FileRouteTypes {
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/ucty'
     | '/api/ai'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
     | '/ai-chat'
     | '/analyza'
     | '/auth'
@@ -174,13 +156,11 @@ export interface FileRouteTypes {
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/_authenticated/ucty'
     | '/api/ai'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AiChatRoute: typeof AiChatRoute
   AnalyzaRoute: typeof AnalyzaRoute
   AuthRoute: typeof AuthRoute
@@ -200,13 +180,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai-chat': {
@@ -272,13 +245,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/ucty': {
-      id: '/_authenticated/ucty'
-      path: '/ucty'
-      fullPath: '/ucty'
-      preLoaderRoute: typeof AuthenticatedUctyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/api/ai': {
       id: '/api/ai'
       path: '/api/ai'
@@ -289,20 +255,8 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedUctyRoute: typeof AuthenticatedUctyRoute
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedUctyRoute: AuthenticatedUctyRoute,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AiChatRoute: AiChatRoute,
   AnalyzaRoute: AnalyzaRoute,
   AuthRoute: AuthRoute,

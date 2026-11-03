@@ -43,16 +43,15 @@ const plans = [
       "COT and Seasonality",
       "Supply & Demand analysis",
       "AI Journal and trading plan",
-      "Risk manager · 5 accounts",
+      "Risk manager",
     ],
   },
   {
     name: "Elite",
     price: "149 €",
-    desc: "For funded traders and professionals",
+    desc: "For professionals",
     features: [
       "Everything in Pro",
-      "Funded account overview",
       "Real-time AI alerts",
       "Mobile app and priority support",
     ],

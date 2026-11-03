@@ -12,7 +12,7 @@ export const Route = createFileRoute("/risk")({
       { title: "Risk manager — MARKETMIND" },
       {
         name: "description",
-        content: "Position size calculator, daily limits and drawdown control for funded accounts.",
+        content: "Position size calculator, daily limits and drawdown control.",
       },
       { property: "og:title", content: "Risk manager — MARKETMIND" },
       { property: "og:description", content: "Position size and risk limits under control." },
