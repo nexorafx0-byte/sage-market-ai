@@ -1,11 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard,
   Brain,
   BookOpen,
   ShieldCheck,
   Wallet,
-  FlaskConical,
   Tags,
   LineChart,
   CandlestickChart,
@@ -26,10 +24,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const analysisItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "AI market analysis", url: "/analyza", icon: Brain },
   { title: "Charts", url: "/grafy", icon: CandlestickChart },
-  { title: "Backtesting", url: "/backtesting", icon: FlaskConical },
   { title: "News", url: "/news", icon: Newspaper },
   { title: "AI chat", url: "/ai-chat", icon: Brain },
 ];

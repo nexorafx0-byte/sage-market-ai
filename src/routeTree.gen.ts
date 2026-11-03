@@ -14,14 +14,12 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BacktestingRouteImport } from './routes/backtesting'
 import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as GrafyRouteImport } from './routes/grafy'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedUctyRouteImport } from './routes/_authenticated/ucty'
 import { Route as ApiAiRouteImport } from './routes/api/ai'
 
@@ -47,11 +45,6 @@ const AnalyzaRoute = AnalyzaRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BacktestingRoute = BacktestingRouteImport.update({
-  id: '/backtesting',
-  path: '/backtesting',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CennikRoute = CennikRouteImport.update({
@@ -84,11 +77,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedUctyRoute = AuthenticatedUctyRouteImport.update({
   id: '/ucty',
   path: '/ucty',
@@ -105,14 +93,12 @@ export interface FileRoutesByFullPath {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
-  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
@@ -121,14 +107,12 @@ export interface FileRoutesByTo {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
-  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
@@ -139,14 +123,12 @@ export interface FileRoutesById {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
-  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
   '/news': typeof NewsRoute
   '/risk': typeof RiskRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/ucty': typeof AuthenticatedUctyRoute
   '/api/ai': typeof ApiAiRoute
 }
@@ -157,14 +139,12 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
-    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/dashboard'
     | '/ucty'
     | '/api/ai'
   fileRoutesByTo: FileRoutesByTo
@@ -173,14 +153,12 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
-    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/dashboard'
     | '/ucty'
     | '/api/ai'
   id:
@@ -190,14 +168,12 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
-    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
     | '/news'
     | '/risk'
     | '/sitemap.xml'
-    | '/_authenticated/dashboard'
     | '/_authenticated/ucty'
     | '/api/ai'
   fileRoutesById: FileRoutesById
@@ -208,7 +184,6 @@ export interface RootRouteChildren {
   AiChatRoute: typeof AiChatRoute
   AnalyzaRoute: typeof AnalyzaRoute
   AuthRoute: typeof AuthRoute
-  BacktestingRoute: typeof BacktestingRoute
   CennikRoute: typeof CennikRoute
   GrafyRoute: typeof GrafyRoute
   JournalRoute: typeof JournalRoute
@@ -255,13 +230,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/backtesting': {
-      id: '/backtesting'
-      path: '/backtesting'
-      fullPath: '/backtesting'
-      preLoaderRoute: typeof BacktestingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/cennik': {
       id: '/cennik'
       path: '/cennik'
@@ -304,13 +272,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/ucty': {
       id: '/_authenticated/ucty'
       path: '/ucty'
@@ -329,12 +290,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedUctyRoute: typeof AuthenticatedUctyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedUctyRoute: AuthenticatedUctyRoute,
 }
 
@@ -347,7 +306,6 @@ const rootRouteChildren: RootRouteChildren = {
   AiChatRoute: AiChatRoute,
   AnalyzaRoute: AnalyzaRoute,
   AuthRoute: AuthRoute,
-  BacktestingRoute: BacktestingRoute,
   CennikRoute: CennikRoute,
   GrafyRoute: GrafyRoute,
   JournalRoute: JournalRoute,

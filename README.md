@@ -38,8 +38,7 @@ Funkcie:
 
  Dashboard pre funded účty
 
- Backtesting
-
+ 
  Risk manager
 
  Mobilná aplikácia
