@@ -52,8 +52,7 @@ const plans = [
     desc: "For funded traders and professionals",
     features: [
       "Everything in Pro",
-      "Unlimited backtesting",
-      "Dashboard for funded accounts",
+      "Funded account overview",
       "Real-time AI alerts",
       "Mobile app and priority support",
     ],
