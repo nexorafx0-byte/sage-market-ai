@@ -14,13 +14,12 @@ export const Route = createFileRoute("/auth")({
       { title: "Sign in — MARKETMIND" },
       {
         name: "description",
-        content:
-          "Sign in to MARKETMIND and connect your funded accounts from MT4, MT5, cTrader, Tradovate or TradeLocker.",
+        content: "Sign in to MARKETMIND and analyze the market with AI.",
       },
       { property: "og:title", content: "Sign in — MARKETMIND" },
       {
         property: "og:description",
-        content: "Access your funded accounts and AI market analysis.",
+        content: "Access AI market analysis, COT and seasonality.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -88,7 +87,7 @@ function AuthPage() {
           {mode === "signin" ? "Sign in" : "Sign up"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Connect your funded accounts and keep them in one place.
+          Analyze the market with AI and keep your journal in one place.
         </p>
 
         <form onSubmit={submit} className="mt-6 space-y-4">
