@@ -237,26 +237,28 @@ function AnalysisPage() {
   ];
 
   const statusLine = isLoading
-    ? "Loading real data from CFTC, BIS and World Bank…"
+    ? "Loading real data…"
     : isError || !live
-      ? "Could not load real data — showing sample values."
-      : `Real data · COT report ${live.cotReportDate} · updated ${new Date(live.updatedAt).toLocaleString("en-US")}`;
+      ? "Data not updated — showing sample values."
+      : `Real data · updated ${new Date(live.updatedAt).toLocaleString("en-US")}`;
 
   return (
     <>
       <PageHeader title="AI market analysis" subtitle="Fundamentals · COT · Seasonality" />
       <div className="p-6">
-        <div className="mb-4 rounded-lg border border-border bg-card p-3 text-xs text-muted-foreground">
-          <p className="flex items-center gap-2">
-            <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary animate-pulse" />
+        <div className="mb-4 text-xs">
+          <p
+            className={`flex items-center gap-2 ${
+              isLoading ? "text-muted-foreground" : isError || !live ? "text-destructive" : "text-success"
+            }`}
+          >
+            <span
+              className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
+                isLoading ? "bg-muted-foreground" : isError || !live ? "bg-destructive" : "bg-success"
+              } animate-pulse`}
+            />
             {statusLine}
           </p>
-          {live?.sources?.length ? (
-            <p className="mt-1">Sources: {live.sources.join(" · ")}</p>
-          ) : null}
-          {live?.warnings?.length ? (
-            <p className="mt-1 text-destructive">{live.warnings.join(" ")}</p>
-          ) : null}
         </div>
 
         <Tabs defaultValue="fundament">
