@@ -15,6 +15,8 @@ export const Route = createFileRoute("/cennik")({
       },
       { property: "og:title", content: "Pricing — MARKETMIND" },
       { property: "og:description", content: "Basic €29 · Pro €79 · Elite €149 per month." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: PricingPage,

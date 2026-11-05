@@ -72,7 +72,7 @@ type Ev = { id: string; title: string; country: string; date: string; impact: st
 function EventList({ events }: { events: Ev[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-xs">
+      <table className="w-full min-w-[640px] text-xs [&_td]:px-2 [&_th]:px-2">
         <thead className="text-left text-muted-foreground">
           <tr><th className="py-2">Time</th><th>Cur.</th><th>Impact</th><th>Event</th><th>Actual</th><th>Forecast</th><th>Previous</th></tr>
         </thead>

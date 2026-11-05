@@ -345,8 +345,8 @@ export function InstrumentDetailDialog({
         </DialogHeader>
 
         <Tabs defaultValue="overall" className="flex min-h-0 flex-1 flex-col">
-          <div className="shrink-0 border-b border-border px-4 py-2 sm:px-6">
-            <TabsList>
+          <div className="min-w-0 shrink-0 overflow-x-auto border-b border-border px-4 py-2 sm:px-6">
+            <TabsList className="w-max">
               <TabsTrigger value="overall">Overall</TabsTrigger>
               <TabsTrigger value="cot">COT</TabsTrigger>
               <TabsTrigger value="seasonality">Seasonality</TabsTrigger>
