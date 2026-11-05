@@ -22,7 +22,17 @@ export const Route = createFileRoute("/cennik")({
   component: PricingPage,
 });
 
-const plans = [
+type Plan = {
+  name: string;
+  price: string;
+  period: string;
+  desc: string;
+  features: string[];
+  highlight?: boolean;
+  save?: string;
+};
+
+const plans: Plan[] = [
   {
     name: "Free",
     price: "0 €",
@@ -83,11 +93,16 @@ function PricingPage() {
                 Most popular
               </span>
             )}
+            {p.save && (
+              <span className="mb-3 ml-2 inline-block rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+                {p.save}
+              </span>
+            )}
             <h2 className="text-lg font-semibold tracking-tight">{p.name}</h2>
             <p className="text-sm text-muted-foreground">{p.desc}</p>
             <div className="mt-4 flex items-baseline gap-1">
               <span className="font-mono text-4xl font-bold">{p.price}</span>
-              <span className="text-sm text-muted-foreground">/month</span>
+              <span className="text-sm text-muted-foreground">/{p.period}</span>
             </div>
             <ul className="mt-6 space-y-3 text-sm">
               {p.features.map((f) => (
