@@ -45,11 +45,11 @@ Funkcie:
 
 Cena:
 
- Basic: 29 €/mesiac
+ Free: prvý mesiac zdarma
 
- Pro: 79 €/mesiac
+ Monthly: 79 €/mesiac
 
- Elite: 149 €/mesiac
+ Yearly: 900 €/rok (ušetríš 48 €)
 
 This project was built with [Lovable](https://lovable.dev).
 
