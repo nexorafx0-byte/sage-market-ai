@@ -11,10 +11,10 @@ export const Route = createFileRoute("/cennik")({
       { title: "Pricing — MARKETMIND" },
       {
         name: "description",
-        content: "Basic €29, Pro €79, and Elite €149 per month. Choose the plan for your trading.",
+        content: "Free first month, Monthly €79, or Yearly €900 — save €48. Choose the plan for your trading.",
       },
       { property: "og:title", content: "Pricing — MARKETMIND" },
-      { property: "og:description", content: "Basic €29 · Pro €79 · Elite €149 per month." },
+      { property: "og:description", content: "Free first month · Monthly €79 · Yearly €900 (save €48)." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -24,9 +24,10 @@ export const Route = createFileRoute("/cennik")({
 
 const plans = [
   {
-    name: "Basic",
-    price: "29 €",
-    desc: "For beginner traders",
+    name: "Free",
+    price: "0 €",
+    period: "first month",
+    desc: "Try MARKETMIND for one month",
     features: [
       "AI macro analysis (daily)",
       "Currency Strength",
@@ -36,24 +37,28 @@ const plans = [
     ],
   },
   {
-    name: "Pro",
+    name: "Monthly",
     price: "79 €",
+    period: "month",
     desc: "For active traders",
     highlight: true,
     features: [
-      "Everything in Basic",
+      "Everything in Free",
       "COT and Seasonality",
       "Supply & Demand analysis",
       "AI Journal and trading plan",
       "Risk manager",
+      "Daily & Weekly Bias",
     ],
   },
   {
-    name: "Elite",
-    price: "149 €",
-    desc: "For professionals",
+    name: "Yearly",
+    price: "900 €",
+    period: "year",
+    desc: "Save 48 € compared to monthly",
+    save: "Save 48 €",
     features: [
-      "Everything in Pro",
+      "Everything in Monthly",
       "Real-time AI alerts",
       "Mobile app and priority support",
     ],
