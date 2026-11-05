@@ -11,10 +11,10 @@ export const Route = createFileRoute("/cennik")({
       { title: "Pricing — MARKETMIND" },
       {
         name: "description",
-        content: "Basic €29, Pro €79, and Elite €149 per month. Choose the plan for your trading.",
+        content: "Free first month, Monthly €79, or Yearly €900 — save €48. Choose the plan for your trading.",
       },
       { property: "og:title", content: "Pricing — MARKETMIND" },
-      { property: "og:description", content: "Basic €29 · Pro €79 · Elite €149 per month." },
+      { property: "og:description", content: "Free first month · Monthly €79 · Yearly €900 (save €48)." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -22,11 +22,22 @@ export const Route = createFileRoute("/cennik")({
   component: PricingPage,
 });
 
-const plans = [
+type Plan = {
+  name: string;
+  price: string;
+  period: string;
+  desc: string;
+  features: string[];
+  highlight?: boolean;
+  save?: string;
+};
+
+const plans: Plan[] = [
   {
-    name: "Basic",
-    price: "29 €",
-    desc: "For beginner traders",
+    name: "Free",
+    price: "0 €",
+    period: "first month",
+    desc: "Try MARKETMIND for one month",
     features: [
       "AI macro analysis (daily)",
       "Currency Strength",
@@ -36,24 +47,28 @@ const plans = [
     ],
   },
   {
-    name: "Pro",
+    name: "Monthly",
     price: "79 €",
+    period: "month",
     desc: "For active traders",
     highlight: true,
     features: [
-      "Everything in Basic",
+      "Everything in Free",
       "COT and Seasonality",
       "Supply & Demand analysis",
       "AI Journal and trading plan",
       "Risk manager",
+      "Daily & Weekly Bias",
     ],
   },
   {
-    name: "Elite",
-    price: "149 €",
-    desc: "For professionals",
+    name: "Yearly",
+    price: "900 €",
+    period: "year",
+    desc: "Save 48 € compared to monthly",
+    save: "Save 48 €",
     features: [
-      "Everything in Pro",
+      "Everything in Monthly",
       "Real-time AI alerts",
       "Mobile app and priority support",
     ],
@@ -78,11 +93,16 @@ function PricingPage() {
                 Most popular
               </span>
             )}
+            {p.save && (
+              <span className="mb-3 ml-2 inline-block rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+                {p.save}
+              </span>
+            )}
             <h2 className="text-lg font-semibold tracking-tight">{p.name}</h2>
             <p className="text-sm text-muted-foreground">{p.desc}</p>
             <div className="mt-4 flex items-baseline gap-1">
               <span className="font-mono text-4xl font-bold">{p.price}</span>
-              <span className="text-sm text-muted-foreground">/month</span>
+              <span className="text-sm text-muted-foreground">/{p.period}</span>
             </div>
             <ul className="mt-6 space-y-3 text-sm">
               {p.features.map((f) => (

@@ -30,9 +30,9 @@ export const Route = createFileRoute("/")({
 });
 
 const plans = [
-  { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Charts & economic calendar", "Risk manager"] },
-  { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "Journal", "AI market context"] },
-  { name: "Elite", price: "149", items: ["Everything in Pro", "Daily & Weekly Bias", "AI event explanations"] },
+  { name: "Free", price: "0", period: "first month", items: ["AI macro analysis", "Fundamental Score", "Charts & economic calendar", "Risk manager"] },
+  { name: "Monthly", price: "79", period: "month", highlight: true, items: ["Everything in Free", "COT & seasonality", "Journal", "AI market context"] },
+  { name: "Yearly", price: "900", period: "year · save 48 €", items: ["Everything in Monthly", "Daily & Weekly Bias", "AI event explanations"] },
 ];
 
 function Landing() {
@@ -133,7 +133,7 @@ function Landing() {
                 </div>
                 <div className="mt-4 font-mono text-3xl font-bold">
                   {p.price} €
-                  <span className="text-sm font-normal text-muted-foreground"> /mo</span>
+                  <span className="text-sm font-normal text-muted-foreground"> /{p.period}</span>
                 </div>
                 <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
                   {p.items.map((i) => (
