@@ -30,9 +30,9 @@ export const Route = createFileRoute("/")({
 });
 
 const plans = [
-  { name: "Free", price: "0", period: "first month", items: ["AI macro analysis", "Fundamental Score", "Charts & economic calendar", "Risk manager"] },
-  { name: "Monthly", price: "79", period: "month", highlight: true, items: ["Everything in Free", "COT & seasonality", "Journal", "AI market context"] },
-  { name: "Yearly", price: "900", period: "year · save 48 €", items: ["Everything in Monthly", "Daily & Weekly Bias", "AI event explanations"] },
+  { name: "Free", price: "0", period: "first month", items: ["AI macro analysis", "Currency Strength", "Fundamental Score", "News calendar"] },
+  { name: "Monthly", price: "79", period: "month", highlight: true, items: ["Everything in Free", "COT & seasonality", "Supply & Demand", "Journal & trading plan", "Risk manager", "Daily & Weekly Bias"] },
+  { name: "Yearly", price: "900", period: "year · save 48 €", items: ["Everything in Monthly", "Real-time AI alerts", "Mobile app", "Priority support"] },
 ];
 
 function Landing() {
