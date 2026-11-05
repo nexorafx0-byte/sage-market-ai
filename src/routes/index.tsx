@@ -1,16 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  Brain,
-  BookOpen,
-  ShieldCheck,
-  CandlestickChart,
-  BarChart3,
-  Bell,
-  CheckCircle2,
-  ArrowRight,
-  LineChart,
-} from "lucide-react";
+import { CheckCircle2, ArrowRight, LineChart } from "lucide-react";
+import { HomepageGuide, HomepageWorkflow } from "@/components/homepage-guide";
+import overview from "@/assets/marketmind-overview.asset.json";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,13 +14,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "One platform for AI macro analysis, Fundamental Score, Currency Strength, COT data, seasonality and journal.",
+          "Explore MARKETMIND: fundamental scores, COT, seasonality, AI bias, charts, news, Journal and risk planning, with usage guides and data limitations.",
       },
-      { property: "og:title", content: "MARKETMIND" },
+      { property: "og:title", content: "MARKETMIND — Trading tools and feature guide" },
       {
         property: "og:description",
         content:
-          "TradingView, Forex Factory, Finviz and MyFxBook in one AI platform for traders.",
+          "Discover MARKETMIND trading tools, learn how to use them together and understand their data limitations.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -37,20 +29,10 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const features = [
-  { icon: Brain, title: "AI macro analysis", desc: "Fundamental Score from -10 to +10 from rates, inflation, GDP and COT data." },
-  { icon: BarChart3, title: "COT & Currency Strength", desc: "Commercials, non-commercials and retail positions from real CFTC data." },
-  { icon: CandlestickChart, title: "TradingView-grade charts", desc: "Full charts, favorite pairs, timeframes and price alerts." },
-  { icon: LineChart, title: "Seasonality", desc: "5, 10, 15 and 20-year seasonal paths with precise period selection." },
-  { icon: BookOpen, title: "AI Journal", desc: "Automatic trade review and an AI-generated trading plan." },
-  { icon: ShieldCheck, title: "Risk manager", desc: "Position size, daily limit and real-time drawdown control." },
-  { icon: Bell, title: "AI alerts", desc: "Important news and events that move your pairs." },
-];
-
 const plans = [
-  { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Currency Strength", "Risk manager"] },
-  { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "AI Journal + plan", "Supply & Demand analysis"] },
-  { name: "Elite", price: "149", items: ["Everything in Pro", "Priority AI alerts", "Mobile app"] },
+  { name: "Basic", price: "29", items: ["AI macro analysis", "Fundamental Score", "Charts & economic calendar", "Risk manager"] },
+  { name: "Pro", price: "79", highlight: true, items: ["Everything in Basic", "COT & seasonality", "Journal", "AI market context"] },
+  { name: "Elite", price: "149", items: ["Everything in Pro", "Daily & Weekly Bias", "AI event explanations"] },
 ];
 
 function Landing() {
@@ -75,7 +57,7 @@ function Landing() {
           <span className="text-sm font-semibold tracking-tight">MARKETMIND</span>
           <nav className="ml-8 hidden gap-6 text-sm text-muted-foreground md:flex">
             <a href="#funkcie" className="hover:text-foreground">Features</a>
-            <a href="#cennik" className="hover:text-foreground">Pricing</a>
+            <a href="#postup" className="hover:text-foreground">Workflow</a>
             <Link to="/cennik" className="hover:text-foreground">Plans</Link>
           </nav>
           <div className="ml-auto flex items-center gap-2">
@@ -98,18 +80,19 @@ function Landing() {
       </header>
 
       <section className="relative overflow-hidden border-b border-border">
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[46rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
-        <div className="relative mx-auto max-w-4xl px-6 py-24 text-center">
+        <img src={overview.url} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-top opacity-20" />
+        <div className="absolute inset-0 bg-background/70" />
+        <div className="relative mx-auto max-w-4xl px-6 py-14 text-center sm:py-16">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            Real data from CFTC, BIS and World Bank
+            Market context · positioning · historical patterns
           </span>
           <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-6xl">
-            Analyze the market with <span className="text-gradient-primary">AI</span>, not with gut feeling
+            MARKETMIND
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            TradingView, Forex Factory, Finviz and MyFxBook in one platform. Macro analysis,
-            COT, seasonality and journal — all in one place.
+            Fundamental analysis, COT, seasonality and AI market context.
+            Inspect charts, plan your risk and record your trades in one workspace.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button size="lg" onClick={() => navigate({ to: authed ? "/analyza" : "/auth" })}>
@@ -123,31 +106,14 @@ function Landing() {
         </div>
       </section>
 
-      <section id="funkcie" className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-          Everything a trader needs
-        </h2>
-        <div className="stagger-children mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="card-luxe rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <f.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 text-sm font-semibold text-foreground">{f.title}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <HomepageGuide />
+      <HomepageWorkflow />
 
       <section id="cennik" className="border-t border-border bg-card/30 py-20">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">Pricing</h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Cancel anytime. No commitment.
+            Compare plans. Listed features do not imply automatic trading or guaranteed outcomes.
           </p>
           <div className="stagger-children mt-10 grid gap-4 md:grid-cols-3">
             {plans.map((p) => (

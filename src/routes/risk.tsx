@@ -16,6 +16,8 @@ export const Route = createFileRoute("/risk")({
       },
       { property: "og:title", content: "Risk manager — MARKETMIND" },
       { property: "og:description", content: "Position size and risk limits under control." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: RiskPage,

@@ -71,7 +71,7 @@ export function HomepageGuide() {
     <section id="funkcie" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:px-6 sm:py-16">
       <div className="mb-10 text-center">
         <p className="text-xs font-medium uppercase tracking-widest text-primary">Explore your trading workspace</p>
-        <h2 className="mt-3 text-3xl font-semibold">Get powerful tools</h2>
+        <h2 className="mt-3 text-3xl font-semibold">Inside MARKETMIND</h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Know what each tool is for, how to use it and what its data can tell you.</p>
       </div>
       <div className="grid gap-5 md:grid-cols-2">

@@ -9,3 +9,5 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 Instrument detail uses a full-viewport Radix dialog with internal scrolling and dismissal controls, preserving analysis filters and scroll position on return.
+
+Homepage feature descriptions and usage guides live in HomepageGuide and HomepageWorkflow, keeping the landing route focused on page composition.

@@ -16,5 +16,6 @@
 - [x] Delete Dashboard and Backtesting pages, sidebar links, landing/pricing/sitemap mentions
 
 # Homepage guide
-- [ ] Add reference-inspired feature previews and accurate descriptions of all current tools
-- [ ] Explain usage and data limitations; verify homepage links and mobile layout
+- [x] Add reference-inspired feature previews and accurate descriptions of all current tools
+- [x] Explain usage and data limitations; verify homepage links and mobile layout
+- [x] Verify Seasonality, Bank reports and Calendar in instrument detail

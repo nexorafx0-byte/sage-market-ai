@@ -30,6 +30,8 @@ export const Route = createFileRoute("/news")({
         property: "og:description",
         content: "Every high-impact release and market headline in one feed.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(newsQueryOptions),
