@@ -19,3 +19,10 @@
 - [x] Add reference-inspired feature previews and accurate descriptions of all current tools
 - [x] Explain usage and data limitations; verify homepage links and mobile layout
 - [x] Verify Seasonality, Bank reports and Calendar in instrument detail
+
+# Backtesting Lab
+- [ ] Build responsive Backtesting Lab with market/setup controls and Lightweight Charts
+- [ ] Add separate replay and trade engines with no future-candle leakage
+- [ ] Add performance statistics, equity curve, drawings and notes
+- [ ] Add user-owned Cloud persistence with secure access rules
+- [ ] Verify real-data/demo states, replay, trading, saving and mobile layout
