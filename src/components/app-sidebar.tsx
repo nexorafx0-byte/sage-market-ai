@@ -31,6 +31,7 @@ const analysisItems = [
 
 const tradingItems = [
   { title: "Journal", url: "/journal", icon: BookOpen },
+  { title: "Backtesting Lab", url: "/backtesting", icon: CandlestickChart },
   { title: "Risk manager", url: "/risk", icon: ShieldCheck },
   { title: "Pricing", url: "/cennik", icon: Tags },
 ];
