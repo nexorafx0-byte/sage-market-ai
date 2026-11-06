@@ -8,6 +8,13 @@
       "when": 1791215572290,
       "tag": "0000_create_ai_bias_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793952565433,
+      "tag": "0001_create_backtesting_lab",
+      "breakpoints": true
     }
   ]
 }
