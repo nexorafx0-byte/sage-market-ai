@@ -61,7 +61,7 @@ function generateDemoCandles(input: HistoryInput): Candle[] {
     return seed / 4294967296;
   };
   const end = Math.floor(Date.parse(`${input.endDate}T12:00:00Z`) / 1000 / timeframe.seconds) * timeframe.seconds;
-  let price = meta.demoBase;
+  let price: number = meta.demoBase;
   let drift = 0;
   const candles: Candle[] = [];
   for (let index = 239; index >= 0; index -= 1) {

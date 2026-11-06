@@ -10,6 +10,7 @@ import {
   type ISeriesApi,
   type ISeriesMarkersPluginApi,
   type SeriesMarker,
+  type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
 
@@ -35,7 +36,7 @@ export default function BacktestChart({ candles, symbol, trades, drawings, tool,
   const holder = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const markersRef = useRef<ISeriesMarkersPluginApi<UTCTimestamp> | null>(null);
+  const markersRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null);
   const priceLinesRef = useRef<IPriceLine[]>([]);
   const createDrawingRef = useRef(onCreateDrawing);
   const [ready, setReady] = useState(false);
