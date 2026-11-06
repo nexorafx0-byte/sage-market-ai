@@ -76,6 +76,57 @@ export type Database = {
         }
         Relationships: []
       }
+      backtests: {
+        Row: {
+          created_at: string
+          data_mode: string
+          drawings: Json
+          id: string
+          name: string
+          notes: string
+          replay_index: number
+          settings: Json
+          stats: Json
+          symbol: string
+          timeframe: string
+          trades: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_mode?: string
+          drawings?: Json
+          id?: string
+          name?: string
+          notes?: string
+          replay_index?: number
+          settings?: Json
+          stats?: Json
+          symbol: string
+          timeframe: string
+          trades?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_mode?: string
+          drawings?: Json
+          id?: string
+          name?: string
+          notes?: string
+          replay_index?: number
+          settings?: Json
+          stats?: Json
+          symbol?: string
+          timeframe?: string
+          trades?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       journal_trades: {
         Row: {
           account_id: string | null

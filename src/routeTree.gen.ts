@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as AnalyzaRouteImport } from './routes/analyza'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BacktestingRouteImport } from './routes/backtesting'
 import { Route as CennikRouteImport } from './routes/cennik'
 import { Route as GrafyRouteImport } from './routes/grafy'
 import { Route as JournalRouteImport } from './routes/journal'
@@ -39,6 +40,11 @@ const AnalyzaRoute = AnalyzaRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BacktestingRoute = BacktestingRouteImport.update({
+  id: '/backtesting',
+  path: '/backtesting',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CennikRoute = CennikRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
+  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
+  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/ai-chat': typeof AiChatRoute
   '/analyza': typeof AnalyzaRoute
   '/auth': typeof AuthRoute
+  '/backtesting': typeof BacktestingRoute
   '/cennik': typeof CennikRoute
   '/grafy': typeof GrafyRoute
   '/journal': typeof JournalRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
+    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
+    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/analyza'
     | '/auth'
+    | '/backtesting'
     | '/cennik'
     | '/grafy'
     | '/journal'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   AiChatRoute: typeof AiChatRoute
   AnalyzaRoute: typeof AnalyzaRoute
   AuthRoute: typeof AuthRoute
+  BacktestingRoute: typeof BacktestingRoute
   CennikRoute: typeof CennikRoute
   GrafyRoute: typeof GrafyRoute
   JournalRoute: typeof JournalRoute
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/backtesting': {
+      id: '/backtesting'
+      path: '/backtesting'
+      fullPath: '/backtesting'
+      preLoaderRoute: typeof BacktestingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cennik': {
@@ -260,6 +280,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiChatRoute: AiChatRoute,
   AnalyzaRoute: AnalyzaRoute,
   AuthRoute: AuthRoute,
+  BacktestingRoute: BacktestingRoute,
   CennikRoute: CennikRoute,
   GrafyRoute: GrafyRoute,
   JournalRoute: JournalRoute,
