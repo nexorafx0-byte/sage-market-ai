@@ -168,6 +168,23 @@ export function evaluateTradeOnCandle(trade: SimulatedTrade, candle: Candle, set
   return rawExit == null || reason == null ? trade : closeSimulatedTrade({ trade, time: candle.time, rawExitPrice: rawExit, reason, settings });
 }
 
+export function evaluateTradesRange(trades: SimulatedTrade[], candles: Candle[], fromIndex: number, toIndex: number, settings: BacktestSettings) {
+  let next = trades;
+  for (let index = Math.max(0, fromIndex); index <= Math.min(candles.length - 1, toIndex); index += 1) {
+    const candle = candles[index];
+    next = next.map((trade) => evaluateTradeOnCandle(trade, candle, settings));
+  }
+  return next;
+}
+
+export function rewindTradesToTime(trades: SimulatedTrade[], time: number): SimulatedTrade[] {
+  return trades.filter((trade) => trade.entryTime <= time).map((trade) => {
+    if (trade.status === "open" || (trade.exitTime ?? Number.POSITIVE_INFINITY) <= time) return trade;
+    const { exitTime: _exitTime, exitPrice: _exitPrice, pnl: _pnl, rMultiple: _rMultiple, closeReason: _closeReason, ...open } = trade;
+    return { ...open, status: "open" };
+  });
+}
+
 export function calculateBacktestStats(initialCapital: number, trades: SimulatedTrade[]): BacktestStats {
   const closed = trades
     .filter((trade) => trade.status === "closed" && typeof trade.pnl === "number")
